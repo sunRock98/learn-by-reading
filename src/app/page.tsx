@@ -18,7 +18,7 @@ export default function Home() {
             font.className
           )}
         >
-          🔐 Auth
+          🔐 Auth Test branch
         </h1>
         <p className='text-lg text-white'>A simple authentication service</p>
         <div>
