@@ -12,7 +12,7 @@ export const sendVerificationEmail = async (
 
   return await resend.emails.send({
     to: email,
-    from: "onboarding@resend.dev",
+    from: `onboarding@${process.env.EMAIL_DOMAIN}`,
     subject: "Verify your email",
     html: `<p>Nice to have you aboard, ${name}! <br /> <a href="${confirmLink}">Click here to verify your email</a></p>`,
   });
@@ -23,7 +23,7 @@ export const sendResetEmail = async (email: string, token: string) => {
 
   return await resend.emails.send({
     to: email,
-    from: "onboarding@resend.dev",
+    from: `reset@${process.env.EMAIL_DOMAIN}`,
     subject: "Reset your password",
     html: `<p>Reset your password by <a href="${resetLink}">clicking this link</a></p>`,
   });
