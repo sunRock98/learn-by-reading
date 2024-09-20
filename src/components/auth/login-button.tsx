@@ -1,5 +1,6 @@
 "use client";
 
+import { AUTH_ROUTES } from "@/routes";
 import { useRouter } from "next/navigation";
 
 type Props = {
@@ -15,8 +16,7 @@ export const LoginButton: React.FC<Props> = ({
 }) => {
   const router = useRouter();
   const handleClick = () => {
-    router.push("/auth/login");
-    console.log("Login button clicked");
+    router.push(AUTH_ROUTES.LOGIN);
   };
 
   if (mode === "modal") {

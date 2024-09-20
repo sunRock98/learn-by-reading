@@ -17,8 +17,9 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
-import { login } from "@/actions/login";
+import { register } from "@/actions/register";
 import { useState, useTransition } from "react";
+import { AUTH_ROUTES } from "@/routes";
 
 export const RegisterForm = () => {
   const [isPending, startTransition] = useTransition();
@@ -38,7 +39,7 @@ export const RegisterForm = () => {
 
   const handleSubmit = form.handleSubmit((values) => {
     startTransition(() => {
-      login(values).then((res) => {
+      register(values).then((res) => {
         setLoginError(res.error);
         setLoginSuccess(res.success);
       });
@@ -49,7 +50,7 @@ export const RegisterForm = () => {
     <CardWrapper
       headelLabel='Create an account'
       backButtonLabel='Already have an account?'
-      backButtonHref='/auth/login'
+      backButtonHref={AUTH_ROUTES.LOGIN}
       showSocial
     >
       <Form {...form}>
@@ -61,7 +62,6 @@ export const RegisterForm = () => {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    {/* <FormLabel>Email</FormLabel> */}
                     <FormControl>
                       <Input
                         {...field}
@@ -80,7 +80,6 @@ export const RegisterForm = () => {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    {/* <FormLabel>Email</FormLabel> */}
                     <FormControl>
                       <Input
                         {...field}
@@ -100,7 +99,6 @@ export const RegisterForm = () => {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    {/* <FormLabel>Password</FormLabel> */}
                     <FormControl>
                       <Input
                         {...field}
