@@ -2,6 +2,7 @@ import authConfig from "./auth.config";
 import NextAuth from "next-auth";
 import {
   apiAuthPrefix,
+  AUTH_ROUTES,
   authRoutes,
   DEFAULT_LOGIN_REDIRECT,
   publicRoutes,
@@ -23,6 +24,10 @@ export default auth((req) => {
   }
 
   if (isAuthRoute) {
+    if (nextUrl.pathname === AUTH_ROUTES.VERIFY_EMAIL) {
+      return;
+    }
+
     if (IS_LOGGED_IN) {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
