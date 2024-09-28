@@ -6,6 +6,7 @@ import { db } from "./lib/db";
 import { UserRole } from "@prisma/client";
 import { getUserById } from "./data/user";
 import { AUTH_ROUTES } from "./routes";
+import { getAccountByUserId } from "./data/account";
 
 declare module "next-auth" {
   // eslint-disable-next-line unused-imports/no-unused-vars
@@ -16,6 +17,7 @@ declare module "next-auth" {
   interface Session {
     user: {
       role: UserRole;
+      isOAuth: boolean;
     } & DefaultSession["user"];
   }
 }
@@ -24,6 +26,7 @@ declare module "@auth/core/jwt" {
   // eslint-disable-next-line unused-imports/no-unused-vars
   interface JWT {
     role: UserRole;
+    isOAuth: boolean;
   }
 }
 
@@ -56,11 +59,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.sub;
       }
 
-      if (token.role) {
-        session.user.role = token.role;
-        session.user.email = token.email ?? "";
-        session.user.name = token.name;
-      }
+      const dbUser = await getUserById(session.user.id);
+
+      session.user.role = dbUser?.role ?? token.role;
+      session.user.email = dbUser?.email ?? token.email ?? "";
+      session.user.name = dbUser?.name ?? token.name;
+      session.user.isOAuth = !!token.isOAuth;
 
       return session;
     },
@@ -69,9 +73,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return token;
       }
 
+      const existingAccount = await getAccountByUserId(user.id as string);
+
       token.role = user.role;
       token.email = user.email;
       token.name = user.name;
+      token.isOAuth = !!existingAccount;
 
       return token;
     },
