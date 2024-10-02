@@ -7,14 +7,14 @@ import { Socials } from "./social-wrapper";
 
 type Props = {
   children: React.ReactNode;
-  headelLabel: string;
+  headerLabel: string;
   backButtonLabel: string;
   backButtonHref: string;
   showSocial?: boolean;
 };
 export const CardWrapper = ({
   children,
-  headelLabel,
+  headerLabel,
   backButtonHref,
   backButtonLabel,
   showSocial,
@@ -22,7 +22,7 @@ export const CardWrapper = ({
   return (
     <Card className='w-[400px] shadow-md'>
       <CardHeader>
-        <AuthHeader label={headelLabel} />
+        <AuthHeader label={headerLabel} />
       </CardHeader>
       <CardContent>{children}</CardContent>
       {showSocial && (

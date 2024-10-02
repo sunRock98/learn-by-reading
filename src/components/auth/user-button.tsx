@@ -11,8 +11,10 @@ import {
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { ExitIcon } from "@radix-ui/react-icons";
 import { LogoutButton } from "./logout-button";
+import { useTranslations } from "next-intl";
 
 export const UserButton = () => {
+  const t = useTranslations("TopBar");
   const currentUser = useCurrentUser();
 
   return (
@@ -29,7 +31,7 @@ export const UserButton = () => {
         <LogoutButton>
           <DropdownMenuItem>
             <ExitIcon className='mr-2 h-5 w-5' />
-            Sign Out
+            {t("logout")}
           </DropdownMenuItem>
         </LogoutButton>
       </DropdownMenuContent>

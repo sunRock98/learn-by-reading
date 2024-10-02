@@ -20,16 +20,19 @@ import { FormSuccess } from "../form-success";
 import { register } from "@/actions/register";
 import { useState, useTransition } from "react";
 import { AUTH_ROUTES } from "@/routes";
+import { useTranslations } from "next-intl";
 
 export const RegisterForm = () => {
+  const t = useTranslations("RegisterForm");
   const [isPending, startTransition] = useTransition();
   const [loginError, setLoginError] = useState<string | undefined>(undefined);
   const [loginSuccess, setLoginSuccess] = useState<string | undefined>(
     undefined
   );
+  const registerSchema = RegisterSchema(t);
 
-  const form = useForm<z.infer<typeof RegisterSchema>>({
-    resolver: zodResolver(RegisterSchema),
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -48,8 +51,8 @@ export const RegisterForm = () => {
 
   return (
     <CardWrapper
-      headelLabel='Create an account'
-      backButtonLabel='Already have an account?'
+      headerLabel={t("headerLabel")}
+      backButtonLabel={t("backButtonLabel")}
       backButtonHref={AUTH_ROUTES.LOGIN}
       showSocial
     >
@@ -65,7 +68,7 @@ export const RegisterForm = () => {
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder='Your Name'
+                        placeholder={t("namePlaceholder")}
                         disabled={isPending}
                       />
                     </FormControl>
@@ -84,7 +87,7 @@ export const RegisterForm = () => {
                       <Input
                         {...field}
                         type='email'
-                        placeholder='Email'
+                        placeholder={t("emailPlaceholder")}
                         disabled={isPending}
                       />
                     </FormControl>
@@ -103,7 +106,7 @@ export const RegisterForm = () => {
                       <Input
                         {...field}
                         type='password'
-                        placeholder='Password'
+                        placeholder={t("passwordPlaceholder")}
                         disabled={isPending}
                       />
                     </FormControl>
@@ -121,7 +124,7 @@ export const RegisterForm = () => {
             className='w-full'
             disabled={isPending}
           >
-            Create account
+            {t("registerButton")}
           </Button>
         </form>
       </Form>

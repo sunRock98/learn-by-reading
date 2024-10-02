@@ -6,11 +6,13 @@ import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { SettingsSchema } from "@/schemas";
 import * as z from "zod";
+import { getTranslations } from "next-intl/server";
 
 export const updateUserSettings = async (
-  values: z.infer<typeof SettingsSchema>
+  values: z.infer<ReturnType<typeof SettingsSchema>>
 ) => {
   const user = await getCurrentUser();
+  const t = await getTranslations("updateSettings");
 
   const newValues: {
     name?: string;
@@ -23,7 +25,7 @@ export const updateUserSettings = async (
   };
 
   if (!user) {
-    return { error: "Not authenticated" };
+    return { error: t("errors.notAuthorized") };
   }
 
   const dbUser = await db.user.findUnique({
@@ -31,7 +33,7 @@ export const updateUserSettings = async (
   });
 
   if (!dbUser) {
-    return { error: "User not found" };
+    return { error: t("errors.userNotFound") };
   }
 
   if (!user.isOAuth) {
@@ -39,7 +41,7 @@ export const updateUserSettings = async (
       const existingUser = await getUserByEmail(values.email);
 
       if (existingUser && existingUser.id !== user.id) {
-        return { error: "Email already in use" };
+        return { error: t("errors.emailExists") };
       }
       // TODO: Implement new email verification
       // const verificationToken = await generateVerificationToken(values.email);
@@ -63,7 +65,7 @@ export const updateUserSettings = async (
       );
 
       if (!isPasswordMatches) {
-        return { error: "Invalid password" };
+        return { error: t("errors.invalidPassword") };
       }
 
       const hashedPassword = await bcrypt.hash(values.newPassword, 10);
@@ -79,7 +81,7 @@ export const updateUserSettings = async (
   });
 
   return {
-    success: "Settings updated!",
+    success: t("success.updated"),
     error: undefined,
   };
 };

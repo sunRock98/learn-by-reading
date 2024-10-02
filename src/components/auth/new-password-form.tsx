@@ -19,15 +19,18 @@ import { NewPasswordSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { changePassword } from "@/actions/change-password";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export const NewPasswordForm = () => {
+  const t = useTranslations("NewPasswordForm");
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>(undefined);
   const [success, setSuccess] = useState<string | undefined>(undefined);
+  const newPassSchema = NewPasswordSchema(t);
 
-  const form = useForm<z.infer<typeof NewPasswordSchema>>({
-    resolver: zodResolver(NewPasswordSchema),
+  const form = useForm<z.infer<typeof newPassSchema>>({
+    resolver: zodResolver(newPassSchema),
     defaultValues: {
       password: "",
     },
@@ -62,7 +65,7 @@ export const NewPasswordForm = () => {
                     <Input
                       {...field}
                       type='password'
-                      placeholder='********'
+                      placeholder={t("passwordPlaceholder")}
                       disabled={isPending}
                     />
                   </FormControl>
@@ -80,7 +83,7 @@ export const NewPasswordForm = () => {
           className='w-full'
           disabled={isPending || !!success}
         >
-          Change password
+          {t("changeButton")}
         </Button>
       </form>
     </Form>

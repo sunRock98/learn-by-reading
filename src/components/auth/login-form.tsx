@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CardWrapper } from "./card-wrapper";
 import { LoginSchema } from "@/schemas";
+import { useTranslations } from "next-intl";
 import {
   Form,
   FormControl,
@@ -21,9 +22,10 @@ import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { AUTH_ROUTES } from "@/routes";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 
 export const LoginForm = () => {
+  const t = useTranslations("LoginForm");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>(undefined);
   const [success, setSuccess] = useState<string | undefined>(undefined);
@@ -32,11 +34,12 @@ export const LoginForm = () => {
   const callbackUrl = searchParams.get("callbackUrl");
   const errorParamText =
     errorParam === "OAuthAccountNotLinked"
-      ? "Email is already in use with different provider"
+      ? t("errors.oauthAccountNotLinked")
       : "";
+  const loginSchema = LoginSchema(t);
 
-  const form = useForm<z.infer<typeof LoginSchema>>({
-    resolver: zodResolver(LoginSchema),
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -57,8 +60,8 @@ export const LoginForm = () => {
 
   return (
     <CardWrapper
-      headelLabel='Welcome back'
-      backButtonLabel="Don't have an account?"
+      headerLabel={t("headerLabel")}
+      backButtonLabel={t("backButtonLabel")}
       backButtonHref={AUTH_ROUTES.REGISTER}
       showSocial
     >
@@ -76,7 +79,7 @@ export const LoginForm = () => {
                       <Input
                         {...field}
                         type='email'
-                        placeholder='Email'
+                        placeholder={t("emailPlaceholder")}
                         disabled={isPending}
                       />
                     </FormControl>
@@ -96,7 +99,7 @@ export const LoginForm = () => {
                       <Input
                         {...field}
                         type='password'
-                        placeholder='Password'
+                        placeholder={t("passwordPlaceholder")}
                         disabled={isPending}
                       />
                     </FormControl>
@@ -107,7 +110,9 @@ export const LoginForm = () => {
                       asChild
                       className='px-0 font-normal'
                     >
-                      <Link href={AUTH_ROUTES.RESET}>Forgot password?</Link>
+                      <Link href={AUTH_ROUTES.RESET}>
+                        {t("forgotPassword")}
+                      </Link>
                     </Button>
                   </FormItem>
                 );
@@ -122,7 +127,7 @@ export const LoginForm = () => {
             className='w-full'
             disabled={isPending}
           >
-            Login
+            {t("loginButton")}
           </Button>
         </form>
       </Form>
