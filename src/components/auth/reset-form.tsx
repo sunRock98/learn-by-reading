@@ -20,14 +20,18 @@ import { FormSuccess } from "../form-success";
 import { useState, useTransition } from "react";
 import { AUTH_ROUTES } from "@/routes";
 import { reset } from "@/actions/reset";
+import { useTranslations } from "next-intl";
 
 export const ResetForm = () => {
+  const t = useTranslations("ResetForm");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>(undefined);
   const [success, setSuccess] = useState<string | undefined>(undefined);
 
-  const form = useForm<z.infer<typeof ResetSchema>>({
-    resolver: zodResolver(ResetSchema),
+  const resetSchema = ResetSchema(t);
+
+  const form = useForm<z.infer<typeof resetSchema>>({
+    resolver: zodResolver(resetSchema),
     defaultValues: {
       email: "",
     },
@@ -47,8 +51,8 @@ export const ResetForm = () => {
 
   return (
     <CardWrapper
-      headelLabel='Reset your password?'
-      backButtonLabel='Back to login'
+      headerLabel={t("headerLabel")}
+      backButtonLabel={t("backButtonLabel")}
       backButtonHref={AUTH_ROUTES.LOGIN}
     >
       <Form {...form}>
@@ -64,7 +68,7 @@ export const ResetForm = () => {
                       <Input
                         {...field}
                         type='email'
-                        placeholder='Email'
+                        placeholder={t("emailPlaceholder")}
                         disabled={isPending}
                       />
                     </FormControl>
@@ -82,7 +86,7 @@ export const ResetForm = () => {
             className='w-full'
             disabled={isPending}
           >
-            Send reset email
+            {t("resetButton")}
           </Button>
         </form>
       </Form>

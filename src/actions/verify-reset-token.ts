@@ -2,19 +2,21 @@
 
 import { getUserByEmail } from "@/data/user";
 import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
+import { getTranslations } from "next-intl/server";
 
 export const verifyResetToken = async (token: string) => {
   const resetToken = await getPasswordResetTokenByToken(token);
+  const t = await getTranslations("NewPasswordForm");
 
   if (!resetToken) {
     return {
-      error: "Invalid token",
+      error: t("schema.errors.invalidToken"),
     };
   }
 
   if (resetToken.expiresAt < new Date()) {
     return {
-      error: "Token has expired",
+      error: t("schema.errors.expiredToken"),
     };
   }
 
@@ -22,12 +24,12 @@ export const verifyResetToken = async (token: string) => {
 
   if (!user) {
     return {
-      error: "User not found",
+      error: t("schema.errors.userNotFound"),
     };
   }
 
   return {
-    success: "Reset token is valid!",
+    success: t("schema.success.tokenVerified"),
     resetToken,
   };
 };

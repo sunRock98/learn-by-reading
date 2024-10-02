@@ -7,31 +7,45 @@ import {
   DEFAULT_LOGIN_REDIRECT,
   publicRoutes,
 } from "./routes";
+import createNextIntlMiddleware from "next-intl/middleware";
+import { routing } from "./i18n/routing";
 
 const { auth } = NextAuth(authConfig);
 
+const handleI18nRouting = createNextIntlMiddleware(routing);
+
 export default auth((req) => {
   const { nextUrl, auth } = req;
+  const locale = req.cookies.get("NEXT_LOCALE")?.value || "en";
+  const isContainsLocale = nextUrl.pathname.startsWith(`/${locale}`);
+  const pathnameWithoutLocale = nextUrl.pathname.replace(`/${locale}`, "");
 
   const IS_LOGGED_IN = !!auth;
 
-  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+  const isApiAuthRoute = pathnameWithoutLocale.startsWith(apiAuthPrefix);
+  const isPublicRoute = publicRoutes.includes(pathnameWithoutLocale);
+  const isAuthRoute = authRoutes.includes(pathnameWithoutLocale);
 
   if (isApiAuthRoute) {
     return;
   }
 
+  if (!isContainsLocale) {
+    console.log("redirecting to locale", locale);
+    return handleI18nRouting(req);
+  }
+
   if (isAuthRoute) {
-    if (nextUrl.pathname === AUTH_ROUTES.VERIFY_EMAIL) {
-      return;
+    if (pathnameWithoutLocale === AUTH_ROUTES.VERIFY_EMAIL) {
+      return handleI18nRouting(req);
     }
 
     if (IS_LOGGED_IN) {
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+      return Response.redirect(
+        new URL("/" + locale + "/" + DEFAULT_LOGIN_REDIRECT, nextUrl)
+      );
     }
-    return;
+    return handleI18nRouting(req);
   }
 
   if (!IS_LOGGED_IN && !isPublicRoute) {
@@ -41,11 +55,14 @@ export default auth((req) => {
     }
 
     const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-
     return Response.redirect(
-      new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+      new URL(
+        `/${locale}/auth/login?callbackUrl=${encodedCallbackUrl}`,
+        nextUrl
+      )
     );
   }
+  return handleI18nRouting(req);
 });
 
 export const config = {

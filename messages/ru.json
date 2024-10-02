@@ -1,0 +1,180 @@
+{
+  "LoginForm": {
+    "schema": {
+      "email": {
+        "required": "Электронная почта обязательна"
+      },
+      "password": {
+        "required": "Пароль обязателен"
+      },
+      "errors": {
+        "invalidFields": "Неверные данные",
+        "invalidCreds": "Неверные учетные данные",
+        "sthWentWrong": "Что-то пошло не так!"
+      },
+      "success": {
+        "emailSent": "Письмо с подтверждением отправлено!",
+        "loggedIn": "Успешный вход в систему!"
+      }
+    },
+    "headerLabel": "Добро пожаловать",
+    "backButtonLabel": "Нет аккаунта?",
+    "emailPlaceholder": "Электронная почта",
+    "passwordPlaceholder": "Пароль",
+    "forgotPassword": "Забыли пароль?",
+    "loginButton": "Войти",
+    "errors": {
+      "oauthAccountNotLinked": "Электронная почта уже используется другим провайдером",
+      "email": "Электронная почта обязательна",
+      "password": "Пароль обязателен"
+    }
+  },
+  "RegisterForm": {
+    "schema": {
+      "email": {
+        "required": "Электронная почта обязательна"
+      },
+      "password": {
+        "min": "Требуется минимум 6 символов",
+        "required": "Пароль обязателен"
+      },
+      "name": {
+        "required": "Имя обязательно"
+      },
+      "errors": {
+        "invalidFields": "Неверные данные",
+        "emailExists": "Пользователь с таким адресом электронной почты уже существует"
+      },
+      "success": {
+        "emailSent": "Письмо с подтверждением отправлено!"
+      }
+    },
+    "headerLabel": "Создать аккаунт",
+    "backButtonLabel": "Уже есть аккаунт?",
+    "namePlaceholder": "Ваше имя",
+    "emailPlaceholder": "Электронная почта",
+    "passwordPlaceholder": "Пароль",
+    "confirmPasswordPlaceholder": "Подтвердите пароль",
+    "registerButton": "Создать аккаунт"
+  },
+  "ResetForm": {
+    "schema": {
+      "email": {
+        "required": "Электронная почта обязательна"
+      },
+      "errors": {
+        "invalidEmail": "Неверный адрес электронной почты",
+        "sthWentWrong": "Что-то пошло не так!"
+      },
+      "success": {
+        "emailSent": "Письмо для сброса пароля отправлено!"
+      }
+    },
+    "headerLabel": "Сбросить пароль?",
+    "backButtonLabel": "Назад к входу",
+    "emailPlaceholder": "Электронная почта",
+    "resetButton": "Отправить письмо для сброса"
+  },
+  "NewPasswordPage": {
+    "headerLabel": "Введите новый пароль",
+    "backButtonLabel": "Назад к входу",
+    "loading": "Загрузка..."
+  },
+
+  "NewPasswordForm": {
+    "schema": {
+      "password": {
+        "min": "Требуется минимум 6 символов",
+        "required": "Пароль обязателен"
+      },
+      "errors": {
+        "missingToken": "Отсутствует токен",
+        "invalidToken": "Недействительный токен",
+        "expiredToken": "Токен истек",
+        "invalidFields": "Неверные данные",
+        "userNotFound": "Пользователь не найден",
+        "sthWentWrong": "Что-то пошло не так!"
+      },
+      "success": {
+        "tokenVerified": "Токен сброса действителен!",
+        "passwordChanged": "Пароль был изменен!"
+      }
+    },
+    "passwordPlaceholder": "Новый пароль",
+    "changeButton": "Изменить пароль"
+  },
+  "tokenVerification": {
+    "errors": {
+      "missingToken": "Отсутствует токен",
+      "invalidToken": "Недействительный токен",
+      "expiredToken": "Токен истек",
+      "sthWentWrong": "Что-то пошло не так!"
+    },
+    "success": {
+      "tokenVerified": "Токен действителен!"
+    }
+  },
+  "verifyEmail": {
+    "errors": {
+      "missingToken": "Отсутствует токен",
+      "invalidToken": "Недействительный токен",
+      "expiredToken": "Токен истек",
+      "userNotFound": "Пользователь не найден",
+      "sthWentWrong": "Что-то пошло не так!"
+    },
+    "success": {
+      "emailVerified": "Электронная почта подтверждена!"
+    }
+  },
+  "EmailVerificationForm": {
+    "headerLabel": "Подтверждение вашей верификации",
+    "backButtonLabel": "Назад к входу",
+    "success": "Ваша электронная почта подтверждена!"
+  },
+
+  "SettingsPage": {
+    "headerLabel": "Настройки"
+  },
+  "SettingsForm": {
+    "schema": {
+      "name": {
+        "label": "Имя",
+        "placeholder": "Иван Иванов",
+        "required": "Имя обязательно"
+      },
+      "email": {
+        "label": "Электронная почта",
+        "placeholder": "ivan.ivanov@example.com",
+        "required": "Электронная почта обязательна"
+      },
+      "password": {
+        "label": "Пароль",
+        "min": "Требуется минимум 6 символов",
+        "required": "Старый пароль обязателен"
+      },
+      "newPassword": {
+        "label": "Новый пароль",
+        "min": "Требуется минимум 6 символов",
+        "required": "Новый пароль обязателен"
+      }
+    },
+    "errors": {
+      "sthWentWrong": "Что-то пошло не так!"
+    },
+    "submit": "Сохранить"
+  },
+  "updateSettings": {
+    "errors": {
+      "notAuthorized": "Не авторизован",
+      "userNotFound": "Пользователь не найден",
+      "emailExists": "Электронная почта уже используется",
+      "invalidPassword": "Неверный пароль"
+    },
+    "success": {
+      "updated": "Настройки обновлены!"
+    }
+  },
+  "TopBar": {
+    "logout": "Выйти"
+  }
+}

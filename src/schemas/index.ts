@@ -1,57 +1,77 @@
+import { useTranslations } from "next-intl";
 import * as z from "zod";
 
-export const LoginSchema = z.object({
-  email: z.string().email({ message: "Email is required" }),
-  password: z.string().min(1, { message: "Password is required" }),
-});
+export const LoginSchema = (
+  t: ReturnType<typeof useTranslations<"LoginForm">>
+) =>
+  z.object({
+    email: z.string().email({ message: t("schema.email.required") }),
+    password: z.string().min(1, { message: t("schema.password.required") }),
+  });
 
-export const RegisterSchema = z.object({
-  email: z.string().email({ message: "Email is required" }),
-  password: z.string().min(6, { message: "Minimum 6 characters is required" }),
-  name: z.string().min(1, { message: "Name is required" }),
-});
+export const RegisterSchema = (
+  t: ReturnType<typeof useTranslations<"RegisterForm">>
+) =>
+  z.object({
+    email: z.string().email({ message: t("schema.email.required") }),
+    password: z.string().min(6, { message: t("schema.password.min") }),
+    name: z.string().min(1, { message: t("schema.name.required") }),
+  });
 
-export const ResetSchema = z.object({
-  email: z.string().email({ message: "Email is required" }),
-});
+export const ResetSchema = (
+  t: ReturnType<typeof useTranslations<"ResetForm">>
+) =>
+  z.object({
+    email: z.string().email({ message: t("schema.email.required") }),
+  });
 
-export const NewPasswordSchema = z.object({
-  password: z.string().min(6, { message: "Minimum 6 characters is required" }),
-});
+export const NewPasswordSchema = (
+  t: ReturnType<typeof useTranslations<"NewPasswordForm">>
+) =>
+  z.object({
+    password: z.string().min(6, { message: t("schema.password.min") }),
+  });
 
-export const SettingsSchema = z
-  .object({
-    name: z.optional(z.string().min(1, { message: "Name is required" })),
-    email: z.optional(z.string().email({ message: "Email is required" })),
-    password: z.optional(
-      z.string().min(6, { message: "Minimum 6 characters is required" })
-    ),
-    newPassword: z.optional(
-      z.string().min(6, { message: "Minimum 6 characters is required" })
-    ),
-  })
-  .refine(
-    (data) => {
-      if (data.newPassword && !data.password) {
-        return false;
+export const SettingsSchema = (
+  t: ReturnType<typeof useTranslations<"SettingsForm">>
+) =>
+  z
+    .object({
+      name: z.optional(
+        z.string().min(1, { message: t("schema.name.required") })
+      ),
+      email: z.optional(
+        z.string().email({ message: t("schema.email.required") })
+      ),
+      password: z.optional(
+        z.string().min(6, { message: t("schema.password.min") })
+      ),
+      newPassword: z.optional(
+        z.string().min(6, { message: t("schema.newPassword.min") })
+      ),
+    })
+    .refine(
+      (data) => {
+        if (data.newPassword && !data.password) {
+          return false;
+        }
+
+        return true;
+      },
+      {
+        message: t("schema.password.required"),
+        path: ["password"],
       }
-
-      return true;
-    },
-    {
-      message: "Old password is required",
-      path: ["password"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.password && !data.newPassword) {
-        return false;
+    )
+    .refine(
+      (data) => {
+        if (data.password && !data.newPassword) {
+          return false;
+        }
+        return true;
+      },
+      {
+        message: t("schema.newPassword.required"),
+        path: ["newPassword"],
       }
-      return true;
-    },
-    {
-      message: "New password is required",
-      path: ["newPassword"],
-    }
-  );
+    );

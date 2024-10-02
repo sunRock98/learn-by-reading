@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -15,6 +16,7 @@ export type Props = {
 };
 
 export const useVerifyTokenFromParam = ({ callback }: Props) => {
+  const t = useTranslations("tokenVerification");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const searchParam = useSearchParams();
@@ -22,22 +24,22 @@ export const useVerifyTokenFromParam = ({ callback }: Props) => {
 
   const verifyToken = useCallback(() => {
     if (!token) {
-      setError("Invalid token");
+      setError(t("errors.missingToken"));
       return;
     }
 
     callback(token)
       .then((res) => {
         if (res.error) {
-          setError("Invalid token");
+          setError(t("errors.invalidToken"));
         } else {
-          setSuccess("Token has been verified");
+          setSuccess(t("success.tokenVerified"));
         }
       })
       .catch(() => {
-        setError("Something went wrong");
+        setError(t("errors.sthWentWrong"));
       });
-  }, [token, callback]);
+  }, [token, callback, t]);
 
   useEffect(() => {
     if (error || success) {

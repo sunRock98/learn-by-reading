@@ -6,7 +6,7 @@ import { AUTH_ROUTES } from "@/routes";
 export const ErrorCard = () => {
   return (
     <CardWrapper
-      headelLabel={"Oops! Something went wrong!"}
+      headerLabel={"Oops! Something went wrong!"}
       backButtonLabel={"Back to login"}
       backButtonHref={AUTH_ROUTES.LOGIN}
     >

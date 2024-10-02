@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { SessionProvider } from "next-auth/react";
 import { ReactNode } from "react";
-import { Navbar } from "./_components/navbar";
+import { Navbar } from "./navbar";
 
 const AuthProvider = async ({ children }: { children: ReactNode }) => {
   const session = await auth();

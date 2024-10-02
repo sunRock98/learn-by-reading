@@ -1,0 +1,178 @@
+{
+  "LoginForm": {
+    "schema": {
+      "email": {
+        "required": "Email is required"
+      },
+      "password": {
+        "required": "Password is required"
+      },
+      "errors": {
+        "invalidFields": "Invalid fields",
+        "invalidCreds": "Invalid credentials",
+        "sthWentWrong": "Something went wrong!"
+      },
+      "success": {
+        "emailSent": "Confiramtion email sent!",
+        "loggedIn": "Logged in successfully!"
+      }
+    },
+    "headerLabel": "Welcome back",
+    "backButtonLabel": "Don't have an account?",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "forgotPassword": "Forgot password?",
+    "loginButton": "Login",
+    "errors": {
+      "oauthAccountNotLinked": "Email is already in use with different provider",
+      "email": "Email is required",
+      "password": "Password is required"
+    }
+  },
+  "RegisterForm": {
+    "schema": {
+      "email": {
+        "required": "Email is required"
+      },
+      "password": {
+        "min": "Minimum 6 characters is required",
+        "required": "Password is required"
+      },
+      "name": {
+        "required": "Name is required"
+      },
+      "errors": {
+        "invalidFields": "Invalid fields",
+        "emailExists": "User with this email already exists"
+      },
+      "success": {
+        "emailSent": "Confiramtion email sent!"
+      }
+    },
+    "headerLabel": "Create an account",
+    "backButtonLabel": "Already have an account?",
+    "namePlaceholder": "Your name",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "confirmPasswordPlaceholder": "Confirm password",
+    "registerButton": "Create account"
+  },
+  "ResetForm": {
+    "schema": {
+      "email": {
+        "required": "Email is required"
+      },
+      "errors": {
+        "invalidEmail": "Invalid email",
+        "sthWentWrong": "Something went wrong!"
+      },
+      "success": {
+        "emailSent": "Password reset email sent!"
+      }
+    },
+    "headerLabel": "Reset your password?",
+    "backButtonLabel": "Back to login",
+    "emailPlaceholder": "Email",
+    "resetButton": "Send reset email"
+  },
+  "NewPasswordPage": {
+    "headerLabel": "Enter your new password",
+    "backButtonLabel": "Back to login",
+    "loading": "Loading..."
+  },
+  "NewPasswordForm": {
+    "schema": {
+      "password": {
+        "min": "Minimum 6 characters is required",
+        "required": "Password is required"
+      },
+      "errors": {
+        "missingToken": "Token is missing",
+        "invalidToken": "Invalid token",
+        "expiredToken": "Token has expired",
+        "invalidFields": "Invalid fields",
+        "userNotFound": "User not found",
+        "sthWentWrong": "Something went wrong!"
+      },
+      "success": {
+        "tokenVerified": "Reset token is valid!",
+        "passwordChanged": "Password was changed!"
+      }
+    },
+    "passwordPlaceholder": "New password",
+    "changeButton": "Change password"
+  },
+  "tokenVerification": {
+    "errors": {
+      "missingToken": "Token is missing",
+      "invalidToken": "Invalid token",
+      "expiredToken": "Token has expired",
+      "sthWentWrong": "Something went wrong!"
+    },
+    "success": {
+      "tokenVerified": "Token is valid!"
+    }
+  },
+  "verifyEmail": {
+    "errors": {
+      "missingToken": "Token is missing",
+      "invalidToken": "Invalid token",
+      "expiredToken": "Token has expired",
+      "userNotFound": "User not found",
+      "sthWentWrong": "Something went wrong!"
+    },
+    "success": {
+      "emailVerified": "Email is verified!"
+    }
+  },
+  "EmailVerificationForm": {
+    "headerLabel": "Confirming your verification",
+    "backButtonLabel": "Back to login",
+    "success": "Your email has been verified!"
+  },
+  "SettingsPage": {
+    "headerLabel": "Settings"
+  },
+  "SettingsForm": {
+    "schema": {
+      "name": {
+        "label": "Name",
+        "placeholder": "John Doe",
+        "required": "Name is required"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "john.doe@example.com",
+        "required": "Email is required"
+      },
+      "password": {
+        "label": "Password",
+        "min": "Minimum 6 characters is required",
+        "required": "Old password is required"
+      },
+      "newPassword": {
+        "label": "New password",
+        "min": "Minimum 6 characters is required",
+        "required": "New password is required"
+      }
+    },
+    "errors": {
+      "sthWentWrong": "Something went wrong!"
+    },
+    "submit": "Save"
+  },
+  "updateSettings": {
+    "errors": {
+      "notAuthorized": "Not authenticated",
+      "userNotFound": "User not found",
+      "emailExists": "Email already in use",
+      "invalidPassword": "Invalid password"
+    },
+    "success": {
+      "updated": "Settings updated!"
+    }
+  },
+  "TopBar": {
+    "logout": "Sign Out"
+  }
+}

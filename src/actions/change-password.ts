@@ -6,20 +6,23 @@ import { z } from "zod";
 import { NewPasswordSchema } from "@/schemas";
 import { verifyResetToken } from "./verify-reset-token";
 import { db } from "@/lib/db";
+import { getTranslations } from "next-intl/server";
 
 export const changePassword = async (
-  values: z.infer<typeof NewPasswordSchema>,
+  values: z.infer<ReturnType<typeof NewPasswordSchema>>,
   token: string | null
 ) => {
+  const t = await getTranslations("NewPasswordForm");
   if (!token) {
     return {
-      error: "Missing token!",
+      error: t("schema.errors.missingToken"),
     };
   }
-  const validatedFields = NewPasswordSchema.safeParse(values);
+  const newPasswordSchema = NewPasswordSchema(t);
+  const validatedFields = newPasswordSchema.safeParse(values);
 
   if (!validatedFields.success) {
-    return { error: "Invalid fields" };
+    return { error: t("schema.errors.invalidFields") };
   }
 
   const { password } = validatedFields.data;
@@ -34,7 +37,7 @@ export const changePassword = async (
 
   if (!resetToken) {
     return {
-      error: "Invalid token",
+      error: t("schema.errors.invalidToken"),
     };
   }
 
@@ -52,7 +55,7 @@ export const changePassword = async (
   });
 
   return {
-    success: "Password was changed!",
+    success: t("schema.success.passwordChanged"),
     error: undefined,
   };
 };

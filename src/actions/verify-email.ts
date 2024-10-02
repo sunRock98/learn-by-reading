@@ -3,19 +3,21 @@
 import { getUserByEmail } from "@/data/user";
 import { getEmailVerificationTokenByToken } from "@/data/email-verification-token";
 import { db } from "@/lib/db";
+import { getTranslations } from "next-intl/server";
 
 export const verifyEmail = async (token: string) => {
+  const t = await getTranslations("verifyEmail");
   const verificationToken = await getEmailVerificationTokenByToken(token);
 
   if (!verificationToken) {
     return {
-      error: "Invalid token",
+      error: t("schema.errors.invalidToken"),
     };
   }
 
   if (verificationToken.expiresAt < new Date()) {
     return {
-      error: "Token has expired",
+      error: t("schema.errors.expiredToken"),
     };
   }
 
@@ -23,7 +25,7 @@ export const verifyEmail = async (token: string) => {
 
   if (!user) {
     return {
-      error: "User not found",
+      error: t("schema.errors.userNotFound"),
     };
   }
 
@@ -37,6 +39,6 @@ export const verifyEmail = async (token: string) => {
   });
 
   return {
-    success: "Email has verified!",
+    success: t("schema.success.emailVerified"),
   };
 };
