@@ -9,9 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { ExitIcon } from "@radix-ui/react-icons";
+import { BackpackIcon, ExitIcon, GearIcon } from "@radix-ui/react-icons";
 import { LogoutButton } from "./logout-button";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
+import { ROUTES } from "@/routes";
 
 export const UserButton = () => {
   const t = useTranslations("TopBar");
@@ -28,6 +30,18 @@ export const UserButton = () => {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
+        <Link href={ROUTES.LanguageSetting}>
+          <DropdownMenuItem>
+            <BackpackIcon className='mr-2 h-5 w-5' />
+            {t("languageSettings")}
+          </DropdownMenuItem>
+        </Link>
+        <Link href={ROUTES.Settings}>
+          <DropdownMenuItem>
+            <GearIcon className='mr-2 h-5 w-5' />
+            {t("settings")}
+          </DropdownMenuItem>
+        </Link>
         <LogoutButton>
           <DropdownMenuItem>
             <ExitIcon className='mr-2 h-5 w-5' />

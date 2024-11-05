@@ -80,7 +80,6 @@
     "backButtonLabel": "Назад к входу",
     "loading": "Загрузка..."
   },
-
   "NewPasswordForm": {
     "schema": {
       "password": {
@@ -131,7 +130,6 @@
     "backButtonLabel": "Назад к входу",
     "success": "Ваша электронная почта подтверждена!"
   },
-
   "SettingsPage": {
     "headerLabel": "Настройки"
   },
@@ -175,6 +173,38 @@
     }
   },
   "TopBar": {
-    "logout": "Выйти"
+    "logout": "Выйти",
+    "settings": "Настройки",
+    "languageSettings": "Выбрать язык"
+  },
+  "LanguageSettingPage": {
+    "headerLabel": "Выберите язык",
+    "yourLanguage": "Вы изучаете"
+  },
+  "LanguageSelectForm": {
+    "schema": {
+      "level": {
+        "required": "Выберите свой уровень знаний",
+        "placeholder": "Выберите свой уровень знаний"
+      },
+      "language": {
+        "required": "Выберите язык",
+        "placeholder": "Какой язык вы хотите изучать?"
+      }
+    },
+    "errors": {
+      "sthWentWrong": "Что-то пошло не так!",
+      "languageAlreadyAdded": "Этот язык уже добавлен",
+      "notAuthorized": "Не авторизован"
+    },
+    "submit": "Добавить"
+  },
+  "LanguageLevels": {
+    "A1": "Начальный",
+    "A2": "Элементарный",
+    "B1": "Средний",
+    "B2": "Выше среднего",
+    "C1": "Продвинутый",
+    "C2": "Профессиональный уровень"
   }
 }

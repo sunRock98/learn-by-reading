@@ -75,3 +75,11 @@ export const SettingsSchema = (
         path: ["newPassword"],
       }
     );
+
+export const LanguageSchema = (
+  t: ReturnType<typeof useTranslations<"LanguageSelectForm">>
+) =>
+  z.object({
+    language: z.string().min(1, { message: t("schema.language.required") }),
+    level: z.string().min(1, { message: t("schema.level.required") }),
+  });
