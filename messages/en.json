@@ -173,6 +173,38 @@
     }
   },
   "TopBar": {
-    "logout": "Sign Out"
+    "logout": "Sign Out",
+    "settings": "Settings",
+    "languageSettings": "Select language"
+  },
+  "LanguageSettingPage": {
+    "headerLabel": "Select Languages",
+    "yourLanguage": "You are learning"
+  },
+  "LanguageSelectForm": {
+    "schema": {
+      "level": {
+        "required": "Select your level",
+        "placeholder": "What is your level?"
+      },
+      "language": {
+        "required": "Select language",
+        "placeholder": "Which language do you want to learn?"
+      }
+    },
+    "errors": {
+      "sthWentWrong": "Something went wrong!",
+      "languageAlreadyAdded": "This language is already added",
+      "notAuthorized": "Не авторизован"
+    },
+    "submit": "Add"
+  },
+  "LanguageLevels": {
+    "A1": "Beginner",
+    "A2": "Elementary",
+    "B1": "Intermediate",
+    "B2": "Upper Intermediate",
+    "C1": "Advanced",
+    "C2": "Proficiency"
   }
 }
