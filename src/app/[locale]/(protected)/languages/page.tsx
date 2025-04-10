@@ -5,7 +5,7 @@ import { LanguageSelectForm } from "./components/LanguageSelectForm";
 import { db } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
 import { getCurrentUser } from "@/lib/auth";
-import { UserLanguageItem } from "./components/UserLanguageItem";
+import { UserCourseItem } from "./components/UserCourseItem";
 
 const getLanguages = async () => {
   return await db.language.findMany({
@@ -17,29 +17,48 @@ const getLanguages = async () => {
   });
 };
 
-const getUserLanguages = async () => {
+const getLevels = async () => {
+  return await db.level.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+};
+
+const getUserCourses = async () => {
   const user = await getCurrentUser();
 
-  return await db.userLanguage.findMany({
+  const selectedUser = await db.user.findUnique({
     where: {
-      userId: user?.id,
+      id: user?.id,
     },
     select: {
       id: true,
-      language: {
+      subscriptions: {
         select: {
-          name: true,
+          id: true,
+          level: true,
+          language: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
         },
       },
-      level: true,
     },
   });
+
+  return selectedUser?.subscriptions ?? [];
 };
 
 const LanguageSettingPage = async () => {
   const t = await getTranslations("LanguageSettingPage");
   const languages = await getLanguages();
-  const userLanguages = await getUserLanguages();
+  const levels = await getLevels();
+  const userCourses = await getUserCourses();
 
   return (
     <Card className='mx-auto max-w-4xl border-indigo-100 bg-white/50 backdrop-blur dark:border-indigo-950 dark:bg-gray-900/50'>
@@ -54,16 +73,14 @@ const LanguageSettingPage = async () => {
             {t("yourLanguage")}
           </h3>
           <div className='mb-2 grid gap-3'>
-            {userLanguages.map((userLanguage) => {
-              return (
-                <UserLanguageItem
-                  key={userLanguage.id}
-                  userLanguage={userLanguage}
-                />
-              );
+            {userCourses.map((course) => {
+              return <UserCourseItem key={course.id} course={course} />;
             })}
           </div>
-          <LanguageSelectForm languages={languages ?? []} />
+          <LanguageSelectForm
+            languages={languages ?? []}
+            levels={levels ?? []}
+          />
         </div>
       </CardContent>
     </Card>

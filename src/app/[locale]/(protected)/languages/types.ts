@@ -1,5 +1,5 @@
-export type UserLanguage = {
+export type Course = {
   id: number;
-  language: { name: string };
-  level: string;
+  language: { id: number; name: string };
+  level: { id: number; name: string };
 };

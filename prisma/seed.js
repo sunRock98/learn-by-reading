@@ -21,6 +21,15 @@ async function main() {
   });
 
   console.log("Languages table populated");
+
+  const levels = ["A1", "A2", "B1", "B2", "C1", "C2"];
+
+  await prisma.level.createMany({
+    data: levels.map((name) => ({ name })),
+    skipDuplicates: true,
+  });
+
+  console.log("Levels table populated");
 }
 
 main()

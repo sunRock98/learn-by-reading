@@ -1,0 +1,52 @@
+{
+  "name": "language_learning",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "language": {
+        "type": "string",
+        "description": "The language to be learned."
+      },
+      "level": {
+        "type": "string",
+        "description": "The proficiency level of the language, e.g., beginner, intermediate, advanced."
+      },
+      "mother_language": {
+        "type": "string",
+        "description": "The learner's mother language."
+      },
+      "text": {
+        "type": "string",
+        "description": "A text in the provided language, within 200 words."
+      },
+      "translations": {
+        "type": "array",
+        "description": "An array containing the translation of each word in the text.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "word": {
+              "type": "string",
+              "description": "The word in the target language."
+            },
+            "translation": {
+              "type": "string",
+              "description": "The corresponding translation in the mother language."
+            }
+          },
+          "required": ["word", "translation"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "language",
+      "level",
+      "mother_language",
+      "text",
+      "translations"
+    ],
+    "additionalProperties": false
+  },
+  "strict": true
+}
