@@ -15,13 +15,15 @@ const getTextsByCourseId = async (id: number) => {
 };
 
 interface CoursePageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 const CoursePage = async ({ params }: CoursePageProps) => {
-  const texts = await getTextsByCourseId(Number(params.id));
+  const { id } = await params;
+  const courseId = Number(id);
+  const texts = await getTextsByCourseId(courseId);
 
   return (
     <div className='p-4'>
