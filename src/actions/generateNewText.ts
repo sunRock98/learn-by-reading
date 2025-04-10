@@ -12,12 +12,13 @@ export const generateNewText = async (course: Course) => {
     level: course.level.name,
     motherLanguage: locale,
   });
-  const { text, translations } = data;
-  console.log(text, translations);
+  const { text, title } = data;
+  console.log("data", data);
 
-  //add the text to the database
+  // Add the text to the database
   await db.text.create({
     data: {
+      title,
       content: text ?? "",
       course: { connect: { id: course.id } },
     },

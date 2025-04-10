@@ -48,6 +48,10 @@ This book has been written by a native author and is recommended for ${level} le
         "type": "string",
         "description": "A text in the provided language, within 200 words."
       },
+      "title": {
+        "type": "string",
+        "description": "The title of the text."
+      },
       "translations": {
         "type": "array",
         "description": "An array containing the translation of each word in the text.",

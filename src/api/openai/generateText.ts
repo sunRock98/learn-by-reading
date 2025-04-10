@@ -9,6 +9,7 @@ type OpenAIResponseData = {
   motherLanguage: string;
   translations: { word: string; translation: string }[];
   text: string;
+  title: string;
 };
 
 export const generateText = async ({
