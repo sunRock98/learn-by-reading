@@ -34,15 +34,20 @@ enum UserRole {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  name          String?
-  email         String?        @unique
-  emailVerified DateTime?      @map("email_verified")
-  image         String?
-  password      String?
-  role          UserRole       @default(USER)
-  accounts      Account[]
-  UserLanguage  UserLanguage[]
+  id               String                 @id @default(cuid())
+  name             String?
+  email            String?                @unique
+  emailVerified    DateTime?              @map("email_verified")
+  image            String?
+  password         String?
+  activeCourseId   Int?
+  activeCourse     Course?                @relation(fields: [activeCourseId], references: [id])
+  role             UserRole               @default(USER)
+  accounts         Account[]
+  subscriptions    Course[]               @relation("UserSubscriptions")
+  progress         UserProgress[] // User's progress across texts
+  exerciseProgress UserExerciseProgress[] // User's progress across exercises
+  dictionaries     UserDictionary[] // User's dictionaries per course
 
   @@map("users")
 }
@@ -66,22 +71,103 @@ model PasswordResetToken {
 }
 
 model Language {
-  id           Int            @id @default(autoincrement())
-  name         String         @unique
-  code         String         @unique
-  createdAt    DateTime       @default(now())
-  UserLanguage UserLanguage[]
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  code      String   @unique
+  createdAt DateTime @default(now())
+  courses   Course[]
+
+  fromWords Word[] @relation("LanguageFrom")
+  toWords   Word[] @relation("LanguageTo")
 }
 
-model UserLanguage {
+model Level {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  courses Course[]
+}
+
+model Course {
+  id           Int              @id @default(autoincrement())
+  language     Language         @relation(fields: [languageId], references: [id])
+  languageId   Int
+  level        Level            @relation(fields: [levelId], references: [id])
+  levelId      Int
+  texts        Text[]
+  subscribers  User[]           @relation("UserSubscriptions")
+  dictionaries UserDictionary[] // Dictionaries specific to this course
+  User         User[]
+
+  @@unique([languageId, levelId])
+}
+
+model Text {
+  id          Int            @id @default(autoincrement())
+  title       String
+  content     String
+  course      Course         @relation(fields: [courseId], references: [id])
+  courseId    Int
+  picture_url String?
+  audio_url   String?
+  exercises   Exercise[]
+  progress    UserProgress[] // User progress for this text
+}
+
+model Exercise {
+  id       Int                    @id @default(autoincrement())
+  content  String
+  text     Text                   @relation(fields: [textId], references: [id])
+  textId   Int
+  progress UserExerciseProgress[] // User progress for this exercise
+}
+
+// Tracks user-specific progress on each text
+model UserProgress {
+  id      Int     @id @default(autoincrement())
+  user    User    @relation(fields: [userId], references: [id])
+  userId  String
+  text    Text    @relation(fields: [textId], references: [id])
+  textId  Int
+  seen    Boolean @default(false)
+  current Boolean @default(false)
+
+  @@unique([userId, textId])
+}
+
+// Tracks user-specific completion of each exercise
+model UserExerciseProgress {
   id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
   userId     String
-  languageId Int
-  level      String
-  createdAt  DateTime @default(now())
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  exerciseId Int
+  completed  Boolean  @default(false)
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  language Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+  @@unique([userId, exerciseId])
+}
 
-  @@unique([userId, languageId, level])
+// Represents a user's dictionary for a specific course
+model UserDictionary {
+  id       Int    @id @default(autoincrement())
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+  course   Course @relation(fields: [courseId], references: [id])
+  courseId Int
+  words    Word[] // Words in the dictionary
+
+  @@unique([userId, courseId]) // Ensures a unique dictionary per user-course pair
+}
+
+// Represents a word and its translation in a user's dictionary
+model Word {
+  id             Int      @id @default(autoincrement())
+  original       String // The original word
+  translation    String // The translation of the word
+  languageFrom   Language @relation("LanguageFrom", fields: [fromLanguageId], references: [id])
+  fromLanguageId Int // The language of the original word
+  languageTo     Language @relation("LanguageTo", fields: [toLanguageId], references: [id])
+  toLanguageId   Int // The language of the translation
+
+  dictionary   UserDictionary @relation(fields: [dictionaryId], references: [id])
+  dictionaryId Int
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { addUserLanguage } from "@/actions/add-user-language";
+import { addCourseToUser } from "@/actions/add-course-to-user";
 import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { LanguageSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Language } from "@prisma/client";
+import { Language, Level } from "@prisma/client";
 import { useTranslations } from "next-intl";
 
 import { useState, useTransition } from "react";
@@ -29,11 +29,10 @@ import { z } from "zod";
 
 type Props = {
   languages: Pick<Language, "code" | "id" | "name">[];
+  levels: Pick<Level, "id" | "name">[];
 };
 
-const LANGUAGE_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
-
-export const LanguageSelectForm = ({ languages }: Props) => {
+export const LanguageSelectForm = ({ languages, levels }: Props) => {
   const t = useTranslations("LanguageSelectForm");
   const tLevels = useTranslations("LanguageLevels");
 
@@ -55,7 +54,7 @@ export const LanguageSelectForm = ({ languages }: Props) => {
     setSuccess(undefined);
 
     startTransition(() => {
-      addUserLanguage(values)
+      addCourseToUser(values)
         .then(async (res) => {
           if (res?.error) {
             setError(res.error);
@@ -132,9 +131,9 @@ export const LanguageSelectForm = ({ languages }: Props) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {LANGUAGE_LEVELS.map((level) => (
-                          <SelectItem key={level} value={level}>
-                            {tLevels(level) + " - " + level}
+                        {levels.map(({ id, name }) => (
+                          <SelectItem key={id} value={String(id)}>
+                            {tLevels(name) + " - " + name}
                           </SelectItem>
                         ))}
                       </SelectContent>

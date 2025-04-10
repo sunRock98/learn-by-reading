@@ -7,6 +7,7 @@ import { UserRole } from "@prisma/client";
 import { getUserById } from "./data/user";
 import { AUTH_ROUTES } from "./routes";
 import { getAccountByUserId } from "./data/account";
+import type { Adapter } from "next-auth/adapters";
 
 declare module "next-auth" {
   // eslint-disable-next-line unused-imports/no-unused-vars
@@ -61,7 +62,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       const dbUser = await getUserById(session.user.id);
 
-      session.user.role = dbUser?.role ?? token.role;
+      session.user.role = dbUser?.role ?? (token.role as UserRole);
       session.user.email = dbUser?.email ?? token.email ?? "";
       session.user.name = dbUser?.name ?? token.name;
       session.user.isOAuth = !!token.isOAuth;
@@ -83,7 +84,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
   },
-  adapter: PrismaAdapter(db),
+  adapter: PrismaAdapter(db) as Adapter,
   session: { strategy: "jwt" },
   ...authConfig,
 });
