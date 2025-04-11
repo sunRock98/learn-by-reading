@@ -5,10 +5,10 @@ import { TextNavigation } from "./components/TextNavigation";
 import { BackButton } from "@/components/ui/back-button";
 
 interface TextPageProps {
-  params: {
+  params: Promise<{
     courseId: string;
     textId: string;
-  };
+  }>;
 }
 
 const fetchText = async (courseId: string, textId: string) => {
@@ -27,7 +27,7 @@ const fetchText = async (courseId: string, textId: string) => {
 };
 
 const TextPage = async ({ params }: TextPageProps) => {
-  const { courseId, textId } = params;
+  const { courseId, textId } = await params;
   const text = await fetchText(courseId, textId);
 
   if (!text) {
