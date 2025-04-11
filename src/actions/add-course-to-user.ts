@@ -24,6 +24,8 @@ export const addCourseToUser = async (
       levelId: Number(values.level),
     });
 
+    console.log("course", course);
+
     if (!course) {
       return { error: t("errors.sthWentWrong") };
     }

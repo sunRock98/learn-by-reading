@@ -22,25 +22,29 @@ export const generateText = async ({
   motherLanguage: string;
 }) => {
   const prompt = constructPrompt({ language, level, motherLanguage });
-  console.log(prompt);
-  const response = await openai.beta.chat.completions.parse({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: prompt,
-      },
-      {
-        role: "user",
-        content: `Language: ${language}, Level: ${level}, mother_language: ${motherLanguage}`,
-      },
-    ],
-    // response_format: zodResponseFormat(languageLearningSchema, "text"),
-  });
 
-  console.log("response", response.choices[0].message.content);
+  try {
+    const response = await openai.beta.chat.completions.parse({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: prompt,
+        },
+        {
+          role: "user",
+          content: `Language: ${language}, Level: ${level}, mother_language: ${motherLanguage}`,
+        },
+      ],
+      // response_format: zodResponseFormat(languageLearningSchema, "text"),
+    });
 
-  return JSON.parse(
-    response.choices[0].message.content ?? ""
-  ) as OpenAIResponseData;
+    console.log("response", response.choices[0].message.content);
+
+    return JSON.parse(
+      response.choices[0].message.content ?? ""
+    ) as OpenAIResponseData;
+  } catch (error) {
+    console.error("Error generating text:", JSON.stringify(error));
+  }
 };
