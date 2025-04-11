@@ -31,9 +31,9 @@ const getTextsByCourseId = async (id: number) => {
 };
 
 interface CoursePageProps {
-  params: {
+  params: Promise<{
     courseId: string;
-  };
+  }>;
 }
 
 const CoursePage = async ({ params }: CoursePageProps) => {
