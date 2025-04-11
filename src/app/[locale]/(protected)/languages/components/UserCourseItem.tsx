@@ -18,14 +18,19 @@ export const UserCourseItem = ({ course }: Props) => {
   const t = useTranslations("LanguageLevels");
   const [isPending, startTransition] = useTransition();
 
-  const handleRemoveCourse = async () => {
+  const handleStartCourse = async () => {
     startTransition(() => {
-      deleteCourse(id).then((res) => {
-        if (res?.error) {
-          console.error(res.error);
-          return;
+      activateCourse(id).then((resp) => {
+        if (resp.activeCourse) {
+          redirect(`course/${id}`);
         }
       });
+    });
+  };
+
+  const handleDeleteCourse = async () => {
+    startTransition(() => {
+      deleteCourse(id);
     });
   };
 
@@ -41,28 +46,30 @@ export const UserCourseItem = ({ course }: Props) => {
           {t(level.name) + " - " + level.name}
         </span>
       </div>
-      <Button
-        variant='ghost'
-        size='sm'
-        onClick={async () => {
-          const resp = await activateCourse(id);
-          if (resp.activeCourse) {
-            redirect(`course/${id}`);
-          }
-        }}
-        className='text-indigo-500 hover:bg-indigo-100 hover:text-indigo-700'
-      >
-        Start
-      </Button>
-      <Button
-        variant='ghost'
-        size='sm'
-        disabled={isPending}
-        onClick={handleRemoveCourse}
-        className='text-indigo-500 hover:bg-indigo-100 hover:text-indigo-700'
-      >
-        {isPending ? <ReloadIcon className='mr-2 h-4 w-4 animate-spin' /> : "X"}
-      </Button>
+      <div className='flex items-center space-x-2'>
+        <Button
+          variant='ghost'
+          size='sm'
+          disabled={isPending}
+          onClick={handleStartCourse}
+          className='text-indigo-500 hover:bg-indigo-100 hover:text-indigo-700'
+        >
+          {isPending ? (
+            <ReloadIcon className='mr-2 h-4 w-4 animate-spin' />
+          ) : (
+            "Start"
+          )}
+        </Button>
+        <Button
+          variant='ghost'
+          size='sm'
+          disabled={isPending}
+          onClick={handleDeleteCourse}
+          className='text-red-500 hover:bg-red-100 hover:text-red-700'
+        >
+          X
+        </Button>
+      </div>
     </div>
   );
 };

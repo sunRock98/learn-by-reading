@@ -12,7 +12,13 @@ export const generateNewText = async (course: Course) => {
     level: course.level.name,
     motherLanguage: locale,
   });
+
+  if (!data) {
+    throw new Error("Failed to generate text");
+  }
+
   const { text, title } = data;
+
   console.log("data", data);
 
   // Add the text to the database
