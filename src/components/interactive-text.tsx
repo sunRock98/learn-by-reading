@@ -2,8 +2,8 @@
 
 import type React from "react";
 import { useState, useCallback } from "react";
+import Image from "next/image";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { TranslationPopup } from "@/components/translation-popup";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, BookOpen, Headphones } from "lucide-react";
@@ -16,6 +16,7 @@ interface Text {
   title: string;
   content: string;
   courseId: number;
+  pictureUrl?: string | null;
 }
 
 interface Course {
@@ -129,57 +130,108 @@ export function InteractiveText({
 
   return (
     <div>
-      {/* Header with Title and Mode Toggle */}
-      <Card className='mb-6 p-8'>
-        <div className='mb-6'>
-          <div className='mb-4 flex items-center justify-between'>
-            <h1 className='text-balance text-3xl font-bold'>{text.title}</h1>
-            <Badge variant='secondary'>{course.level.name}</Badge>
-          </div>
+      {/* New Yorker Magazine Style Layout - Split Header */}
+      <Card className='mb-6 overflow-hidden border-0 bg-[#fffef8] shadow-lg dark:bg-[#1a1a18]'>
+        {/* Hero Section - Split Grid Layout */}
+        <div
+          className={`grid min-h-[400px] ${text.pictureUrl ? "md:grid-cols-2" : "grid-cols-1"}`}
+        >
+          {/* Left Side - Title & Info */}
+          <div className='flex flex-col justify-center px-8 py-12 md:px-12 lg:px-16'>
+            {/* Category Tag */}
+            <span className='mb-6 font-serif text-sm font-medium uppercase tracking-[0.25em] text-[#c41e3a]'>
+              {course.language.name} · {course.level.name}
+            </span>
 
-          {/* Mode Toggle */}
-          <div className='flex gap-2'>
-            <Button
-              variant={viewMode === "read" ? "default" : "outline"}
-              size='sm'
-              onClick={() => setViewMode("read")}
-              className='gap-2'
-            >
-              <BookOpen className='h-4 w-4' />
-              {t("read")}
-            </Button>
-            <Button
-              variant={viewMode === "listen" ? "default" : "outline"}
-              size='sm'
-              onClick={() => setViewMode("listen")}
-              className='gap-2'
-            >
-              <Headphones className='h-4 w-4' />
-              {t("listen")}
-            </Button>
-          </div>
-        </div>
+            {/* Title - New Yorker Style */}
+            <h1 className='mb-6 font-serif text-3xl font-normal uppercase leading-[1.1] tracking-[-0.02em] text-[#1a1a18] md:text-4xl lg:text-5xl dark:text-[#e8e6dc]'>
+              {text.title}
+            </h1>
 
-        {/* Read Mode */}
-        {viewMode === "read" && (
-          <>
-            <p className='text-muted-foreground mb-4 text-sm'>
+            {/* Subtitle / Description */}
+            <p className='mb-8 font-serif text-lg italic text-[#5a5a52] dark:text-[#9a9a8f]'>
               {t("clickToTranslate")}
             </p>
-            <div className='prose prose-lg max-w-none'>
-              <div className='whitespace-pre-line text-lg leading-relaxed'>
-                {renderInteractiveText(text.content)}
+
+            {/* Mode Toggle */}
+            <div className='flex gap-3'>
+              <Button
+                variant={viewMode === "read" ? "default" : "outline"}
+                size='sm'
+                onClick={() => setViewMode("read")}
+                className='gap-2 font-serif'
+              >
+                <BookOpen className='h-4 w-4' />
+                {t("read")}
+              </Button>
+              <Button
+                variant={viewMode === "listen" ? "default" : "outline"}
+                size='sm'
+                onClick={() => setViewMode("listen")}
+                className='gap-2 font-serif'
+              >
+                <Headphones className='h-4 w-4' />
+                {t("listen")}
+              </Button>
+            </div>
+          </div>
+
+          {/* Right Side - Large Image */}
+          {text.pictureUrl && (
+            <div className='relative min-h-[300px] md:min-h-full'>
+              <Image
+                src={text.pictureUrl}
+                alt={`Illustration for ${text.title}`}
+                fill
+                className='object-cover'
+                sizes='(max-width: 768px) 100vw, 50vw'
+                priority
+              />
+              {/* Gradient overlay for better text contrast on mobile */}
+              <div className='absolute inset-0 bg-gradient-to-t from-[#1a1a18]/20 to-transparent md:hidden' />
+            </div>
+          )}
+        </div>
+
+        {/* Divider Line */}
+        <div className='flex items-center justify-center gap-4 px-8 py-6'>
+          <div className='h-px flex-1 bg-[#d4d0c4] dark:bg-[#3a3a38]' />
+          <div className='h-2 w-2 rotate-45 bg-[#c41e3a]' />
+          <div className='h-px flex-1 bg-[#d4d0c4] dark:bg-[#3a3a38]' />
+        </div>
+
+        {/* Content Section */}
+        <div className='px-8 pb-8 md:px-12 lg:px-16'>
+          {/* Read Mode */}
+          {viewMode === "read" && (
+            <div className='mx-auto max-w-2xl'>
+              <div className='font-serif text-lg leading-[1.9] text-[#1a1a18] dark:text-[#e8e6dc]'>
+                <div className='whitespace-pre-line'>
+                  {renderInteractiveText(text.content)}
+                </div>
               </div>
             </div>
-          </>
-        )}
+          )}
 
-        {/* Listen Mode */}
-        {viewMode === "listen" && (
-          <div className='mt-4'>
-            <AudioReader text={text.content} language={course.language.name} />
+          {/* Listen Mode */}
+          {viewMode === "listen" && (
+            <div className='mx-auto max-w-2xl'>
+              <AudioReader
+                text={text.content}
+                language={course.language.name}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Magazine Footer */}
+        <div className='border-t border-[#d4d0c4] bg-[#f5f3e8] px-8 py-4 dark:border-[#3a3a38] dark:bg-[#151513]'>
+          <div className='flex items-center justify-center gap-2 font-serif text-xs uppercase tracking-widest text-[#8a8677] dark:text-[#6a6a5f]'>
+            <span>◆</span>
+            <span>Learn by Reading</span>
+            <span>◆</span>
           </div>
-        )}
+        </div>
       </Card>
 
       {!completedReading ? (

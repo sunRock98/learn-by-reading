@@ -58,7 +58,7 @@ const TextPage = async ({ params }: TextPageProps) => {
   const userNativeLanguage = userWithLanguage?.nativeLanguage || "English";
 
   return (
-    <div className='container mx-auto max-w-4xl px-4 py-8'>
+    <div className='container mx-auto max-w-6xl px-4 py-8'>
       <div className='mb-6'>
         <BackButton
           href={`/course/${courseId}`}
@@ -73,6 +73,7 @@ const TextPage = async ({ params }: TextPageProps) => {
           title: text.title,
           content: text.content,
           courseId: text.courseId,
+          pictureUrl: text.picture_url,
         }}
         course={{
           language: {
@@ -85,7 +86,7 @@ const TextPage = async ({ params }: TextPageProps) => {
         userNativeLanguage={userNativeLanguage}
       />
 
-      <div className='mt-8'>
+      <div className='mx-auto mt-8 max-w-4xl'>
         <TextNavigation courseId={courseId} textId={textId} />
       </div>
     </div>
