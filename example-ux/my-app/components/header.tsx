@@ -1,6 +1,6 @@
-"use client"
-import { DashboardHeader } from "./dashboard-header"
+"use client";
+import { DashboardHeader } from "./dashboard-header";
 
 export function Header() {
-  return <DashboardHeader />
+  return <DashboardHeader />;
 }

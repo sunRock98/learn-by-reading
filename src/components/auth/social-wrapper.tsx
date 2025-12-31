@@ -16,7 +16,7 @@ export const Socials = () => {
     signIn(provider, { callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT });
   };
   return (
-    <div className='grid grid-cols-2 gap-4 w-full'>
+    <div className='grid w-full grid-cols-2 gap-4'>
       <Button
         onClick={() => handleClick("google")}
         variant='outline'

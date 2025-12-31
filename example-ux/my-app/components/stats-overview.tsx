@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card"
-import { BookOpen, Target, TrendingUp } from "lucide-react"
+import { Card } from "@/components/ui/card";
+import { BookOpen, Target, TrendingUp } from "lucide-react";
 
 export function StatsOverview() {
   const stats = [
@@ -21,27 +21,29 @@ export function StatsOverview() {
       icon: TrendingUp,
       change: "Intermediate",
     },
-  ]
+  ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div className='mb-8 grid grid-cols-1 gap-4 md:grid-cols-3'>
       {stats.map((stat) => {
-        const Icon = stat.icon
+        const Icon = stat.icon;
         return (
-          <Card key={stat.label} className="p-6">
-            <div className="flex items-start justify-between">
+          <Card key={stat.label} className='p-6'>
+            <div className='flex items-start justify-between'>
               <div>
-                <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-                <p className="text-3xl font-bold mb-1">{stat.value}</p>
-                <p className="text-xs text-muted-foreground">{stat.change}</p>
+                <p className='text-muted-foreground mb-1 text-sm'>
+                  {stat.label}
+                </p>
+                <p className='mb-1 text-3xl font-bold'>{stat.value}</p>
+                <p className='text-muted-foreground text-xs'>{stat.change}</p>
               </div>
-              <div className="p-3 bg-primary/10 rounded-xl">
-                <Icon className="h-5 w-5 text-primary" />
+              <div className='bg-primary/10 rounded-xl p-3'>
+                <Icon className='text-primary h-5 w-5' />
               </div>
             </div>
           </Card>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

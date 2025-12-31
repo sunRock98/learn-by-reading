@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card"
-import { BookOpen, TrendingUp, Target, Star } from "lucide-react"
+import { Card } from "@/components/ui/card";
+import { BookOpen, TrendingUp, Target, Star } from "lucide-react";
 
 export function DictionaryStats() {
   const stats = [
@@ -31,26 +31,28 @@ export function DictionaryStats() {
       color: "text-purple-600",
       bgColor: "bg-purple-100 dark:bg-purple-950",
     },
-  ]
+  ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div className='mb-8 grid grid-cols-1 gap-4 md:grid-cols-4'>
       {stats.map((stat) => {
-        const Icon = stat.icon
+        const Icon = stat.icon;
         return (
-          <Card key={stat.label} className="p-6">
-            <div className="flex items-start justify-between">
+          <Card key={stat.label} className='p-6'>
+            <div className='flex items-start justify-between'>
               <div>
-                <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-                <p className="text-3xl font-bold">{stat.value}</p>
+                <p className='text-muted-foreground mb-1 text-sm'>
+                  {stat.label}
+                </p>
+                <p className='text-3xl font-bold'>{stat.value}</p>
               </div>
               <div className={`p-3 ${stat.bgColor} rounded-xl`}>
                 <Icon className={`h-5 w-5 ${stat.color}`} />
               </div>
             </div>
           </Card>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

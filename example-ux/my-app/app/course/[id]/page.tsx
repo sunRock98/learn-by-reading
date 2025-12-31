@@ -1,7 +1,7 @@
-import { Header } from "@/components/header"
-import { TextList } from "@/components/text-list"
-import { CourseHeader } from "@/components/course-header"
-import { notFound } from "next/navigation"
+import { Header } from "@/components/header";
+import { TextList } from "@/components/text-list";
+import { CourseHeader } from "@/components/course-header";
+import { notFound } from "next/navigation";
 
 const mockCourses = {
   "1": {
@@ -70,27 +70,27 @@ const mockCourses = {
       },
     ],
   },
-}
+};
 
 export default async function CoursePage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = await params
-  const course = mockCourses[id as keyof typeof mockCourses]
+  const { id } = await params;
+  const course = mockCourses[id as keyof typeof mockCourses];
 
   if (!course) {
-    notFound()
+    notFound();
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className='bg-background min-h-screen'>
       <Header />
-      <main className="container mx-auto px-4 py-8">
+      <main className='container mx-auto px-4 py-8'>
         <CourseHeader course={course} />
         <TextList texts={course.texts} courseId={course.id} />
       </main>
     </div>
-  )
+  );
 }

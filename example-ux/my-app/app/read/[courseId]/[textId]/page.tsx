@@ -1,7 +1,7 @@
-import { Header } from "@/components/header"
-import { InteractiveReader } from "@/components/interactive-reader"
-import { ReadingProgress } from "@/components/reading-progress"
-import { notFound } from "next/navigation"
+import { Header } from "@/components/header";
+import { InteractiveReader } from "@/components/interactive-reader";
+import { ReadingProgress } from "@/components/reading-progress";
+import { notFound } from "next/navigation";
 
 const mockTexts = {
   "1": {
@@ -64,27 +64,30 @@ Les experts recommandent de limiter le temps d'écran et de privilégier les int
       courseId: "2",
     },
   },
-}
+};
 
 export default async function ReadPage({
   params,
 }: {
-  params: Promise<{ courseId: string; textId: string }>
+  params: Promise<{ courseId: string; textId: string }>;
 }) {
-  const { courseId, textId } = await params
-  const text = mockTexts[courseId as keyof typeof mockTexts]?.[textId as keyof (typeof mockTexts)["1"]]
+  const { courseId, textId } = await params;
+  const text =
+    mockTexts[courseId as keyof typeof mockTexts]?.[
+      textId as keyof (typeof mockTexts)["1"]
+    ];
 
   if (!text) {
-    notFound()
+    notFound();
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className='bg-background min-h-screen'>
       <Header />
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className='container mx-auto max-w-4xl px-4 py-8'>
         <ReadingProgress courseId={courseId} textId={textId} />
         <InteractiveReader text={text} />
       </main>
     </div>
-  )
+  );
 }

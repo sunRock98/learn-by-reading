@@ -75,12 +75,12 @@ export const LoginForm = () => {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <div className="grid gap-2">
-                      <FormLabel htmlFor="email">Email</FormLabel>
+                    <div className='grid gap-2'>
+                      <FormLabel htmlFor='email'>Email</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          id="email"
+                          id='email'
                           type='email'
                           placeholder={t("emailPlaceholder")}
                           disabled={isPending}
@@ -98,14 +98,14 @@ export const LoginForm = () => {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <div className="grid gap-2">
-                      <div className="flex items-center justify-between">
-                        <FormLabel htmlFor="password">Password</FormLabel>
+                    <div className='grid gap-2'>
+                      <div className='flex items-center justify-between'>
+                        <FormLabel htmlFor='password'>Password</FormLabel>
                         <Button
                           size={"sm"}
                           variant={"link"}
                           asChild
-                          className='px-0 font-normal h-auto'
+                          className='h-auto px-0 font-normal'
                         >
                           <Link href={AUTH_ROUTES.RESET}>
                             {t("forgotPassword")}
@@ -115,7 +115,7 @@ export const LoginForm = () => {
                       <FormControl>
                         <Input
                           {...field}
-                          id="password"
+                          id='password'
                           type='password'
                           placeholder={t("passwordPlaceholder")}
                           disabled={isPending}
@@ -129,11 +129,7 @@ export const LoginForm = () => {
             />
             <FormError message={error || errorParamText} />
             <FormSuccess message={success} />
-            <Button
-              type='submit'
-              className='w-full'
-              disabled={isPending}
-            >
+            <Button type='submit' className='w-full' disabled={isPending}>
               {isPending ? "Logging in..." : t("loginButton")}
             </Button>
           </div>

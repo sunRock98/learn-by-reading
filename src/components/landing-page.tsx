@@ -4,13 +4,13 @@ import { BookOpen, Globe, Brain, TrendingUp, Sparkles } from "lucide-react";
 
 export function LandingPage() {
   return (
-    <div className='min-h-screen bg-gradient-to-b from-background to-muted/20'>
+    <div className='from-background to-muted/20 min-h-screen bg-gradient-to-b'>
       {/* Header */}
-      <header className='sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
+      <header className='bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b backdrop-blur'>
         <div className='container mx-auto px-4 py-4'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-2'>
-              <BookOpen className='h-6 w-6 text-primary' />
+              <BookOpen className='text-primary h-6 w-6' />
               <span className='text-xl font-bold'>Read2Learn</span>
             </div>
             <div className='flex items-center gap-3'>
@@ -32,7 +32,7 @@ export function LandingPage() {
             Master Languages Through{" "}
             <span className='text-primary'>Authentic Reading</span>
           </h1>
-          <p className='mb-8 text-pretty text-xl text-muted-foreground'>
+          <p className='text-muted-foreground mb-8 text-pretty text-xl'>
             Learn naturally by reading texts tailored to your level and
             interests. Click any word for instant translations and build your
             vocabulary effortlessly.
@@ -51,34 +51,34 @@ export function LandingPage() {
       {/* Features Section */}
       <section className='container mx-auto px-4 py-20'>
         <div className='mx-auto grid max-w-5xl gap-8 md:grid-cols-3'>
-          <div className='flex flex-col items-center rounded-xl border bg-card p-6 text-center'>
-            <div className='mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10'>
-              <Globe className='h-6 w-6 text-primary' />
+          <div className='bg-card flex flex-col items-center rounded-xl border p-6 text-center'>
+            <div className='bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full'>
+              <Globe className='text-primary h-6 w-6' />
             </div>
             <h3 className='mb-2 text-lg font-semibold'>Multiple Languages</h3>
-            <p className='text-sm text-muted-foreground'>
+            <p className='text-muted-foreground text-sm'>
               Learn Spanish, French, German, Italian, and more with content
               adapted to your level
             </p>
           </div>
 
-          <div className='flex flex-col items-center rounded-xl border bg-card p-6 text-center'>
-            <div className='mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10'>
-              <Brain className='h-6 w-6 text-primary' />
+          <div className='bg-card flex flex-col items-center rounded-xl border p-6 text-center'>
+            <div className='bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full'>
+              <Brain className='text-primary h-6 w-6' />
             </div>
             <h3 className='mb-2 text-lg font-semibold'>AI-Powered Learning</h3>
-            <p className='text-sm text-muted-foreground'>
+            <p className='text-muted-foreground text-sm'>
               Generate custom texts based on your interests and get instant
               translations for any word
             </p>
           </div>
 
-          <div className='flex flex-col items-center rounded-xl border bg-card p-6 text-center'>
-            <div className='mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10'>
-              <TrendingUp className='h-6 w-6 text-primary' />
+          <div className='bg-card flex flex-col items-center rounded-xl border p-6 text-center'>
+            <div className='bg-primary/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full'>
+              <TrendingUp className='text-primary h-6 w-6' />
             </div>
             <h3 className='mb-2 text-lg font-semibold'>Track Progress</h3>
-            <p className='text-sm text-muted-foreground'>
+            <p className='text-muted-foreground text-sm'>
               Monitor your vocabulary growth and reading progress with detailed
               analytics
             </p>
@@ -87,12 +87,12 @@ export function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section className='container mx-auto bg-muted/30 px-4 py-20'>
+      <section className='bg-muted/30 container mx-auto px-4 py-20'>
         <div className='mx-auto max-w-4xl'>
           <h2 className='mb-12 text-center text-3xl font-bold'>How It Works</h2>
           <div className='space-y-8'>
             <div className='flex gap-4'>
-              <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground'>
+              <div className='bg-primary text-primary-foreground flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full font-bold'>
                 1
               </div>
               <div>
@@ -107,7 +107,7 @@ export function LandingPage() {
             </div>
 
             <div className='flex gap-4'>
-              <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground'>
+              <div className='bg-primary text-primary-foreground flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full font-bold'>
                 2
               </div>
               <div>
@@ -122,7 +122,7 @@ export function LandingPage() {
             </div>
 
             <div className='flex gap-4'>
-              <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground'>
+              <div className='bg-primary text-primary-foreground flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full font-bold'>
                 3
               </div>
               <div>
@@ -139,10 +139,10 @@ export function LandingPage() {
 
       {/* CTA Section */}
       <section className='container mx-auto px-4 py-20'>
-        <div className='mx-auto max-w-3xl rounded-2xl border bg-primary/5 p-12 text-center'>
-          <Sparkles className='mx-auto mb-4 h-12 w-12 text-primary' />
+        <div className='bg-primary/5 mx-auto max-w-3xl rounded-2xl border p-12 text-center'>
+          <Sparkles className='text-primary mx-auto mb-4 h-12 w-12' />
           <h2 className='mb-4 text-3xl font-bold'>Ready to Start Learning?</h2>
-          <p className='mb-8 text-muted-foreground'>
+          <p className='text-muted-foreground mb-8'>
             Join thousands of learners mastering new languages through reading
           </p>
           <Button size='lg' asChild>
@@ -153,7 +153,7 @@ export function LandingPage() {
 
       {/* Footer */}
       <footer className='border-t py-8'>
-        <div className='container mx-auto px-4 text-center text-sm text-muted-foreground'>
+        <div className='text-muted-foreground container mx-auto px-4 text-center text-sm'>
           <p>© 2025 Read2Learn. Master languages through authentic reading.</p>
         </div>
       </footer>

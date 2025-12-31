@@ -1,17 +1,17 @@
-import { Header } from "@/components/header"
-import { ProfileHeader } from "@/components/profile-header"
-import { ProgressCharts } from "@/components/progress-charts"
-import { ActivityFeed } from "@/components/activity-feed"
-import { LearningGoals } from "@/components/learning-goals"
+import { Header } from "@/components/header";
+import { ProfileHeader } from "@/components/profile-header";
+import { ProgressCharts } from "@/components/progress-charts";
+import { ActivityFeed } from "@/components/activity-feed";
+import { LearningGoals } from "@/components/learning-goals";
 
 export default function ProfilePage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className='bg-background min-h-screen'>
       <Header />
-      <main className="container mx-auto px-4 py-8">
+      <main className='container mx-auto px-4 py-8'>
         <ProfileHeader />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-2">
+        <div className='mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3'>
+          <div className='lg:col-span-2'>
             <ProgressCharts />
           </div>
           <div>
@@ -21,5 +21,5 @@ export default function ProfilePage() {
         <ActivityFeed />
       </main>
     </div>
-  )
+  );
 }

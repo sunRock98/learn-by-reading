@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card"
-import { BookOpen, BookmarkPlus, CheckCircle2, Trophy } from "lucide-react"
+import { Card } from "@/components/ui/card";
+import { BookOpen, BookmarkPlus, CheckCircle2, Trophy } from "lucide-react";
 
 const activities = [
   {
@@ -52,30 +52,35 @@ const activities = [
     color: "text-purple-600",
     bgColor: "bg-purple-100 dark:bg-purple-950",
   },
-]
+];
 
 export function ActivityFeed() {
   return (
-    <Card className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Recent Activity</h2>
+    <Card className='p-6'>
+      <h2 className='mb-6 text-2xl font-bold'>Recent Activity</h2>
 
-      <div className="space-y-4">
+      <div className='space-y-4'>
         {activities.map((activity) => {
-          const Icon = activity.icon
+          const Icon = activity.icon;
           return (
-            <div key={activity.id} className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0">
+            <div
+              key={activity.id}
+              className='flex items-start gap-4 border-b pb-4 last:border-0 last:pb-0'
+            >
               <div className={`p-3 ${activity.bgColor} rounded-xl`}>
                 <Icon className={`h-5 w-5 ${activity.color}`} />
               </div>
-              <div className="flex-1">
-                <p className="font-medium mb-1">{activity.title}</p>
-                <p className="text-sm text-muted-foreground mb-2">{activity.description}</p>
-                <p className="text-xs text-muted-foreground">{activity.time}</p>
+              <div className='flex-1'>
+                <p className='mb-1 font-medium'>{activity.title}</p>
+                <p className='text-muted-foreground mb-2 text-sm'>
+                  {activity.description}
+                </p>
+                <p className='text-muted-foreground text-xs'>{activity.time}</p>
               </div>
             </div>
-          )
+          );
         })}
       </div>
     </Card>
-  )
+  );
 }

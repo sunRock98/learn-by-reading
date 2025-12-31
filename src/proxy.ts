@@ -16,6 +16,12 @@ const handleI18nRouting = createNextIntlMiddleware(routing);
 
 export default auth((req) => {
   const { nextUrl, auth } = req;
+
+  // Check if it's an API route first, before any other processing
+  if (nextUrl.pathname.startsWith("/api")) {
+    return;
+  }
+
   const locale = req.cookies.get("NEXT_LOCALE")?.value || "en";
   const isContainsLocale = nextUrl.pathname.startsWith(`/${locale}`);
   const pathnameWithoutLocale = nextUrl.pathname.replace(`/${locale}`, "");
