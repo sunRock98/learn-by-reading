@@ -175,7 +175,8 @@
   "TopBar": {
     "logout": "Sign Out",
     "settings": "Settings",
-    "languageSettings": "Select language"
+    "dashboard": "Dashboard",
+    "dictionary": "Dictionary"
   },
   "LanguageSettingPage": {
     "headerLabel": "Select Languages",

@@ -5,6 +5,26 @@ import { StatsOverview } from "@/components/dashboard/stats-overview";
 import { CourseGrid } from "@/components/dashboard/course-grid";
 import { RecentWords } from "@/components/dashboard/recent-words";
 
+async function getLanguagesAndLevels() {
+  const [languages, levels] = await Promise.all([
+    db.language.findMany({
+      select: {
+        id: true,
+        name: true,
+        code: true,
+      },
+    }),
+    db.level.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+    }),
+  ]);
+
+  return { languages, levels };
+}
+
 async function getDashboardData(userId: string) {
   // Get user's courses with progress
   const courses = await db.course.findMany({
@@ -73,7 +93,11 @@ export default async function DashboardPage() {
     redirect("/auth/login");
   }
 
-  const { courses, recentWords, stats } = await getDashboardData(user.id!);
+  const [{ courses, recentWords, stats }, { languages, levels }] =
+    await Promise.all([
+      getDashboardData(user.id!),
+      getLanguagesAndLevels(),
+    ]);
 
   return (
     <div className='container mx-auto max-w-6xl px-4 py-8'>
@@ -90,7 +114,7 @@ export default async function DashboardPage() {
 
       <div className='grid gap-8 lg:grid-cols-3'>
         <div className='lg:col-span-2'>
-          <CourseGrid courses={courses} />
+          <CourseGrid courses={courses} languages={languages} levels={levels} />
         </div>
         <div>
           <RecentWords words={recentWords} />

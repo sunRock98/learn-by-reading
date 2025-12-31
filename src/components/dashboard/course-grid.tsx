@@ -1,10 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Clock, Target, Plus } from "lucide-react";
 import Link from "next/link";
+import { AddCourseModal } from "./add-course-modal";
+
+interface Language {
+  id: number;
+  name: string;
+  code: string;
+}
+
+interface Level {
+  id: number;
+  name: string;
+}
 
 interface Course {
   id: number;
@@ -19,9 +32,13 @@ interface Course {
 
 interface CourseGridProps {
   courses: Course[];
+  languages: Language[];
+  levels: Level[];
 }
 
-export function CourseGrid({ courses }: CourseGridProps) {
+export function CourseGrid({ courses, languages, levels }: CourseGridProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   if (courses.length === 0) {
     return (
       <div>
@@ -36,14 +53,18 @@ export function CourseGrid({ courses }: CourseGridProps) {
               Start your language learning journey by selecting a language and
               level.
             </p>
-            <Button asChild>
-              <Link href='/languages'>
-                <Plus className='mr-2 h-4 w-4' />
-                Choose a Language
-              </Link>
+            <Button onClick={() => setIsModalOpen(true)}>
+              <Plus className='mr-2 h-4 w-4' />
+              Choose a Language
             </Button>
           </div>
         </Card>
+        <AddCourseModal
+          languages={languages}
+          levels={levels}
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+        />
       </div>
     );
   }
@@ -52,13 +73,18 @@ export function CourseGrid({ courses }: CourseGridProps) {
     <div>
       <div className='mb-6 flex items-center justify-between'>
         <h2 className='text-2xl font-bold'>Your Courses</h2>
-        <Button variant='outline' size='sm' asChild>
-          <Link href='/languages'>
-            <Plus className='mr-2 h-4 w-4' />
-            Add Course
-          </Link>
+        <Button variant='outline' size='sm' onClick={() => setIsModalOpen(true)}>
+          <Plus className='mr-2 h-4 w-4' />
+          Add Course
         </Button>
       </div>
+
+      <AddCourseModal
+        languages={languages}
+        levels={levels}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
 
       <div className='grid grid-cols-1 gap-6'>
         {courses.map((course) => {

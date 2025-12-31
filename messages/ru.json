@@ -175,7 +175,8 @@
   "TopBar": {
     "logout": "Выйти",
     "settings": "Настройки",
-    "languageSettings": "Выбрать язык"
+    "dashboard": "Главная",
+    "dictionary": "Словарь"
   },
   "LanguageSettingPage": {
     "headerLabel": "Выберите язык",

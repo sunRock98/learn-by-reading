@@ -6,10 +6,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { BackpackIcon, ExitIcon, GearIcon } from "@radix-ui/react-icons";
+import { ExitIcon, GearIcon, DashboardIcon, BookmarkIcon } from "@radix-ui/react-icons";
 import { LogoutButton } from "./logout-button";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
@@ -29,13 +30,20 @@ export const UserButton = () => {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <Link href={ROUTES.LanguageSetting}>
+      <DropdownMenuContent align="end">
+        <Link href={ROUTES.Dashboard}>
           <DropdownMenuItem>
-            <BackpackIcon className='mr-2 h-5 w-5' />
-            {t("languageSettings")}
+            <DashboardIcon className='mr-2 h-5 w-5' />
+            {t("dashboard")}
           </DropdownMenuItem>
         </Link>
+        <Link href={ROUTES.Dictionary}>
+          <DropdownMenuItem>
+            <BookmarkIcon className='mr-2 h-5 w-5' />
+            {t("dictionary")}
+          </DropdownMenuItem>
+        </Link>
+        <DropdownMenuSeparator />
         <Link href={ROUTES.Settings}>
           <DropdownMenuItem>
             <GearIcon className='mr-2 h-5 w-5' />
