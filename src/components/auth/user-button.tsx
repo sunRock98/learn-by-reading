@@ -10,7 +10,12 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { useCurrentUser } from "@/hooks/use-current-user";
-import { ExitIcon, GearIcon, DashboardIcon, BookmarkIcon } from "@radix-ui/react-icons";
+import {
+  ExitIcon,
+  GearIcon,
+  DashboardIcon,
+  BookmarkIcon,
+} from "@radix-ui/react-icons";
 import { LogoutButton } from "./logout-button";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
@@ -30,7 +35,7 @@ export const UserButton = () => {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align='end'>
         <Link href={ROUTES.Dashboard}>
           <DropdownMenuItem>
             <DashboardIcon className='mr-2 h-5 w-5' />

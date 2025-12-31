@@ -94,10 +94,7 @@ export default async function DashboardPage() {
   }
 
   const [{ courses, recentWords, stats }, { languages, levels }] =
-    await Promise.all([
-      getDashboardData(user.id!),
-      getLanguagesAndLevels(),
-    ]);
+    await Promise.all([getDashboardData(user.id!), getLanguagesAndLevels()]);
 
   return (
     <div className='container mx-auto max-w-6xl px-4 py-8'>

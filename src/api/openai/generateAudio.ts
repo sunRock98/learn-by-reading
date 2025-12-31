@@ -7,7 +7,13 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export type VoiceType = "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer";
+export type VoiceType =
+  | "alloy"
+  | "echo"
+  | "fable"
+  | "onyx"
+  | "nova"
+  | "shimmer";
 
 export interface GenerateAudioResult {
   audioBase64: string;
@@ -66,4 +72,3 @@ export async function generateAudioStream({
   // Return the stream directly
   return response.body as ReadableStream<Uint8Array>;
 }
-

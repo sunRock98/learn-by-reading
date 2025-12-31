@@ -73,7 +73,11 @@ export function CourseGrid({ courses, languages, levels }: CourseGridProps) {
     <div>
       <div className='mb-6 flex items-center justify-between'>
         <h2 className='text-2xl font-bold'>Your Courses</h2>
-        <Button variant='outline' size='sm' onClick={() => setIsModalOpen(true)}>
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={() => setIsModalOpen(true)}
+        >
           <Plus className='mr-2 h-4 w-4' />
           Add Course
         </Button>

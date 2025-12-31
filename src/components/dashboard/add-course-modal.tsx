@@ -97,23 +97,27 @@ export function AddCourseModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <GraduationCap className="h-5 w-5" />
+          <DialogTitle className='flex items-center gap-2'>
+            <GraduationCap className='h-5 w-5' />
             Add New Course
           </DialogTitle>
           <DialogDescription>
-            Choose a language and level to start learning. You can add multiple courses.
+            Choose a language and level to start learning. You can add multiple
+            courses.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <div className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className='space-y-6'
+          >
+            <div className='space-y-4'>
               <FormField
                 control={form.control}
-                name="language"
+                name='language'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Language</FormLabel>
@@ -124,7 +128,7 @@ export function AddCourseModal({
                         disabled={isPending}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a language to learn" />
+                          <SelectValue placeholder='Select a language to learn' />
                         </SelectTrigger>
                         <SelectContent>
                           {languages.map((language) => (
@@ -145,7 +149,7 @@ export function AddCourseModal({
 
               <FormField
                 control={form.control}
-                name="level"
+                name='level'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Level</FormLabel>
@@ -156,7 +160,7 @@ export function AddCourseModal({
                         disabled={isPending}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select your current level" />
+                          <SelectValue placeholder='Select your current level' />
                         </SelectTrigger>
                         <SelectContent>
                           {levels.map(({ id, name }) => (
@@ -175,20 +179,20 @@ export function AddCourseModal({
 
             <FormError message={error} />
 
-            <div className="flex justify-end gap-3">
+            <div className='flex justify-end gap-3'>
               <Button
-                type="button"
-                variant="outline"
+                type='button'
+                variant='outline'
                 onClick={() => onOpenChange(false)}
                 disabled={isPending}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button type='submit' disabled={isPending}>
                 {isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                 ) : (
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus className='mr-2 h-4 w-4' />
                 )}
                 Add Course
               </Button>
@@ -199,4 +203,3 @@ export function AddCourseModal({
     </Dialog>
   );
 }
-

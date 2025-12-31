@@ -270,14 +270,14 @@ export function AudioReader({ text, language }: AudioReaderProps) {
   };
 
   return (
-    <Card className="p-6">
+    <Card className='p-6'>
       {/* Text Display with Word Highlighting */}
       {isTextVisible && (
         <div
           ref={textContainerRef}
-          className="mb-6 max-h-64 overflow-y-auto rounded-lg bg-muted/30 p-4"
+          className='bg-muted/30 mb-6 max-h-64 overflow-y-auto rounded-lg p-4'
         >
-          <p className="text-lg leading-relaxed whitespace-pre-wrap">
+          <p className='whitespace-pre-wrap text-lg leading-relaxed'>
             {words.map((word, index) => (
               <span key={index}>
                 <span
@@ -286,7 +286,7 @@ export function AudioReader({ text, language }: AudioReaderProps) {
                   }}
                   className={`inline transition-all duration-150 ${
                     index === currentWordIndex
-                      ? "rounded bg-primary px-1 text-primary-foreground"
+                      ? "bg-primary text-primary-foreground rounded px-1"
                       : index < currentWordIndex
                         ? "text-muted-foreground"
                         : ""
@@ -302,62 +302,62 @@ export function AudioReader({ text, language }: AudioReaderProps) {
       )}
 
       {/* Progress Bar */}
-      <div className="mb-4">
+      <div className='mb-4'>
         <Slider
           value={[progress]}
           max={100}
           step={0.1}
           onValueChange={handleSeek}
-          className="cursor-pointer"
+          className='cursor-pointer'
         />
-        <div className="mt-1 flex justify-between text-xs text-muted-foreground">
+        <div className='text-muted-foreground mt-1 flex justify-between text-xs'>
           <span>{formatTime(currentTime)}</span>
           <span>{formatTime(duration)}</span>
         </div>
       </div>
 
       {/* Main Controls */}
-      <div className="flex items-center justify-center gap-4">
+      <div className='flex items-center justify-center gap-4'>
         <Button
-          variant="outline"
-          size="icon"
+          variant='outline'
+          size='icon'
           onClick={handleReset}
           disabled={isLoading}
         >
-          <RotateCcw className="h-4 w-4" />
+          <RotateCcw className='h-4 w-4' />
         </Button>
 
         <Button
-          size="lg"
-          className="h-14 w-14 rounded-full"
+          size='lg'
+          className='h-14 w-14 rounded-full'
           onClick={togglePlayPause}
           disabled={isLoading}
         >
           {isLoading ? (
-            <Loader2 className="h-6 w-6 animate-spin" />
+            <Loader2 className='h-6 w-6 animate-spin' />
           ) : isPlaying ? (
-            <Pause className="h-6 w-6" />
+            <Pause className='h-6 w-6' />
           ) : (
-            <Play className="h-6 w-6 pl-1" />
+            <Play className='h-6 w-6 pl-1' />
           )}
         </Button>
 
         <Button
-          variant="outline"
-          size="icon"
+          variant='outline'
+          size='icon'
           onClick={() => setShowSettings(!showSettings)}
         >
-          <Settings className="h-4 w-4" />
+          <Settings className='h-4 w-4' />
         </Button>
       </div>
 
       {/* Settings Panel */}
       {showSettings && (
-        <div className="mt-6 space-y-4 rounded-lg bg-muted/30 p-4">
-          <div className="grid grid-cols-2 gap-4">
+        <div className='bg-muted/30 mt-6 space-y-4 rounded-lg p-4'>
+          <div className='grid grid-cols-2 gap-4'>
             {/* Voice Selection */}
             <div>
-              <label className="mb-2 block text-sm font-medium">Voice</label>
+              <label className='mb-2 block text-sm font-medium'>Voice</label>
               <Select value={voice} onValueChange={handleVoiceChange}>
                 <SelectTrigger>
                   <SelectValue />
@@ -365,9 +365,9 @@ export function AudioReader({ text, language }: AudioReaderProps) {
                 <SelectContent>
                   {VOICES.map((v) => (
                     <SelectItem key={v.value} value={v.value}>
-                      <span className="flex flex-col">
+                      <span className='flex flex-col'>
                         <span>{v.label}</span>
-                        <span className="text-xs text-muted-foreground">
+                        <span className='text-muted-foreground text-xs'>
                           {v.description}
                         </span>
                       </span>
@@ -379,7 +379,7 @@ export function AudioReader({ text, language }: AudioReaderProps) {
 
             {/* Speed Selection */}
             <div>
-              <label className="mb-2 block text-sm font-medium">Speed</label>
+              <label className='mb-2 block text-sm font-medium'>Speed</label>
               <Select
                 value={speed.toString()}
                 onValueChange={handleSpeedChange}
@@ -399,12 +399,12 @@ export function AudioReader({ text, language }: AudioReaderProps) {
           </div>
 
           {/* Volume Control */}
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={toggleMute}>
+          <div className='flex items-center gap-3'>
+            <Button variant='ghost' size='icon' onClick={toggleMute}>
               {isMuted ? (
-                <VolumeX className="h-4 w-4" />
+                <VolumeX className='h-4 w-4' />
               ) : (
-                <Volume2 className="h-4 w-4" />
+                <Volume2 className='h-4 w-4' />
               )}
             </Button>
             <Slider
@@ -412,26 +412,26 @@ export function AudioReader({ text, language }: AudioReaderProps) {
               max={1}
               step={0.01}
               onValueChange={handleVolumeChange}
-              className="flex-1"
+              className='flex-1'
             />
           </div>
 
           {/* Text Visibility Toggle */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Show Text</span>
+          <div className='flex items-center justify-between'>
+            <span className='text-sm font-medium'>Show Text</span>
             <Button
-              variant="outline"
-              size="sm"
+              variant='outline'
+              size='sm'
               onClick={() => setIsTextVisible(!isTextVisible)}
             >
               {isTextVisible ? (
                 <>
-                  <EyeOff className="mr-2 h-4 w-4" />
+                  <EyeOff className='mr-2 h-4 w-4' />
                   Hide
                 </>
               ) : (
                 <>
-                  <Eye className="mr-2 h-4 w-4" />
+                  <Eye className='mr-2 h-4 w-4' />
                   Show
                 </>
               )}
@@ -442,4 +442,3 @@ export function AudioReader({ text, language }: AudioReaderProps) {
     </Card>
   );
 }
-
