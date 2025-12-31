@@ -31,11 +31,13 @@ export async function generateAudio({
 }): Promise<GenerateAudioResult> {
   try {
     const response = await openai.audio.speech.create({
-      model: "tts-1",
+      model: "gpt-4o-mini-tts",
       voice: voice,
       input: text,
       speed: speed,
-    });
+      language: "pt",
+      instructions: "deep tone which storyteller would use",
+    } as OpenAI.Audio.Speech.SpeechCreateParams);
 
     // Convert the response to base64
     const arrayBuffer = await response.arrayBuffer();

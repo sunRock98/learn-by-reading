@@ -12,6 +12,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Play,
   Pause,
   RotateCcw,
@@ -54,7 +59,7 @@ export function AudioReader({ text, language: _language }: AudioReaderProps) {
   const [isMuted, setIsMuted] = useState(false);
   const [speed, setSpeed] = useState(1.0);
   const [voice, setVoice] = useState<VoiceType>("nova");
-  const [showSettings, setShowSettings] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [isTextVisible, setIsTextVisible] = useState(true);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
@@ -345,107 +350,108 @@ export function AudioReader({ text, language: _language }: AudioReaderProps) {
           )}
         </Button>
 
-        <Button
-          variant='outline'
-          size='icon'
-          onClick={() => setShowSettings(!showSettings)}
-        >
-          <Settings className='h-4 w-4' />
-        </Button>
-      </div>
-
-      {/* Settings Panel */}
-      {showSettings && (
-        <div className='bg-muted/30 mt-6 space-y-4 rounded-lg p-4'>
-          <div className='grid grid-cols-2 gap-4'>
-            {/* Voice Selection */}
-            <div>
-              <label className='mb-2 block text-sm font-medium'>
-                {t("voice")}
-              </label>
-              <Select value={voice} onValueChange={handleVoiceChange}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {VOICES.map((v) => (
-                    <SelectItem key={v.value} value={v.value}>
-                      <span className='flex flex-col'>
-                        <span>{v.label}</span>
-                        <span className='text-muted-foreground text-xs'>
-                          {v.description}
+        <Popover open={settingsOpen} onOpenChange={setSettingsOpen}>
+          <PopoverTrigger asChild>
+            <Button variant='outline' size='icon'>
+              <Settings className='h-4 w-4' />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className='w-72' align='end' sideOffset={8}>
+            <div className='space-y-4'>
+              {/* Voice Selection */}
+              <div className='space-y-2'>
+                <label className='text-sm font-medium'>{t("voice")}</label>
+                <Select value={voice} onValueChange={handleVoiceChange}>
+                  <SelectTrigger className='w-full'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {VOICES.map((v) => (
+                      <SelectItem key={v.value} value={v.value}>
+                        <span className='flex flex-col'>
+                          <span>{v.label}</span>
+                          <span className='text-muted-foreground text-xs'>
+                            {v.description}
+                          </span>
                         </span>
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Speed Selection */}
+              <div className='space-y-2'>
+                <label className='text-sm font-medium'>{t("speed")}</label>
+                <Select
+                  value={speed.toString()}
+                  onValueChange={handleSpeedChange}
+                >
+                  <SelectTrigger className='w-full'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SPEEDS.map((s) => (
+                      <SelectItem key={s} value={s.toString()}>
+                        {s}x
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Volume Control */}
+              <div className='space-y-2'>
+                <label className='text-sm font-medium'>{t("volume")}</label>
+                <div className='flex items-center gap-2'>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='h-8 w-8 shrink-0'
+                    onClick={toggleMute}
+                  >
+                    {isMuted ? (
+                      <VolumeX className='h-4 w-4' />
+                    ) : (
+                      <Volume2 className='h-4 w-4' />
+                    )}
+                  </Button>
+                  <Slider
+                    value={[isMuted ? 0 : volume]}
+                    max={1}
+                    step={0.01}
+                    onValueChange={handleVolumeChange}
+                    className='flex-1'
+                  />
+                </div>
+              </div>
+
+              {/* Text Visibility Toggle */}
+              <div className='flex items-center justify-between border-t pt-2'>
+                <span className='text-sm font-medium'>{t("showText")}</span>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => setIsTextVisible(!isTextVisible)}
+                  className='h-8 gap-2'
+                >
+                  {isTextVisible ? (
+                    <>
+                      <EyeOff className='h-4 w-4' />
+                      {t("hide")}
+                    </>
+                  ) : (
+                    <>
+                      <Eye className='h-4 w-4' />
+                      {t("show")}
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
-
-            {/* Speed Selection */}
-            <div>
-              <label className='mb-2 block text-sm font-medium'>
-                {t("speed")}
-              </label>
-              <Select
-                value={speed.toString()}
-                onValueChange={handleSpeedChange}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SPEEDS.map((s) => (
-                    <SelectItem key={s} value={s.toString()}>
-                      {s}x
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Volume Control */}
-          <div className='flex items-center gap-3'>
-            <Button variant='ghost' size='icon' onClick={toggleMute}>
-              {isMuted ? (
-                <VolumeX className='h-4 w-4' />
-              ) : (
-                <Volume2 className='h-4 w-4' />
-              )}
-            </Button>
-            <Slider
-              value={[isMuted ? 0 : volume]}
-              max={1}
-              step={0.01}
-              onValueChange={handleVolumeChange}
-              className='flex-1'
-            />
-          </div>
-
-          {/* Text Visibility Toggle */}
-          <div className='flex items-center justify-between'>
-            <span className='text-sm font-medium'>{t("showText")}</span>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={() => setIsTextVisible(!isTextVisible)}
-            >
-              {isTextVisible ? (
-                <>
-                  <EyeOff className='mr-2 h-4 w-4' />
-                  {t("hide")}
-                </>
-              ) : (
-                <>
-                  <Eye className='mr-2 h-4 w-4' />
-                  {t("show")}
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-      )}
+          </PopoverContent>
+        </Popover>
+      </div>
     </Card>
   );
 }
