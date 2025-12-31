@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { getCurrentUser } from "@/lib/auth";
 import { TextNavigation } from "./components/TextNavigation";
 import { BackButton } from "@/components/ui/back-button";
+import { InteractiveText } from "@/components/interactive-text";
 
 interface TextPageProps {
   params: Promise<{
@@ -11,12 +12,20 @@ interface TextPageProps {
   }>;
 }
 
-const fetchText = async (courseId: string, textId: string) => {
+const fetchTextWithCourse = async (courseId: string, textId: string) => {
   try {
     const text = await db.text.findUnique({
       where: {
         id: parseInt(textId),
         courseId: parseInt(courseId),
+      },
+      include: {
+        course: {
+          include: {
+            language: true,
+            level: true,
+          },
+        },
       },
     });
     return text;
@@ -28,35 +37,58 @@ const fetchText = async (courseId: string, textId: string) => {
 
 const TextPage = async ({ params }: TextPageProps) => {
   const { courseId, textId } = await params;
-  const text = await fetchText(courseId, textId);
+
+  const user = await getCurrentUser();
+  if (!user) {
+    notFound();
+  }
+
+  const text = await fetchTextWithCourse(courseId, textId);
 
   if (!text) {
     notFound();
   }
 
+  // Get user's native language (default to English)
+  const userWithLanguage = await db.user.findUnique({
+    where: { id: user.id },
+    select: { nativeLanguage: true },
+  });
+
+  const userNativeLanguage = userWithLanguage?.nativeLanguage || "English";
+
   return (
-    <Card className='mx-auto max-w-4xl border-indigo-100 bg-white/50 backdrop-blur dark:border-indigo-950 dark:bg-gray-900/50'>
-      <CardHeader>
-        <div className='mb-4'>
-          <BackButton
-            href={`/course/${courseId}`}
-            labelKey='backToCourse'
-            defaultLabel='Back to Course'
-          />
-        </div>
-        <h1 className='text-center text-2xl font-semibold tracking-tight text-indigo-900 dark:text-indigo-100'>
-          {text.title}
-        </h1>
-      </CardHeader>
-      <CardContent>
-        <div className='prose prose-indigo dark:prose-invert mx-auto max-w-3xl'>
-          <p className='whitespace-pre-wrap'>{text.content}</p>
-        </div>
-        <div className='mt-8'>
-          <TextNavigation courseId={courseId} textId={textId} />
-        </div>
-      </CardContent>
-    </Card>
+    <div className='container mx-auto max-w-4xl px-4 py-8'>
+      <div className='mb-6'>
+        <BackButton
+          href={`/course/${courseId}`}
+          labelKey='backToCourse'
+          defaultLabel='Back to Course'
+        />
+      </div>
+
+      <InteractiveText
+        text={{
+          id: text.id,
+          title: text.title,
+          content: text.content,
+          courseId: text.courseId,
+        }}
+        course={{
+          language: {
+            name: text.course.language.name,
+          },
+          level: {
+            name: text.course.level.name,
+          },
+        }}
+        userNativeLanguage={userNativeLanguage}
+      />
+
+      <div className='mt-8'>
+        <TextNavigation courseId={courseId} textId={textId} />
+      </div>
+    </div>
   );
 };
 

@@ -18,11 +18,16 @@
       }
     },
     "headerLabel": "Добро пожаловать",
-    "backButtonLabel": "Нет аккаунта?",
-    "emailPlaceholder": "Электронная почта",
+    "backButtonLabel": "Зарегистрироваться",
+    "emailLabel": "Электронная почта",
+    "emailPlaceholder": "m@example.com",
+    "passwordLabel": "Пароль",
     "passwordPlaceholder": "Пароль",
     "forgotPassword": "Забыли пароль?",
     "loginButton": "Войти",
+    "loggingIn": "Вход...",
+    "description": "Введите email для входа в аккаунт",
+    "noAccount": "Нет аккаунта?",
     "errors": {
       "oauthAccountNotLinked": "Электронная почта уже используется другим провайдером",
       "email": "Электронная почта обязательна",
@@ -50,12 +55,18 @@
       }
     },
     "headerLabel": "Создать аккаунт",
-    "backButtonLabel": "Уже есть аккаунт?",
+    "backButtonLabel": "Войти",
+    "description": "Введите ваши данные для создания аккаунта",
+    "nameLabel": "Имя",
     "namePlaceholder": "Ваше имя",
-    "emailPlaceholder": "Электронная почта",
+    "emailLabel": "Электронная почта",
+    "emailPlaceholder": "m@example.com",
+    "passwordLabel": "Пароль",
     "passwordPlaceholder": "Пароль",
     "confirmPasswordPlaceholder": "Подтвердите пароль",
-    "registerButton": "Создать аккаунт"
+    "registerButton": "Создать аккаунт",
+    "creatingAccount": "Создание аккаунта...",
+    "hasAccount": "Уже есть аккаунт?"
   },
   "ResetForm": {
     "schema": {
@@ -70,10 +81,13 @@
         "emailSent": "Письмо для сброса пароля отправлено!"
       }
     },
-    "headerLabel": "Сбросить пароль?",
+    "headerLabel": "Сбросить пароль",
     "backButtonLabel": "Назад к входу",
-    "emailPlaceholder": "Электронная почта",
-    "resetButton": "Отправить письмо для сброса"
+    "description": "Введите email для получения ссылки сброса пароля",
+    "emailLabel": "Электронная почта",
+    "emailPlaceholder": "m@example.com",
+    "resetButton": "Отправить письмо для сброса",
+    "sendingEmail": "Отправка..."
   },
   "NewPasswordPage": {
     "headerLabel": "Введите новый пароль",
@@ -175,7 +189,8 @@
   "TopBar": {
     "logout": "Выйти",
     "settings": "Настройки",
-    "languageSettings": "Выбрать язык"
+    "dashboard": "Главная",
+    "dictionary": "Словарь"
   },
   "LanguageSettingPage": {
     "headerLabel": "Выберите язык",
@@ -210,12 +225,23 @@
   "common": {
     "loading": "Загрузка",
     "previous": "Предыдущий",
-    "next": "Следующий"
+    "next": "Следующий",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "all": "Все",
+    "words": "слов",
+    "listen": "Слушать",
+    "min": "мин",
+    "orContinueWith": "Или продолжить с",
+    "loginWithGoogle": "Войти через Google",
+    "loginWithGitHub": "Войти через GitHub"
   },
   "BackButton": {
     "back": "Назад",
     "backToCourse": "Назад к курсу",
-    "backToLanguages": "Назад к языкам"
+    "backToLanguages": "Назад к языкам",
+    "backToDashboard": "Назад на главную"
   },
   "CoursePage": {
     "courseDetails": "Детали курса",
@@ -229,5 +255,152 @@
     "title": "Текст не найден",
     "message": "Текст, который вы ищете, не существует или был удален.",
     "backHome": "Вернуться на главную"
+  },
+  "Dashboard": {
+    "welcomeBack": "С возвращением",
+    "subtitle": "Изучайте языки через увлекательное чтение"
+  },
+  "StatsOverview": {
+    "wordsLearned": "Изучено слов",
+    "inDictionary": "В вашем словаре",
+    "activeCourses": "Активные курсы",
+    "languagesLearning": "Изучаемые языки",
+    "wordsMastered": "Освоено слов",
+    "masteryRate": "уровень освоения",
+    "keepLearning": "Продолжайте учиться",
+    "today": "Сегодня",
+    "buildStreak": "Сохраняйте серию!"
+  },
+  "CourseGrid": {
+    "yourCourses": "Ваши курсы",
+    "noCourses": "Пока нет курсов",
+    "noCoursesDescription": "Начните изучение языка, выбрав язык и уровень.",
+    "chooseLanguage": "Выбрать язык",
+    "addCourse": "Добавить курс",
+    "learnAtLevel": "Изучайте {language} на уровне {level}",
+    "textsCompleted": "{completed} / {total} текстов завершено",
+    "minPerText": "2-3 мин на текст",
+    "progress": "Прогресс",
+    "continueReading": "Продолжить чтение",
+    "startCourse": "Начать курс"
+  },
+  "RecentWords": {
+    "title": "Недавние слова",
+    "noWords": "Пока нет слов",
+    "noWordsDescription": "Переведённые слова появятся здесь",
+    "viewAll": "Посмотреть все"
+  },
+  "AddCourseModal": {
+    "title": "Добавить новый курс",
+    "description": "Выберите язык и уровень для начала обучения. Вы можете добавить несколько курсов.",
+    "language": "Язык",
+    "languagePlaceholder": "Выберите язык для изучения",
+    "level": "Уровень",
+    "levelPlaceholder": "Выберите ваш текущий уровень",
+    "addCourse": "Добавить курс",
+    "selectLanguage": "Пожалуйста, выберите язык",
+    "selectLevel": "Пожалуйста, выберите уровень"
+  },
+  "CourseHeader": {
+    "learnThrough": "Изучайте {language} на уровне {level} через увлекательные истории",
+    "courseProgress": "Прогресс курса",
+    "textsCompleted": "{completed}/{total} текстов завершено",
+    "textsAvailable": "{count} текстов доступно",
+    "complete": "{percentage}% завершено"
+  },
+  "TextList": {
+    "readingTexts": "Тексты для чтения",
+    "noTexts": "Пока нет текстов",
+    "noTextsDescription": "Сгенерируйте первый текст для начала обучения!",
+    "generateFirst": "Создать первый текст",
+    "generateNew": "Создать новый текст",
+    "readAgain": "Читать снова",
+    "startReading": "Начать чтение"
+  },
+  "GenerateTextModal": {
+    "title": "Создать новый текст",
+    "description": "Создайте новый текст для чтения на {language} уровня {level}. По желанию укажите тему или позвольте ИИ выбрать за вас.",
+    "topicLabel": "Тема (необязательно)",
+    "topicPlaceholder": "например, День на пляже, Путешествие, Еда...",
+    "topicHint": "Оставьте пустым для генерации случайной интересной истории",
+    "quickSuggestions": "Быстрые подсказки:",
+    "generating": "Генерация...",
+    "generate": "Создать",
+    "failedToGenerate": "Не удалось создать текст",
+    "unexpectedError": "Произошла непредвиденная ошибка",
+    "topics": {
+      "beach": "День на пляже",
+      "restaurant": "Заказ еды в ресторане",
+      "friends": "Знакомство с новыми друзьями",
+      "market": "Поход на рынок",
+      "weekend": "Приключения на выходных",
+      "cooking": "Учимся готовить",
+      "letter": "Таинственное письмо",
+      "pet": "Потерянный питомец"
+    }
+  },
+  "InteractiveText": {
+    "read": "Читать",
+    "listen": "Слушать",
+    "clickToTranslate": "Нажмите на любое слово, чтобы увидеть перевод и добавить его в словарь",
+    "markComplete": "Отметить как завершённое",
+    "greatJob": "Отлично!",
+    "returningToCourse": "Возвращение к курсу..."
+  },
+  "TranslationPopup": {
+    "translationUnavailable": "Перевод недоступен",
+    "saved": "Сохранено!"
+  },
+  "AudioReader": {
+    "voice": "Голос",
+    "speed": "Скорость",
+    "showText": "Показать текст",
+    "hide": "Скрыть",
+    "show": "Показать"
+  },
+  "Dictionary": {
+    "title": "Мой словарь",
+    "subtitle": "Все слова, которые вы изучили на всех курсах",
+    "noWords": "Пока нет слов",
+    "noWordsDescription": "Начните читать тексты и нажимайте на слова, чтобы добавить их в словарь.",
+    "searchPlaceholder": "Поиск слов...",
+    "learning": "Изучаю",
+    "reviewing": "Повторяю",
+    "mastered": "Освоено",
+    "lookedUp": "Просмотрено {count} раз",
+    "added": "Добавлено {date}"
+  },
+  "DictionaryStats": {
+    "totalWords": "Всего слов",
+    "learning": "Изучаю",
+    "reviewing": "Повторяю",
+    "mastered": "Освоено",
+    "ofTotal": "от общего"
+  },
+  "LandingPage": {
+    "login": "Войти",
+    "getStarted": "Начать",
+    "heroTitle": "Изучайте языки через",
+    "heroHighlight": "увлекательное чтение",
+    "heroDescription": "Учитесь естественно, читая тексты, адаптированные под ваш уровень и интересы. Нажмите на любое слово для мгновенного перевода и пополняйте словарь без усилий.",
+    "startLearningFree": "Начать бесплатно",
+    "signIn": "Войти",
+    "multipleLanguages": "Много языков",
+    "multipleLanguagesDesc": "Изучайте испанский, французский, немецкий, итальянский и другие языки с контентом, адаптированным под ваш уровень",
+    "aiPoweredLearning": "Обучение с ИИ",
+    "aiPoweredLearningDesc": "Генерируйте тексты по вашим интересам и получайте мгновенные переводы любого слова",
+    "trackProgress": "Отслеживайте прогресс",
+    "trackProgressDesc": "Следите за ростом словарного запаса и прогрессом чтения с помощью подробной аналитики",
+    "howItWorks": "Как это работает",
+    "step1Title": "Выберите язык и уровень",
+    "step1Desc": "Выберите язык, который хотите изучать, и ваш текущий уровень владения (A1-C2)",
+    "step2Title": "Читайте интересный контент",
+    "step2Desc": "Просматривайте подобранные тексты или генерируйте контент по своим интересам",
+    "step3Title": "Учитесь естественно",
+    "step3Desc": "Нажмите на любое слово для мгновенного перевода и сохраните его в личный словарь",
+    "readyToStart": "Готовы начать обучение?",
+    "readyToStartDesc": "Присоединяйтесь к тысячам учащихся, осваивающих новые языки через чтение",
+    "createFreeAccount": "Создать бесплатный аккаунт",
+    "footer": "© 2025 Read2Learn. Изучайте языки через увлекательное чтение."
   }
 }

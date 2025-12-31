@@ -16,15 +16,17 @@ export const generateText = async ({
   language,
   level,
   motherLanguage,
+  topic,
 }: {
   language: string;
   level: string;
   motherLanguage: string;
+  topic?: string;
 }) => {
-  const prompt = constructPrompt({ language, level, motherLanguage });
+  const prompt = constructPrompt({ language, level, motherLanguage, topic });
 
   try {
-    const response = await openai.beta.chat.completions.parse({
+    const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
@@ -33,18 +35,38 @@ export const generateText = async ({
         },
         {
           role: "user",
-          content: `Language: ${language}, Level: ${level}, mother_language: ${motherLanguage}`,
+          content: topic
+            ? `Generate a text about: ${topic}`
+            : "Generate an interesting text for me to read",
         },
       ],
-      // response_format: zodResponseFormat(languageLearningSchema, "text"),
+      temperature: 0.8,
+      max_tokens: 2000,
     });
 
-    console.log("response", response.choices[0].message.content);
+    const content = response.choices[0].message.content;
+    console.log("Generated text response:", content);
 
-    return JSON.parse(
-      response.choices[0].message.content ?? ""
-    ) as OpenAIResponseData;
+    if (!content) {
+      throw new Error("No content in response");
+    }
+
+    // Clean the response (remove markdown code blocks if present)
+    let cleanContent = content.trim();
+    if (cleanContent.startsWith("```json")) {
+      cleanContent = cleanContent.slice(7);
+    }
+    if (cleanContent.startsWith("```")) {
+      cleanContent = cleanContent.slice(3);
+    }
+    if (cleanContent.endsWith("```")) {
+      cleanContent = cleanContent.slice(0, -3);
+    }
+    cleanContent = cleanContent.trim();
+
+    return JSON.parse(cleanContent) as OpenAIResponseData;
   } catch (error) {
-    console.error("Error generating text:", JSON.stringify(error));
+    console.error("Error generating text:", error);
+    throw error;
   }
 };

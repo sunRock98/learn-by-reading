@@ -42,6 +42,7 @@ model User {
   password         String?
   activeCourseId   Int?
   activeCourse     Course?                @relation(fields: [activeCourseId], references: [id])
+  nativeLanguage   String?                @default("English") // User's mother language for translations
   role             UserRole               @default(USER)
   accounts         Account[]
   subscriptions    Course[]               @relation("UserSubscriptions")
@@ -158,15 +159,25 @@ model UserDictionary {
   @@unique([userId, courseId]) // Ensures a unique dictionary per user-course pair
 }
 
+enum MasteryLevel {
+  LEARNING // User just learned this word
+  REVIEWING // User is reinforcing this word
+  MASTERED // User has mastered this word
+}
+
 // Represents a word and its translation in a user's dictionary
 model Word {
-  id             Int      @id @default(autoincrement())
+  id             Int          @id @default(autoincrement())
   original       String // The original word
   translation    String // The translation of the word
-  languageFrom   Language @relation("LanguageFrom", fields: [fromLanguageId], references: [id])
+  languageFrom   Language     @relation("LanguageFrom", fields: [fromLanguageId], references: [id])
   fromLanguageId Int // The language of the original word
-  languageTo     Language @relation("LanguageTo", fields: [toLanguageId], references: [id])
+  languageTo     Language     @relation("LanguageTo", fields: [toLanguageId], references: [id])
   toLanguageId   Int // The language of the translation
+  lookupCount    Int          @default(0) // How many times user looked up this word
+  lastSeenAt     DateTime     @default(now()) // When word last appeared in a text
+  masteryLevel   MasteryLevel @default(LEARNING) // Current mastery status
+  createdAt      DateTime     @default(now())
 
   dictionary   UserDictionary @relation(fields: [dictionaryId], references: [id])
   dictionaryId Int

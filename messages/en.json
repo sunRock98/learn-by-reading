@@ -18,11 +18,16 @@
       }
     },
     "headerLabel": "Welcome back",
-    "backButtonLabel": "Don't have an account?",
-    "emailPlaceholder": "Email",
+    "backButtonLabel": "Sign up",
+    "emailLabel": "Email",
+    "emailPlaceholder": "m@example.com",
+    "passwordLabel": "Password",
     "passwordPlaceholder": "Password",
     "forgotPassword": "Forgot password?",
     "loginButton": "Login",
+    "loggingIn": "Logging in...",
+    "description": "Enter your email below to login to your account",
+    "noAccount": "Don't have an account?",
     "errors": {
       "oauthAccountNotLinked": "Email is already in use with different provider",
       "email": "Email is required",
@@ -46,16 +51,22 @@
         "emailExists": "User with this email already exists"
       },
       "success": {
-        "emailSent": "Confiramtion email sent!"
+        "emailSent": "Confirmation email sent!"
       }
     },
     "headerLabel": "Create an account",
-    "backButtonLabel": "Already have an account?",
+    "backButtonLabel": "Login",
+    "description": "Enter your information to create your account",
+    "nameLabel": "Name",
     "namePlaceholder": "Your name",
-    "emailPlaceholder": "Email",
+    "emailLabel": "Email",
+    "emailPlaceholder": "m@example.com",
+    "passwordLabel": "Password",
     "passwordPlaceholder": "Password",
     "confirmPasswordPlaceholder": "Confirm password",
-    "registerButton": "Create account"
+    "registerButton": "Create account",
+    "creatingAccount": "Creating account...",
+    "hasAccount": "Already have an account?"
   },
   "ResetForm": {
     "schema": {
@@ -70,10 +81,13 @@
         "emailSent": "Password reset email sent!"
       }
     },
-    "headerLabel": "Reset your password?",
+    "headerLabel": "Reset your password",
     "backButtonLabel": "Back to login",
-    "emailPlaceholder": "Email",
-    "resetButton": "Send reset email"
+    "description": "Enter your email to receive a password reset link",
+    "emailLabel": "Email",
+    "emailPlaceholder": "m@example.com",
+    "resetButton": "Send reset email",
+    "sendingEmail": "Sending..."
   },
   "NewPasswordPage": {
     "headerLabel": "Enter your new password",
@@ -175,7 +189,8 @@
   "TopBar": {
     "logout": "Sign Out",
     "settings": "Settings",
-    "languageSettings": "Select language"
+    "dashboard": "Dashboard",
+    "dictionary": "Dictionary"
   },
   "LanguageSettingPage": {
     "headerLabel": "Select Languages",
@@ -195,7 +210,7 @@
     "errors": {
       "sthWentWrong": "Something went wrong!",
       "languageAlreadyAdded": "This language is already added",
-      "notAuthorized": "Не авторизован"
+      "notAuthorized": "Not authorized"
     },
     "submit": "Add"
   },
@@ -210,12 +225,23 @@
   "common": {
     "loading": "Loading",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "all": "All",
+    "words": "words",
+    "listen": "Listen",
+    "min": "min",
+    "orContinueWith": "Or continue with",
+    "loginWithGoogle": "Login with Google",
+    "loginWithGitHub": "Login with GitHub"
   },
   "BackButton": {
     "back": "Back",
     "backToCourse": "Back to Course",
-    "backToLanguages": "Back to Languages"
+    "backToLanguages": "Back to Languages",
+    "backToDashboard": "Back to Dashboard"
   },
   "CoursePage": {
     "courseDetails": "Course Details",
@@ -229,5 +255,152 @@
     "title": "Text Not Found",
     "message": "The text you are looking for does not exist or has been removed.",
     "backHome": "Back to Home"
+  },
+  "Dashboard": {
+    "welcomeBack": "Welcome back",
+    "subtitle": "Master languages through authentic reading experiences"
+  },
+  "StatsOverview": {
+    "wordsLearned": "Words Learned",
+    "inDictionary": "In your dictionary",
+    "activeCourses": "Active Courses",
+    "languagesLearning": "Languages learning",
+    "wordsMastered": "Words Mastered",
+    "masteryRate": "mastery rate",
+    "keepLearning": "Keep Learning",
+    "today": "Today",
+    "buildStreak": "Build your streak!"
+  },
+  "CourseGrid": {
+    "yourCourses": "Your Courses",
+    "noCourses": "No courses yet",
+    "noCoursesDescription": "Start your language learning journey by selecting a language and level.",
+    "chooseLanguage": "Choose a Language",
+    "addCourse": "Add Course",
+    "learnAtLevel": "Learn {language} at {level} level",
+    "textsCompleted": "{completed} / {total} texts completed",
+    "minPerText": "2-3 min per text",
+    "progress": "Progress",
+    "continueReading": "Continue Reading",
+    "startCourse": "Start Course"
+  },
+  "RecentWords": {
+    "title": "Recent Words",
+    "noWords": "No words yet",
+    "noWordsDescription": "Words you translate will appear here",
+    "viewAll": "View all"
+  },
+  "AddCourseModal": {
+    "title": "Add New Course",
+    "description": "Choose a language and level to start learning. You can add multiple courses.",
+    "language": "Language",
+    "languagePlaceholder": "Select a language to learn",
+    "level": "Level",
+    "levelPlaceholder": "Select your current level",
+    "addCourse": "Add Course",
+    "selectLanguage": "Please select a language",
+    "selectLevel": "Please select a level"
+  },
+  "CourseHeader": {
+    "learnThrough": "Learn {language} at {level} level through engaging stories",
+    "courseProgress": "Course Progress",
+    "textsCompleted": "{completed}/{total} texts completed",
+    "textsAvailable": "{count} texts available",
+    "complete": "{percentage}% complete"
+  },
+  "TextList": {
+    "readingTexts": "Reading Texts",
+    "noTexts": "No Texts Yet",
+    "noTextsDescription": "Generate your first reading text to start learning!",
+    "generateFirst": "Generate First Text",
+    "generateNew": "Generate New Text",
+    "readAgain": "Read Again",
+    "startReading": "Start Reading"
+  },
+  "GenerateTextModal": {
+    "title": "Generate New Text",
+    "description": "Create a new reading text in {language} at {level} level. Optionally provide a topic or let AI choose one for you.",
+    "topicLabel": "Topic (Optional)",
+    "topicPlaceholder": "e.g., A day at the beach, Travel, Food...",
+    "topicHint": "Leave empty to generate a random interesting story",
+    "quickSuggestions": "Quick suggestions:",
+    "generating": "Generating...",
+    "generate": "Generate",
+    "failedToGenerate": "Failed to generate text",
+    "unexpectedError": "An unexpected error occurred",
+    "topics": {
+      "beach": "A day at the beach",
+      "restaurant": "Ordering food at a restaurant",
+      "friends": "Meeting new friends",
+      "market": "A trip to the market",
+      "weekend": "Weekend adventures",
+      "cooking": "Learning to cook",
+      "letter": "A mysterious letter",
+      "pet": "The lost pet"
+    }
+  },
+  "InteractiveText": {
+    "read": "Read",
+    "listen": "Listen",
+    "clickToTranslate": "Click on any word to see its translation and add it to your dictionary",
+    "markComplete": "Mark as Complete",
+    "greatJob": "Great job!",
+    "returningToCourse": "Returning to course..."
+  },
+  "TranslationPopup": {
+    "translationUnavailable": "Translation unavailable",
+    "saved": "Saved!"
+  },
+  "AudioReader": {
+    "voice": "Voice",
+    "speed": "Speed",
+    "showText": "Show Text",
+    "hide": "Hide",
+    "show": "Show"
+  },
+  "Dictionary": {
+    "title": "My Dictionary",
+    "subtitle": "All the words you've learned across all courses",
+    "noWords": "No words yet",
+    "noWordsDescription": "Start reading texts and click on words to add them to your dictionary.",
+    "searchPlaceholder": "Search words...",
+    "learning": "Learning",
+    "reviewing": "Reviewing",
+    "mastered": "Mastered",
+    "lookedUp": "Looked up {count} times",
+    "added": "Added {date}"
+  },
+  "DictionaryStats": {
+    "totalWords": "Total Words",
+    "learning": "Learning",
+    "reviewing": "Reviewing",
+    "mastered": "Mastered",
+    "ofTotal": "of total"
+  },
+  "LandingPage": {
+    "login": "Login",
+    "getStarted": "Get Started",
+    "heroTitle": "Master Languages Through",
+    "heroHighlight": "Authentic Reading",
+    "heroDescription": "Learn naturally by reading texts tailored to your level and interests. Click any word for instant translations and build your vocabulary effortlessly.",
+    "startLearningFree": "Start Learning Free",
+    "signIn": "Sign In",
+    "multipleLanguages": "Multiple Languages",
+    "multipleLanguagesDesc": "Learn Spanish, French, German, Italian, and more with content adapted to your level",
+    "aiPoweredLearning": "AI-Powered Learning",
+    "aiPoweredLearningDesc": "Generate custom texts based on your interests and get instant translations for any word",
+    "trackProgress": "Track Progress",
+    "trackProgressDesc": "Monitor your vocabulary growth and reading progress with detailed analytics",
+    "howItWorks": "How It Works",
+    "step1Title": "Choose Your Language & Level",
+    "step1Desc": "Select the language you want to learn and your current proficiency level (A1-C2)",
+    "step2Title": "Read Engaging Content",
+    "step2Desc": "Browse curated texts or generate custom content based on your interests",
+    "step3Title": "Learn Naturally",
+    "step3Desc": "Click any word for instant translation and save it to your personal dictionary",
+    "readyToStart": "Ready to Start Learning?",
+    "readyToStartDesc": "Join thousands of learners mastering new languages through reading",
+    "createFreeAccount": "Create Free Account",
+    "footer": "© 2025 Read2Learn. Master languages through authentic reading."
   }
 }

@@ -12,6 +12,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
@@ -66,24 +67,27 @@ export const LoginForm = () => {
       showSocial
     >
       <Form {...form}>
-        <form onSubmit={handleSubmit} className='space-y-6'>
-          <div className='space-y-4'>
+        <form onSubmit={handleSubmit}>
+          <div className='flex flex-col gap-6'>
             <FormField
               control={form.control}
               name='email'
               render={({ field }) => {
                 return (
                   <FormItem>
-                    {/* <FormLabel>Email</FormLabel> */}
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type='email'
-                        placeholder={t("emailPlaceholder")}
-                        disabled={isPending}
-                      />
-                    </FormControl>
-                    <FormMessage className='font-light' />
+                    <div className='grid gap-2'>
+                      <FormLabel htmlFor='email'>{t("emailLabel")}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          id='email'
+                          type='email'
+                          placeholder={t("emailPlaceholder")}
+                          disabled={isPending}
+                        />
+                      </FormControl>
+                      <FormMessage className='font-light' />
+                    </div>
                   </FormItem>
                 );
               }}
@@ -94,41 +98,43 @@ export const LoginForm = () => {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    {/* <FormLabel>Password</FormLabel> */}
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type='password'
-                        placeholder={t("passwordPlaceholder")}
-                        disabled={isPending}
-                      />
-                    </FormControl>
-                    <FormMessage className='font-light' />
-                    <Button
-                      size={"sm"}
-                      variant={"link"}
-                      asChild
-                      className='px-0 font-normal'
-                    >
-                      <Link href={AUTH_ROUTES.RESET}>
-                        {t("forgotPassword")}
-                      </Link>
-                    </Button>
+                    <div className='grid gap-2'>
+                      <div className='flex items-center justify-between'>
+                        <FormLabel htmlFor='password'>
+                          {t("passwordLabel")}
+                        </FormLabel>
+                        <Button
+                          size={"sm"}
+                          variant={"link"}
+                          asChild
+                          className='h-auto px-0 font-normal'
+                        >
+                          <Link href={AUTH_ROUTES.RESET}>
+                            {t("forgotPassword")}
+                          </Link>
+                        </Button>
+                      </div>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          id='password'
+                          type='password'
+                          placeholder={t("passwordPlaceholder")}
+                          disabled={isPending}
+                        />
+                      </FormControl>
+                      <FormMessage className='font-light' />
+                    </div>
                   </FormItem>
                 );
               }}
             />
+            <FormError message={error || errorParamText} />
+            <FormSuccess message={success} />
+            <Button type='submit' className='w-full' disabled={isPending}>
+              {isPending ? t("loggingIn") : t("loginButton")}
+            </Button>
           </div>
-          <FormError message={error || errorParamText} />
-          <FormSuccess message={success} />
-          <Button
-            type='submit'
-            size='lg'
-            className='w-full'
-            disabled={isPending}
-          >
-            {t("loginButton")}
-          </Button>
         </form>
       </Form>
     </CardWrapper>

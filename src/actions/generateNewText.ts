@@ -1,32 +1,73 @@
 "use server";
 
 import { generateText } from "@/api/openai/generateText";
-import { Course } from "@/app/[locale]/(protected)/languages/types";
 import { db } from "@/lib/db";
-import { getLocale } from "next-intl/server";
+import { getCurrentUser } from "@/lib/auth";
 
-export const generateNewText = async (course: Course) => {
-  const locale = await getLocale();
-  const data = await generateText({
-    language: course.language.name,
-    level: course.level.name,
-    motherLanguage: locale,
-  });
+interface GenerateNewTextParams {
+  courseId: number;
+  languageName: string;
+  levelName: string;
+  topic?: string;
+}
 
-  if (!data) {
-    throw new Error("Failed to generate text");
+interface GenerateNewTextResult {
+  success: boolean;
+  textId?: number;
+  error?: string;
+}
+
+export const generateNewText = async ({
+  courseId,
+  languageName,
+  levelName,
+  topic,
+}: GenerateNewTextParams): Promise<GenerateNewTextResult> => {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return { success: false, error: "Not authenticated" };
+    }
+
+    // Get user's native language for translations
+    const userData = await db.user.findUnique({
+      where: { id: user.id },
+      select: { nativeLanguage: true },
+    });
+
+    const motherLanguage = userData?.nativeLanguage || "English";
+
+    const data = await generateText({
+      language: languageName,
+      level: levelName,
+      motherLanguage,
+      topic,
+    });
+
+    if (!data) {
+      return { success: false, error: "Failed to generate text" };
+    }
+
+    const { text, title } = data;
+
+    console.log("Generated text data:", { title, textLength: text?.length });
+
+    // Add the text to the database
+    const newText = await db.text.create({
+      data: {
+        title: title || "Untitled",
+        content: text || "",
+        course: { connect: { id: courseId } },
+      },
+    });
+
+    return { success: true, textId: newText.id };
+  } catch (error) {
+    console.error("Error generating new text:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to generate text",
+    };
   }
-
-  const { text, title } = data;
-
-  console.log("data", data);
-
-  // Add the text to the database
-  await db.text.create({
-    data: {
-      title,
-      content: text ?? "",
-      course: { connect: { id: course.id } },
-    },
-  });
 };

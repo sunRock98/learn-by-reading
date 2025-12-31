@@ -11,7 +11,7 @@ export const ErrorCard = () => {
       backButtonHref={AUTH_ROUTES.LOGIN}
     >
       <div className='flex w-full items-center justify-center'>
-        <ExclamationTriangleIcon className='h-10 w-10 text-destructive text-red-500' />
+        <ExclamationTriangleIcon className='text-destructive h-10 w-10 text-red-500' />
       </div>
     </CardWrapper>
   );

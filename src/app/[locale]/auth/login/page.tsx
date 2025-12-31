@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 const LoginPage = () => {
   return (
-    <div>
+    <div className='from-background to-muted/20 flex min-h-screen w-full items-center justify-center bg-gradient-to-b p-6 md:p-10'>
       <Suspense>
         <LoginForm />
       </Suspense>
