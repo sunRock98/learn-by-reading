@@ -354,6 +354,7 @@
   "AudioReader": {
     "voice": "Voice",
     "speed": "Speed",
+    "volume": "Volume",
     "showText": "Show Text",
     "hide": "Hide",
     "show": "Show"

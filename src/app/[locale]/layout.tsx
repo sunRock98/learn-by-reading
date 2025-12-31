@@ -11,12 +11,8 @@ import {
   Geist_Mono as V0_Font_Geist_Mono,
   Source_Serif_4 as V0_Font_Source_Serif_4,
 } from "next/font/google";
-import {
-  getMessages,
-  getTranslations,
-  setRequestLocale,
-} from "next-intl/server";
-import { hasLocale, Locale, NextIntlClientProvider } from "next-intl";
+import { getMessages, setRequestLocale } from "next-intl/server";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 
@@ -35,7 +31,7 @@ const _sourceSerif_4 = V0_Font_Source_Serif_4({
 });
 
 const geist = Geist({ subsets: ["latin"] });
-const geistMono = Geist_Mono({ subsets: ["latin"] });
+const _geistMonoAlias = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Read2Learn - Master Languages Through Reading",
@@ -59,6 +55,9 @@ export default async function RootLayout({
 
   setRequestLocale(locale);
 
+  // Get messages for client components
+  const messages = await getMessages();
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={`${geist.className} antialiased`}>
@@ -68,7 +67,9 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NextIntlClientProvider>{children}</NextIntlClientProvider>
+          <NextIntlClientProvider messages={messages}>
+            {children}
+          </NextIntlClientProvider>
         </ThemeProvider>
         <Analytics />
       </body>
