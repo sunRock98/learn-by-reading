@@ -1,58 +1,16 @@
 "use server";
 
+import OpenAI from "openai";
 import { db } from "@/lib/db";
 
 export interface FastTranslationResult {
   translation: string;
 }
 
-// Language code mapping
-const LANGUAGE_CODES: Record<string, string> = {
-  English: "en",
-  Russian: "ru",
-  Spanish: "es",
-  French: "fr",
-  German: "de",
-  Chinese: "zh",
-  Japanese: "ja",
-  Portuguese: "pt",
-  Korean: "ko",
-  Italian: "it",
-  Arabic: "ar",
-  Dutch: "nl",
-  Polish: "pl",
-  Turkish: "tr",
-  Swedish: "sv",
-  Norwegian: "no",
-  Danish: "da",
-  Finnish: "fi",
-  Greek: "el",
-  Hebrew: "he",
-  Hindi: "hi",
-  Thai: "th",
-  Vietnamese: "vi",
-  Indonesian: "id",
-  Malay: "ms",
-  Tagalog: "tl",
-  Ukrainian: "uk",
-  Czech: "cs",
-  Hungarian: "hu",
-  Romanian: "ro",
-  Bulgarian: "bg",
-  Croatian: "hr",
-  Slovak: "sk",
-  Slovenian: "sl",
-  Estonian: "et",
-  Latvian: "lv",
-  Lithuanian: "lt",
-  Maltese: "mt",
-  Icelandic: "is",
-  Irish: "ga",
-  Welsh: "cy",
-  Basque: "eu",
-  Catalan: "ca",
-  Galician: "gl",
-};
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function fastTranslate({
   word,
@@ -64,12 +22,6 @@ export async function fastTranslate({
   targetLanguage: string;
 }): Promise<FastTranslationResult> {
   try {
-    // Get language codes
-    const sourceCode =
-      LANGUAGE_CODES[sourceLanguage] || sourceLanguage.toLowerCase();
-    const targetCode =
-      LANGUAGE_CODES[targetLanguage] || targetLanguage.toLowerCase();
-
     // Check if we have a cached translation in the database
     const cachedTranslation = await db.word.findFirst({
       where: {
@@ -92,28 +44,34 @@ export async function fastTranslate({
       };
     }
 
-    // Use Google Translate unofficial API (free)
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceCode}&tl=${targetCode}&dt=t&q=${encodeURIComponent(word)}`;
+    // Use OpenAI for translation
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `You are a translator. Translate the given word or phrase from ${sourceLanguage} to ${targetLanguage}. Return ONLY the translation, nothing else. No explanations, no quotes, just the translated word(s).`,
+        },
+        {
+          role: "user",
+          content: word,
+        },
+      ],
+      temperature: 0.1,
+      max_tokens: 100,
+    });
 
-    const response = await fetch(url);
+    const translation = response.choices[0]?.message?.content?.trim();
 
-    if (!response.ok) {
-      throw new Error(`Translation API error: ${response.status}`);
+    if (!translation) {
+      throw new Error("No translation in response");
     }
-
-    const data = await response.json();
-
-    if (!data || !data[0] || !data[0][0] || !data[0][0][0]) {
-      throw new Error("Invalid translation response");
-    }
-
-    const translation = data[0][0][0];
 
     return { translation };
   } catch (error) {
-    console.error("Fast translation error:", error);
+    console.error("Translation error:", error);
 
-    // Return a fallback translation
+    // Return a fallback
     return {
       translation: `[${word}]`,
     };

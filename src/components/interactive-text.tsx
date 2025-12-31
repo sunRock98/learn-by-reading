@@ -6,8 +6,9 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TranslationPopup } from "@/components/translation-popup";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, BookOpen, Headphones } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { AudioReader } from "@/components/audio-reader";
 
 interface Text {
   id: number;
@@ -37,6 +38,8 @@ interface WordPosition {
   y: number;
 }
 
+type ViewMode = "read" | "listen";
+
 export function InteractiveText({
   text,
   course,
@@ -44,6 +47,7 @@ export function InteractiveText({
 }: InteractiveTextProps) {
   const [selectedWord, setSelectedWord] = useState<WordPosition | null>(null);
   const [completedReading, setCompletedReading] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("read");
   const router = useRouter();
 
   const handleWordClick = useCallback(
@@ -123,23 +127,58 @@ export function InteractiveText({
 
   return (
     <div>
+      {/* Header with Title and Mode Toggle */}
       <Card className='mb-6 p-8'>
         <div className='mb-6'>
           <div className='mb-4 flex items-center justify-between'>
             <h1 className='text-balance text-3xl font-bold'>{text.title}</h1>
             <Badge variant='secondary'>{course.level.name}</Badge>
           </div>
-          <p className='text-muted-foreground text-sm'>
-            Click on any word to see its translation and add it to your
-            dictionary
-          </p>
-        </div>
 
-        <div className='prose prose-lg max-w-none'>
-          <div className='whitespace-pre-line text-lg leading-relaxed'>
-            {renderInteractiveText(text.content)}
+          {/* Mode Toggle */}
+          <div className='flex gap-2'>
+            <Button
+              variant={viewMode === "read" ? "default" : "outline"}
+              size='sm'
+              onClick={() => setViewMode("read")}
+              className='gap-2'
+            >
+              <BookOpen className='h-4 w-4' />
+              Read
+            </Button>
+            <Button
+              variant={viewMode === "listen" ? "default" : "outline"}
+              size='sm'
+              onClick={() => setViewMode("listen")}
+              className='gap-2'
+            >
+              <Headphones className='h-4 w-4' />
+              Listen
+            </Button>
           </div>
         </div>
+
+        {/* Read Mode */}
+        {viewMode === "read" && (
+          <>
+            <p className='text-muted-foreground mb-4 text-sm'>
+              Click on any word to see its translation and add it to your
+              dictionary
+            </p>
+            <div className='prose prose-lg max-w-none'>
+              <div className='whitespace-pre-line text-lg leading-relaxed'>
+                {renderInteractiveText(text.content)}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Listen Mode */}
+        {viewMode === "listen" && (
+          <div className='mt-4'>
+            <AudioReader text={text.content} language={course.language.name} />
+          </div>
+        )}
       </Card>
 
       {!completedReading ? (
@@ -161,7 +200,7 @@ export function InteractiveText({
         </Card>
       )}
 
-      {selectedWord && (
+      {selectedWord && viewMode === "read" && (
         <TranslationPopup
           word={selectedWord.word}
           sourceLanguage={course.language.name}
