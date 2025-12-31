@@ -67,7 +67,7 @@ export const RegisterForm = () => {
                 return (
                   <FormItem>
                     <div className='grid gap-2'>
-                      <FormLabel htmlFor='name'>Name</FormLabel>
+                      <FormLabel htmlFor='name'>{t("nameLabel")}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -89,7 +89,7 @@ export const RegisterForm = () => {
                 return (
                   <FormItem>
                     <div className='grid gap-2'>
-                      <FormLabel htmlFor='email'>Email</FormLabel>
+                      <FormLabel htmlFor='email'>{t("emailLabel")}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -112,7 +112,9 @@ export const RegisterForm = () => {
                 return (
                   <FormItem>
                     <div className='grid gap-2'>
-                      <FormLabel htmlFor='password'>Password</FormLabel>
+                      <FormLabel htmlFor='password'>
+                        {t("passwordLabel")}
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -131,7 +133,7 @@ export const RegisterForm = () => {
             <FormError message={loginError} />
             <FormSuccess message={loginSuccess} />
             <Button type='submit' className='w-full' disabled={isPending}>
-              {isPending ? "Creating account..." : t("registerButton")}
+              {isPending ? t("creatingAccount") : t("registerButton")}
             </Button>
           </div>
         </form>

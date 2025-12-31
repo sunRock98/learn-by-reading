@@ -31,6 +31,7 @@ import {
 import { FormError } from "@/components/form-error";
 import { addCourseToUser } from "@/actions/add-course-to-user";
 import { Loader2, Plus, GraduationCap } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Language {
   id: number;
@@ -47,13 +48,8 @@ interface AddCourseModalProps {
   languages: Language[];
   levels: Level[];
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (_open: boolean) => void;
 }
-
-const formSchema = z.object({
-  language: z.string().min(1, "Please select a language"),
-  level: z.string().min(1, "Please select a level"),
-});
 
 export function AddCourseModal({
   languages,
@@ -62,8 +58,15 @@ export function AddCourseModal({
   onOpenChange,
 }: AddCourseModalProps) {
   const router = useRouter();
+  const t = useTranslations("AddCourseModal");
+  const tCommon = useTranslations("common");
   const [error, setError] = useState<string | undefined>(undefined);
   const [isPending, startTransition] = useTransition();
+
+  const formSchema = z.object({
+    language: z.string().min(1, t("selectLanguage")),
+    level: z.string().min(1, t("selectLevel")),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -101,12 +104,9 @@ export function AddCourseModal({
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2'>
             <GraduationCap className='h-5 w-5' />
-            Add New Course
+            {t("title")}
           </DialogTitle>
-          <DialogDescription>
-            Choose a language and level to start learning. You can add multiple
-            courses.
-          </DialogDescription>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -120,7 +120,7 @@ export function AddCourseModal({
                 name='language'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Language</FormLabel>
+                    <FormLabel>{t("language")}</FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
@@ -128,7 +128,7 @@ export function AddCourseModal({
                         disabled={isPending}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder='Select a language to learn' />
+                          <SelectValue placeholder={t("languagePlaceholder")} />
                         </SelectTrigger>
                         <SelectContent>
                           {languages.map((language) => (
@@ -152,7 +152,7 @@ export function AddCourseModal({
                 name='level'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Level</FormLabel>
+                    <FormLabel>{t("level")}</FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
@@ -160,7 +160,7 @@ export function AddCourseModal({
                         disabled={isPending}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder='Select your current level' />
+                          <SelectValue placeholder={t("levelPlaceholder")} />
                         </SelectTrigger>
                         <SelectContent>
                           {levels.map(({ id, name }) => (
@@ -186,7 +186,7 @@ export function AddCourseModal({
                 onClick={() => onOpenChange(false)}
                 disabled={isPending}
               >
-                Cancel
+                {tCommon("cancel")}
               </Button>
               <Button type='submit' disabled={isPending}>
                 {isPending ? (
@@ -194,7 +194,7 @@ export function AddCourseModal({
                 ) : (
                   <Plus className='mr-2 h-4 w-4' />
                 )}
-                Add Course
+                {t("addCourse")}
               </Button>
             </div>
           </form>

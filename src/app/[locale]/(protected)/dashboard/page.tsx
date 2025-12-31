@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { StatsOverview } from "@/components/dashboard/stats-overview";
 import { CourseGrid } from "@/components/dashboard/course-grid";
 import { RecentWords } from "@/components/dashboard/recent-words";
+import { getTranslations } from "next-intl/server";
 
 async function getLanguagesAndLevels() {
   const [languages, levels] = await Promise.all([
@@ -88,6 +89,7 @@ async function getDashboardData(userId: string) {
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
+  const t = await getTranslations("Dashboard");
 
   if (!user) {
     redirect("/auth/login");
@@ -100,11 +102,10 @@ export default async function DashboardPage() {
     <div className='container mx-auto max-w-6xl px-4 py-8'>
       <div className='mb-8'>
         <h1 className='mb-2 text-balance text-4xl font-bold'>
-          Welcome back{user.name ? `, ${user.name}` : ""}!
+          {t("welcomeBack")}
+          {user.name ? `, ${user.name}` : ""}!
         </h1>
-        <p className='text-muted-foreground text-lg'>
-          Master languages through authentic reading experiences
-        </p>
+        <p className='text-muted-foreground text-lg'>{t("subtitle")}</p>
       </div>
 
       <StatsOverview stats={stats} />

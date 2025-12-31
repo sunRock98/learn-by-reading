@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { BookOpen, Clock, CheckCircle2, Sparkles } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { GenerateTextModal } from "./generate-text-modal";
+import { useTranslations } from "next-intl";
 
 interface Text {
   id: number;
@@ -22,10 +23,9 @@ interface TextListProps {
   languageName: string;
 }
 
-function estimateReadingTime(content: string): string {
+function estimateReadingTime(content: string): number {
   const wordCount = content.split(/\s+/).length;
-  const minutes = Math.ceil(wordCount / 150); // Average reading speed
-  return `${minutes} min`;
+  return Math.ceil(wordCount / 150); // Average reading speed
 }
 
 function getWordCount(content: string): number {
@@ -39,17 +39,19 @@ export function TextList({
   languageName,
 }: TextListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const t = useTranslations("TextList");
+  const tCommon = useTranslations("common");
 
   if (texts.length === 0) {
     return (
       <div>
-        <h2 className='mb-6 text-2xl font-bold'>Reading Texts</h2>
+        <h2 className='mb-6 text-2xl font-bold'>{t("readingTexts")}</h2>
         <Card className='p-12'>
           <div className='flex flex-col items-center justify-center text-center'>
             <BookOpen className='text-muted-foreground mb-4 h-12 w-12' />
-            <h3 className='mb-2 text-xl font-semibold'>No Texts Yet</h3>
+            <h3 className='mb-2 text-xl font-semibold'>{t("noTexts")}</h3>
             <p className='text-muted-foreground mb-6'>
-              Generate your first reading text to start learning!
+              {t("noTextsDescription")}
             </p>
             <Button
               size='lg'
@@ -57,7 +59,7 @@ export function TextList({
               onClick={() => setIsModalOpen(true)}
             >
               <Sparkles className='h-5 w-5' />
-              Generate First Text
+              {t("generateFirst")}
             </Button>
           </div>
         </Card>
@@ -75,7 +77,7 @@ export function TextList({
   return (
     <div>
       <div className='mb-6 flex items-center justify-between'>
-        <h2 className='text-2xl font-bold'>Reading Texts</h2>
+        <h2 className='text-2xl font-bold'>{t("readingTexts")}</h2>
         <Button
           variant='outline'
           size='sm'
@@ -83,7 +85,7 @@ export function TextList({
           onClick={() => setIsModalOpen(true)}
         >
           <Sparkles className='h-4 w-4' />
-          Generate New Text
+          {t("generateNew")}
         </Button>
       </div>
 
@@ -114,18 +116,22 @@ export function TextList({
                   <div className='text-muted-foreground flex items-center gap-4 text-sm'>
                     <div className='flex items-center gap-1'>
                       <BookOpen className='h-4 w-4' />
-                      <span>{wordCount} words</span>
+                      <span>
+                        {wordCount} {tCommon("words")}
+                      </span>
                     </div>
                     <div className='flex items-center gap-1'>
                       <Clock className='h-4 w-4' />
-                      <span>{estimatedTime}</span>
+                      <span>
+                        {estimatedTime} {tCommon("min")}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <Button asChild>
                   <Link href={`/course/${courseId}/text/${text.id}`}>
-                    {text.completed ? "Read Again" : "Start Reading"}
+                    {text.completed ? t("readAgain") : t("startReading")}
                   </Link>
                 </Button>
               </div>

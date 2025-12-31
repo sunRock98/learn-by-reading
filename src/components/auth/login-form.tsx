@@ -76,7 +76,7 @@ export const LoginForm = () => {
                 return (
                   <FormItem>
                     <div className='grid gap-2'>
-                      <FormLabel htmlFor='email'>Email</FormLabel>
+                      <FormLabel htmlFor='email'>{t("emailLabel")}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -100,7 +100,9 @@ export const LoginForm = () => {
                   <FormItem>
                     <div className='grid gap-2'>
                       <div className='flex items-center justify-between'>
-                        <FormLabel htmlFor='password'>Password</FormLabel>
+                        <FormLabel htmlFor='password'>
+                          {t("passwordLabel")}
+                        </FormLabel>
                         <Button
                           size={"sm"}
                           variant={"link"}
@@ -130,7 +132,7 @@ export const LoginForm = () => {
             <FormError message={error || errorParamText} />
             <FormSuccess message={success} />
             <Button type='submit' className='w-full' disabled={isPending}>
-              {isPending ? "Logging in..." : t("loginButton")}
+              {isPending ? t("loggingIn") : t("loginButton")}
             </Button>
           </div>
         </form>

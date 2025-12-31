@@ -23,6 +23,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { generateAudio, VoiceType } from "@/api/openai/generateAudio";
+import { useTranslations } from "next-intl";
 
 interface AudioReaderProps {
   text: string;
@@ -40,7 +41,9 @@ const VOICES: { value: VoiceType; label: string; description: string }[] = [
 
 const SPEEDS = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
 
-export function AudioReader({ text, language }: AudioReaderProps) {
+export function AudioReader({ text, language: _language }: AudioReaderProps) {
+  const t = useTranslations("AudioReader");
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);
@@ -357,7 +360,9 @@ export function AudioReader({ text, language }: AudioReaderProps) {
           <div className='grid grid-cols-2 gap-4'>
             {/* Voice Selection */}
             <div>
-              <label className='mb-2 block text-sm font-medium'>Voice</label>
+              <label className='mb-2 block text-sm font-medium'>
+                {t("voice")}
+              </label>
               <Select value={voice} onValueChange={handleVoiceChange}>
                 <SelectTrigger>
                   <SelectValue />
@@ -379,7 +384,9 @@ export function AudioReader({ text, language }: AudioReaderProps) {
 
             {/* Speed Selection */}
             <div>
-              <label className='mb-2 block text-sm font-medium'>Speed</label>
+              <label className='mb-2 block text-sm font-medium'>
+                {t("speed")}
+              </label>
               <Select
                 value={speed.toString()}
                 onValueChange={handleSpeedChange}
@@ -418,7 +425,7 @@ export function AudioReader({ text, language }: AudioReaderProps) {
 
           {/* Text Visibility Toggle */}
           <div className='flex items-center justify-between'>
-            <span className='text-sm font-medium'>Show Text</span>
+            <span className='text-sm font-medium'>{t("showText")}</span>
             <Button
               variant='outline'
               size='sm'
@@ -427,12 +434,12 @@ export function AudioReader({ text, language }: AudioReaderProps) {
               {isTextVisible ? (
                 <>
                   <EyeOff className='mr-2 h-4 w-4' />
-                  Hide
+                  {t("hide")}
                 </>
               ) : (
                 <>
                   <Eye className='mr-2 h-4 w-4' />
-                  Show
+                  {t("show")}
                 </>
               )}
             </Button>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface Word {
   id: number;
@@ -20,6 +21,9 @@ interface RecentWordsProps {
 }
 
 export function RecentWords({ words }: RecentWordsProps) {
+  const t = useTranslations("RecentWords");
+  const tDict = useTranslations("Dictionary");
+
   const getMasteryColor = (level: string) => {
     switch (level) {
       case "LEARNING":
@@ -33,18 +37,31 @@ export function RecentWords({ words }: RecentWordsProps) {
     }
   };
 
+  const getMasteryLabel = (level: string) => {
+    switch (level) {
+      case "LEARNING":
+        return tDict("learning");
+      case "REVIEWING":
+        return tDict("reviewing");
+      case "MASTERED":
+        return tDict("mastered");
+      default:
+        return level;
+    }
+  };
+
   if (words.length === 0) {
     return (
       <div>
         <div className='mb-6 flex items-center justify-between'>
-          <h2 className='text-xl font-bold'>Recent Words</h2>
+          <h2 className='text-xl font-bold'>{t("title")}</h2>
         </div>
         <Card className='p-8'>
           <div className='flex flex-col items-center justify-center text-center'>
             <BookOpen className='text-muted-foreground mb-3 h-10 w-10' />
-            <h3 className='mb-1 text-sm font-semibold'>No words yet</h3>
+            <h3 className='mb-1 text-sm font-semibold'>{t("noWords")}</h3>
             <p className='text-muted-foreground text-xs'>
-              Words you translate will appear here
+              {t("noWordsDescription")}
             </p>
           </div>
         </Card>
@@ -55,10 +72,10 @@ export function RecentWords({ words }: RecentWordsProps) {
   return (
     <div>
       <div className='mb-6 flex items-center justify-between'>
-        <h2 className='text-xl font-bold'>Recent Words</h2>
+        <h2 className='text-xl font-bold'>{t("title")}</h2>
         <Button variant='ghost' size='sm' asChild>
           <Link href='/dictionary'>
-            View all
+            {t("viewAll")}
             <ArrowRight className='ml-1 h-4 w-4' />
           </Link>
         </Button>
@@ -72,8 +89,7 @@ export function RecentWords({ words }: RecentWordsProps) {
               <Badge
                 className={`text-xs ${getMasteryColor(word.masteryLevel)}`}
               >
-                {word.masteryLevel.charAt(0) +
-                  word.masteryLevel.slice(1).toLowerCase()}
+                {getMasteryLabel(word.masteryLevel)}
               </Badge>
             </div>
             <p className='text-muted-foreground text-sm'>{word.translation}</p>

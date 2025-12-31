@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { BookOpen, GraduationCap, RefreshCw, Trophy } from "lucide-react";
 import { MasteryLevel } from "@prisma/client";
+import { useTranslations } from "next-intl";
 
 interface Word {
   masteryLevel: MasteryLevel;
@@ -13,6 +14,8 @@ interface DictionaryStatsProps {
 }
 
 export function DictionaryStats({ words }: DictionaryStatsProps) {
+  const t = useTranslations("DictionaryStats");
+
   const stats = {
     total: words.length,
     learning: words.filter((w) => w.masteryLevel === MasteryLevel.LEARNING)
@@ -32,7 +35,7 @@ export function DictionaryStats({ words }: DictionaryStatsProps) {
         <CardContent className='p-4'>
           <div className='flex items-center justify-between'>
             <div>
-              <p className='text-muted-foreground text-sm'>Total Words</p>
+              <p className='text-muted-foreground text-sm'>{t("totalWords")}</p>
               <p className='text-2xl font-bold'>{stats.total}</p>
             </div>
             <BookOpen className='text-primary h-8 w-8' />
@@ -44,7 +47,7 @@ export function DictionaryStats({ words }: DictionaryStatsProps) {
         <CardContent className='p-4'>
           <div className='flex items-center justify-between'>
             <div>
-              <p className='text-muted-foreground text-sm'>Learning</p>
+              <p className='text-muted-foreground text-sm'>{t("learning")}</p>
               <p className='text-2xl font-bold text-yellow-600'>
                 {stats.learning}
               </p>
@@ -58,7 +61,7 @@ export function DictionaryStats({ words }: DictionaryStatsProps) {
         <CardContent className='p-4'>
           <div className='flex items-center justify-between'>
             <div>
-              <p className='text-muted-foreground text-sm'>Reviewing</p>
+              <p className='text-muted-foreground text-sm'>{t("reviewing")}</p>
               <p className='text-2xl font-bold text-blue-600'>
                 {stats.reviewing}
               </p>
@@ -72,12 +75,12 @@ export function DictionaryStats({ words }: DictionaryStatsProps) {
         <CardContent className='p-4'>
           <div className='flex items-center justify-between'>
             <div>
-              <p className='text-muted-foreground text-sm'>Mastered</p>
+              <p className='text-muted-foreground text-sm'>{t("mastered")}</p>
               <p className='text-2xl font-bold text-green-600'>
                 {stats.mastered}
               </p>
               <p className='text-muted-foreground text-xs'>
-                {masteryPercentage}% of total
+                {masteryPercentage}% {t("ofTotal")}
               </p>
             </div>
             <Trophy className='h-8 w-8 text-green-600' />

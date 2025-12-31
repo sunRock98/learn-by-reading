@@ -7,6 +7,7 @@ import { X, BookmarkPlus, Volume2, Loader2, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { fastTranslate } from "@/api/translation/fastTranslate";
 import { addWordToDictionary } from "@/actions/dictionary";
+import { useTranslations } from "next-intl";
 
 interface TranslationPopupProps {
   word: string;
@@ -37,6 +38,8 @@ export function TranslationPopup({
   );
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const t = useTranslations("TranslationPopup");
+  const tCommon = useTranslations("common");
 
   useEffect(() => {
     const fetchTranslation = async () => {
@@ -53,7 +56,7 @@ export function TranslationPopup({
       } catch (error) {
         console.error("Translation error:", error);
         setTranslation({
-          translation: "Translation unavailable",
+          translation: t("translationUnavailable"),
         });
       } finally {
         setIsLoading(false);
@@ -61,7 +64,7 @@ export function TranslationPopup({
     };
 
     fetchTranslation();
-  }, [word, sourceLanguage, targetLanguage]);
+  }, [word, sourceLanguage, targetLanguage, t]);
 
   const handleSaveToDictionary = useCallback(async () => {
     if (!translation || isSaving) return;
@@ -164,7 +167,7 @@ export function TranslationPopup({
                 className='flex-1 bg-transparent'
               >
                 <Volume2 className='mr-2 h-4 w-4' />
-                Listen
+                {tCommon("listen")}
               </Button>
               <Button
                 variant={isSaved ? "secondary" : "default"}
@@ -180,7 +183,7 @@ export function TranslationPopup({
                 ) : (
                   <BookmarkPlus className='mr-2 h-4 w-4' />
                 )}
-                {isSaved ? "Saved!" : "Save"}
+                {isSaved ? t("saved") : tCommon("save")}
               </Button>
             </div>
           </div>

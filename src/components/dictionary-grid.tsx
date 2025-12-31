@@ -11,6 +11,7 @@ import {
   updateWordMastery,
 } from "@/actions/dictionary";
 import { MasteryLevel } from "@prisma/client";
+import { useTranslations } from "next-intl";
 
 interface Word {
   id: number;
@@ -38,6 +39,8 @@ export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
   const [words, setWords] = useState(initialWords);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<MasteryLevel | "all">("all");
+  const t = useTranslations("Dictionary");
+  const tCommon = useTranslations("common");
 
   const filteredWords = words.filter((word) => {
     const matchesSearch =
@@ -96,15 +99,27 @@ export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
     }
   };
 
+  const getMasteryLabel = (level: MasteryLevel) => {
+    switch (level) {
+      case MasteryLevel.LEARNING:
+        return t("learning");
+      case MasteryLevel.REVIEWING:
+        return t("reviewing");
+      case MasteryLevel.MASTERED:
+        return t("mastered");
+      default:
+        return level;
+    }
+  };
+
   if (words.length === 0) {
     return (
       <Card className='p-12'>
         <div className='flex flex-col items-center justify-center text-center'>
           <BookOpen className='text-muted-foreground mb-4 h-12 w-12' />
-          <h3 className='mb-2 text-lg font-semibold'>No words yet</h3>
+          <h3 className='mb-2 text-lg font-semibold'>{t("noWords")}</h3>
           <p className='text-muted-foreground max-w-md'>
-            Start reading texts and click on words to add them to your
-            dictionary.
+            {t("noWordsDescription")}
           </p>
         </div>
       </Card>
@@ -118,7 +133,7 @@ export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
         <div className='relative flex-1'>
           <Search className='text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2' />
           <Input
-            placeholder='Search words...'
+            placeholder={t("searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className='pl-10'
@@ -130,36 +145,36 @@ export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
             size='sm'
             onClick={() => setFilter("all")}
           >
-            All
+            {tCommon("all")}
           </Button>
           <Button
             variant={filter === MasteryLevel.LEARNING ? "default" : "outline"}
             size='sm'
             onClick={() => setFilter(MasteryLevel.LEARNING)}
           >
-            Learning
+            {t("learning")}
           </Button>
           <Button
             variant={filter === MasteryLevel.REVIEWING ? "default" : "outline"}
             size='sm'
             onClick={() => setFilter(MasteryLevel.REVIEWING)}
           >
-            Reviewing
+            {t("reviewing")}
           </Button>
           <Button
             variant={filter === MasteryLevel.MASTERED ? "default" : "outline"}
             size='sm'
             onClick={() => setFilter(MasteryLevel.MASTERED)}
           >
-            Mastered
+            {t("mastered")}
           </Button>
         </div>
       </div>
 
       <div className='mb-4 flex items-center justify-between'>
         <h2 className='text-xl font-semibold'>
-          {filteredWords.length} words
-          {filter !== "all" && ` (${filter.toLowerCase()})`}
+          {filteredWords.length} {tCommon("words")}
+          {filter !== "all" && ` (${getMasteryLabel(filter as MasteryLevel)})`}
         </h2>
       </div>
 
@@ -189,8 +204,7 @@ export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
             <div className='mb-4 space-y-2'>
               <div className='flex flex-wrap items-center gap-2'>
                 <Badge className={getMasteryColor(word.masteryLevel)}>
-                  {word.masteryLevel.charAt(0) +
-                    word.masteryLevel.slice(1).toLowerCase()}
+                  {getMasteryLabel(word.masteryLevel)}
                 </Badge>
                 <Badge variant='secondary'>
                   {word.dictionary.course.language.name}
@@ -200,9 +214,11 @@ export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
               <p className='text-lg font-semibold'>{word.translation}</p>
 
               <div className='text-muted-foreground flex items-center justify-between text-xs'>
-                <span>Looked up {word.lookupCount} times</span>
+                <span>{t("lookedUp", { count: word.lookupCount })}</span>
                 <span>
-                  Added {new Date(word.createdAt).toLocaleDateString()}
+                  {t("added", {
+                    date: new Date(word.createdAt).toLocaleDateString(),
+                  })}
                 </span>
               </div>
             </div>
@@ -217,7 +233,7 @@ export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
                 className='flex-1'
               >
                 <Volume2 className='mr-2 h-4 w-4' />
-                Listen
+                {tCommon("listen")}
               </Button>
               <Button
                 variant='outline'

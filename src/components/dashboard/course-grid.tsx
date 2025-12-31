@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { BookOpen, Clock, Target, Plus } from "lucide-react";
 import Link from "next/link";
 import { AddCourseModal } from "./add-course-modal";
+import { useTranslations } from "next-intl";
 
 interface Language {
   id: number;
@@ -38,24 +39,24 @@ interface CourseGridProps {
 
 export function CourseGrid({ courses, languages, levels }: CourseGridProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const t = useTranslations("CourseGrid");
 
   if (courses.length === 0) {
     return (
       <div>
         <div className='mb-6 flex items-center justify-between'>
-          <h2 className='text-2xl font-bold'>Your Courses</h2>
+          <h2 className='text-2xl font-bold'>{t("yourCourses")}</h2>
         </div>
         <Card className='p-12'>
           <div className='flex flex-col items-center justify-center text-center'>
             <BookOpen className='text-muted-foreground mb-4 h-12 w-12' />
-            <h3 className='mb-2 text-lg font-semibold'>No courses yet</h3>
+            <h3 className='mb-2 text-lg font-semibold'>{t("noCourses")}</h3>
             <p className='text-muted-foreground mb-4 max-w-md'>
-              Start your language learning journey by selecting a language and
-              level.
+              {t("noCoursesDescription")}
             </p>
             <Button onClick={() => setIsModalOpen(true)}>
               <Plus className='mr-2 h-4 w-4' />
-              Choose a Language
+              {t("chooseLanguage")}
             </Button>
           </div>
         </Card>
@@ -72,14 +73,14 @@ export function CourseGrid({ courses, languages, levels }: CourseGridProps) {
   return (
     <div>
       <div className='mb-6 flex items-center justify-between'>
-        <h2 className='text-2xl font-bold'>Your Courses</h2>
+        <h2 className='text-2xl font-bold'>{t("yourCourses")}</h2>
         <Button
           variant='outline'
           size='sm'
           onClick={() => setIsModalOpen(true)}
         >
           <Plus className='mr-2 h-4 w-4' />
-          Add Course
+          {t("addCourse")}
         </Button>
       </div>
 
@@ -113,7 +114,10 @@ export function CourseGrid({ courses, languages, levels }: CourseGridProps) {
                     <Badge variant='secondary'>{course.level.name}</Badge>
                   </div>
                   <p className='text-muted-foreground mb-3 text-sm'>
-                    Learn {course.language.name} at {course.level.name} level
+                    {t("learnAtLevel", {
+                      language: course.language.name,
+                      level: course.level.name,
+                    })}
                   </p>
                 </div>
               </div>
@@ -122,12 +126,15 @@ export function CourseGrid({ courses, languages, levels }: CourseGridProps) {
                 <div className='text-muted-foreground flex items-center gap-2 text-sm'>
                   <BookOpen className='h-4 w-4' />
                   <span>
-                    {completedTexts} / {totalTexts} texts completed
+                    {t("textsCompleted", {
+                      completed: completedTexts,
+                      total: totalTexts,
+                    })}
                   </span>
                 </div>
                 <div className='text-muted-foreground flex items-center gap-2 text-sm'>
                   <Clock className='h-4 w-4' />
-                  <span>2-3 min per text</span>
+                  <span>{t("minPerText")}</span>
                 </div>
                 <div className='text-muted-foreground flex items-center gap-2 text-sm'>
                   <Target className='h-4 w-4' />
@@ -137,7 +144,7 @@ export function CourseGrid({ courses, languages, levels }: CourseGridProps) {
 
               <div className='mb-4'>
                 <div className='mb-2 flex items-center justify-between text-sm'>
-                  <span className='text-muted-foreground'>Progress</span>
+                  <span className='text-muted-foreground'>{t("progress")}</span>
                   <span className='font-medium'>{Math.round(progress)}%</span>
                 </div>
                 <div className='bg-secondary h-2 overflow-hidden rounded-full'>
@@ -150,7 +157,7 @@ export function CourseGrid({ courses, languages, levels }: CourseGridProps) {
 
               <Button asChild className='w-full'>
                 <Link href={`/course/${course.id}`}>
-                  {completedTexts > 0 ? "Continue Reading" : "Start Course"}
+                  {completedTexts > 0 ? t("continueReading") : t("startCourse")}
                 </Link>
               </Button>
             </Card>

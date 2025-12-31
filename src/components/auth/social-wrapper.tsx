@@ -7,10 +7,12 @@ import { signIn } from "next-auth/react";
 import { Button } from "../ui/button";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export const Socials = () => {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
+  const t = useTranslations("common");
 
   const handleClick = (provider: "google" | "github") => {
     signIn(provider, { callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT });
@@ -23,7 +25,7 @@ export const Socials = () => {
         className='w-full'
       >
         <FcGoogle className='h-5 w-5' />
-        <span className='sr-only'>Login with Google</span>
+        <span className='sr-only'>{t("loginWithGoogle")}</span>
       </Button>
       <Button
         onClick={() => handleClick("github")}
@@ -31,7 +33,7 @@ export const Socials = () => {
         className='w-full'
       >
         <FaGithub className='h-5 w-5' />
-        <span className='sr-only'>Login with GitHub</span>
+        <span className='sr-only'>{t("loginWithGitHub")}</span>
       </Button>
     </div>
   );

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, BookOpen, Headphones } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AudioReader } from "@/components/audio-reader";
+import { useTranslations } from "next-intl";
 
 interface Text {
   id: number;
@@ -49,6 +50,7 @@ export function InteractiveText({
   const [completedReading, setCompletedReading] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("read");
   const router = useRouter();
+  const t = useTranslations("InteractiveText");
 
   const handleWordClick = useCallback(
     (e: React.MouseEvent<HTMLSpanElement>) => {
@@ -144,7 +146,7 @@ export function InteractiveText({
               className='gap-2'
             >
               <BookOpen className='h-4 w-4' />
-              Read
+              {t("read")}
             </Button>
             <Button
               variant={viewMode === "listen" ? "default" : "outline"}
@@ -153,7 +155,7 @@ export function InteractiveText({
               className='gap-2'
             >
               <Headphones className='h-4 w-4' />
-              Listen
+              {t("listen")}
             </Button>
           </div>
         </div>
@@ -162,8 +164,7 @@ export function InteractiveText({
         {viewMode === "read" && (
           <>
             <p className='text-muted-foreground mb-4 text-sm'>
-              Click on any word to see its translation and add it to your
-              dictionary
+              {t("clickToTranslate")}
             </p>
             <div className='prose prose-lg max-w-none'>
               <div className='whitespace-pre-line text-lg leading-relaxed'>
@@ -185,7 +186,7 @@ export function InteractiveText({
         <div className='flex justify-center'>
           <Button onClick={handleCompleteReading} size='lg' className='gap-2'>
             <CheckCircle2 className='h-5 w-5' />
-            Mark as Complete
+            {t("markComplete")}
           </Button>
         </div>
       ) : (
@@ -193,8 +194,8 @@ export function InteractiveText({
           <div className='flex items-center gap-3 text-green-800 dark:text-green-200'>
             <CheckCircle2 className='h-6 w-6' />
             <div>
-              <p className='font-semibold'>Great job!</p>
-              <p className='text-sm'>Returning to course...</p>
+              <p className='font-semibold'>{t("greatJob")}</p>
+              <p className='text-sm'>{t("returningToCourse")}</p>
             </div>
           </div>
         </Card>

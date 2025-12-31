@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { FormError } from "@/components/form-error";
 import { generateNewText } from "@/actions/generateNewText";
 import { Loader2, Sparkles, Shuffle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface GenerateTextModalProps {
   isOpen: boolean;
@@ -24,17 +25,6 @@ interface GenerateTextModalProps {
   levelName: string;
 }
 
-const TOPIC_SUGGESTIONS = [
-  "A day at the beach",
-  "Ordering food at a restaurant",
-  "Meeting new friends",
-  "A trip to the market",
-  "Weekend adventures",
-  "Learning to cook",
-  "A mysterious letter",
-  "The lost pet",
-];
-
 export function GenerateTextModal({
   isOpen,
   onClose,
@@ -42,6 +32,20 @@ export function GenerateTextModal({
   languageName,
   levelName,
 }: GenerateTextModalProps) {
+  const t = useTranslations("GenerateTextModal");
+  const tCommon = useTranslations("common");
+
+  const TOPIC_SUGGESTIONS = [
+    t("topics.beach"),
+    t("topics.restaurant"),
+    t("topics.friends"),
+    t("topics.market"),
+    t("topics.weekend"),
+    t("topics.cooking"),
+    t("topics.letter"),
+    t("topics.pet"),
+  ];
+
   const [topic, setTopic] = useState("");
   const [error, setError] = useState<string | undefined>();
   const [isPending, startTransition] = useTransition();
@@ -72,10 +76,10 @@ export function GenerateTextModal({
             router.push(`/course/${courseId}/text/${result.textId}`);
           }
         } else {
-          setError(result?.error || "Failed to generate text");
+          setError(result?.error || t("failedToGenerate"));
         }
       } catch (err) {
-        setError("An unexpected error occurred");
+        setError(t("unexpectedError"));
         console.error(err);
       }
     });
@@ -95,21 +99,20 @@ export function GenerateTextModal({
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2'>
             <Sparkles className='h-5 w-5' />
-            Generate New Text
+            {t("title")}
           </DialogTitle>
           <DialogDescription>
-            Create a new reading text in {languageName} at {levelName} level.
-            Optionally provide a topic or let AI choose one for you.
+            {t("description", { language: languageName, level: levelName })}
           </DialogDescription>
         </DialogHeader>
 
         <div className='space-y-4 py-4'>
           <div className='space-y-2'>
-            <Label htmlFor='topic'>Topic (Optional)</Label>
+            <Label htmlFor='topic'>{t("topicLabel")}</Label>
             <div className='flex gap-2'>
               <Input
                 id='topic'
-                placeholder='e.g., A day at the beach, Travel, Food...'
+                placeholder={t("topicPlaceholder")}
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 disabled={isPending}
@@ -126,15 +129,13 @@ export function GenerateTextModal({
                 <Shuffle className='h-4 w-4' />
               </Button>
             </div>
-            <p className='text-muted-foreground text-xs'>
-              Leave empty to generate a random interesting story
-            </p>
+            <p className='text-muted-foreground text-xs'>{t("topicHint")}</p>
           </div>
 
           {/* Topic suggestions */}
           <div className='space-y-2'>
             <Label className='text-muted-foreground text-xs'>
-              Quick suggestions:
+              {t("quickSuggestions")}
             </Label>
             <div className='flex flex-wrap gap-2'>
               {TOPIC_SUGGESTIONS.slice(0, 4).map((suggestion) => (
@@ -163,18 +164,18 @@ export function GenerateTextModal({
             onClick={handleClose}
             disabled={isPending}
           >
-            Cancel
+            {tCommon("cancel")}
           </Button>
           <Button onClick={handleGenerate} disabled={isPending}>
             {isPending ? (
               <>
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Generating...
+                {t("generating")}
               </>
             ) : (
               <>
                 <Sparkles className='mr-2 h-4 w-4' />
-                Generate
+                {t("generate")}
               </>
             )}
           </Button>

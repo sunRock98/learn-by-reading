@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, Target } from "lucide-react";
 import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 interface CourseHeaderProps {
   course: {
@@ -15,6 +16,9 @@ interface CourseHeaderProps {
 }
 
 export function CourseHeader({ course }: CourseHeaderProps) {
+  const t = useTranslations("CourseHeader");
+  const tBack = useTranslations("BackButton");
+
   const progressPercentage =
     course.textsCount > 0
       ? Math.round((course.completedTexts / course.textsCount) * 100)
@@ -25,7 +29,7 @@ export function CourseHeader({ course }: CourseHeaderProps) {
       <Button variant='ghost' size='sm' asChild className='mb-4'>
         <Link href='/dashboard'>
           <ArrowLeft className='mr-2 h-4 w-4' />
-          Back to Dashboard
+          {tBack("backToDashboard")}
         </Link>
       </Button>
 
@@ -38,16 +42,23 @@ export function CourseHeader({ course }: CourseHeaderProps) {
             </Badge>
           </div>
           <p className='text-muted-foreground mb-4 text-lg'>
-            Learn {course.language} at {course.level} level through engaging
-            stories
+            {t("learnThrough", {
+              language: course.language,
+              level: course.level,
+            })}
           </p>
 
           {/* Progress Bar */}
           <div className='mb-4 max-w-md'>
             <div className='mb-2 flex items-center justify-between text-sm'>
-              <span className='text-muted-foreground'>Course Progress</span>
+              <span className='text-muted-foreground'>
+                {t("courseProgress")}
+              </span>
               <span className='font-medium'>
-                {course.completedTexts}/{course.textsCount} texts completed
+                {t("textsCompleted", {
+                  completed: course.completedTexts,
+                  total: course.textsCount,
+                })}
               </span>
             </div>
             <div className='bg-muted h-2 overflow-hidden rounded-full'>
@@ -61,11 +72,11 @@ export function CourseHeader({ course }: CourseHeaderProps) {
           <div className='text-muted-foreground flex items-center gap-6 text-sm'>
             <div className='flex items-center gap-2'>
               <BookOpen className='h-4 w-4' />
-              <span>{course.textsCount} texts available</span>
+              <span>{t("textsAvailable", { count: course.textsCount })}</span>
             </div>
             <div className='flex items-center gap-2'>
               <Target className='h-4 w-4' />
-              <span>{progressPercentage}% complete</span>
+              <span>{t("complete", { percentage: progressPercentage })}</span>
             </div>
           </div>
         </div>

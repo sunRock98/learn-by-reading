@@ -2,6 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { BookOpen, GraduationCap, Library, Trophy } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface StatsOverviewProps {
   stats: {
@@ -12,6 +13,8 @@ interface StatsOverviewProps {
 }
 
 export function StatsOverview({ stats }: StatsOverviewProps) {
+  const t = useTranslations("StatsOverview");
+
   const masteryPercentage =
     stats.totalWords > 0
       ? Math.round((stats.masteredWords / stats.totalWords) * 100)
@@ -19,34 +22,34 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
 
   const statCards = [
     {
-      label: "Words Learned",
+      label: t("wordsLearned"),
       value: stats.totalWords.toString(),
       icon: BookOpen,
-      change: "In your dictionary",
+      change: t("inDictionary"),
       color: "text-primary",
       bgColor: "bg-primary/10",
     },
     {
-      label: "Active Courses",
+      label: t("activeCourses"),
       value: stats.coursesCount.toString(),
       icon: Library,
-      change: "Languages learning",
+      change: t("languagesLearning"),
       color: "text-blue-600",
       bgColor: "bg-blue-600/10",
     },
     {
-      label: "Words Mastered",
+      label: t("wordsMastered"),
       value: stats.masteredWords.toString(),
       icon: Trophy,
-      change: `${masteryPercentage}% mastery rate`,
+      change: `${masteryPercentage}% ${t("masteryRate")}`,
       color: "text-green-600",
       bgColor: "bg-green-600/10",
     },
     {
-      label: "Keep Learning",
-      value: "Today",
+      label: t("keepLearning"),
+      value: t("today"),
       icon: GraduationCap,
-      change: "Build your streak!",
+      change: t("buildStreak"),
       color: "text-yellow-600",
       bgColor: "bg-yellow-600/10",
     },
