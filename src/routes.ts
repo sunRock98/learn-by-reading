@@ -37,9 +37,11 @@ export const apiAuthPrefix = "/api/auth";
  * @type {string}
  */
 
-export const DEFAULT_LOGIN_REDIRECT = "/languages";
+export const DEFAULT_LOGIN_REDIRECT = "/dashboard";
 
 export const ROUTES = {
+  Dashboard: "/dashboard",
   Settings: "/settings",
   LanguageSetting: "/languages",
+  Dictionary: "/dictionary",
 };
