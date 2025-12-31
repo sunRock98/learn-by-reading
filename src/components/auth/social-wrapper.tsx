@@ -16,22 +16,22 @@ export const Socials = () => {
     signIn(provider, { callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT });
   };
   return (
-    <div className='flex w-full items-center gap-x-2'>
+    <div className='grid grid-cols-2 gap-4 w-full'>
       <Button
         onClick={() => handleClick("google")}
-        size={"lg"}
-        className='w-full'
         variant='outline'
+        className='w-full'
       >
         <FcGoogle className='h-5 w-5' />
+        <span className='sr-only'>Login with Google</span>
       </Button>
       <Button
         onClick={() => handleClick("github")}
-        size={"lg"}
-        className='w-full'
         variant='outline'
+        className='w-full'
       >
         <FaGithub className='h-5 w-5' />
+        <span className='sr-only'>Login with GitHub</span>
       </Button>
     </div>
   );

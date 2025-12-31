@@ -4,9 +4,9 @@
  * @type {string[]}
  */
 
-export const HOME = "/";
+export const LANDING_PAGE = "/";
 
-export const publicRoutes = [HOME];
+export const publicRoutes = [LANDING_PAGE, ""];
 
 /**
  * Auth routes are routes that are used for authentication
@@ -37,7 +37,7 @@ export const apiAuthPrefix = "/api/auth";
  * @type {string}
  */
 
-export const DEFAULT_LOGIN_REDIRECT = "/settings";
+export const DEFAULT_LOGIN_REDIRECT = "/languages";
 
 export const ROUTES = {
   Settings: "/settings",

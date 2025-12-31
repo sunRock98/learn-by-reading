@@ -11,6 +11,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
@@ -57,22 +58,26 @@ export const RegisterForm = () => {
       showSocial
     >
       <Form {...form}>
-        <form onSubmit={handleSubmit} className='space-y-6'>
-          <div className='space-y-4'>
+        <form onSubmit={handleSubmit}>
+          <div className='flex flex-col gap-6'>
             <FormField
               control={form.control}
               name='name'
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t("namePlaceholder")}
-                        disabled={isPending}
-                      />
-                    </FormControl>
-                    <FormMessage className='font-light' />
+                    <div className="grid gap-2">
+                      <FormLabel htmlFor="name">Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          id="name"
+                          placeholder={t("namePlaceholder")}
+                          disabled={isPending}
+                        />
+                      </FormControl>
+                      <FormMessage className='font-light' />
+                    </div>
                   </FormItem>
                 );
               }}
@@ -83,15 +88,19 @@ export const RegisterForm = () => {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type='email'
-                        placeholder={t("emailPlaceholder")}
-                        disabled={isPending}
-                      />
-                    </FormControl>
-                    <FormMessage className='font-light' />
+                    <div className="grid gap-2">
+                      <FormLabel htmlFor="email">Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          id="email"
+                          type='email'
+                          placeholder={t("emailPlaceholder")}
+                          disabled={isPending}
+                        />
+                      </FormControl>
+                      <FormMessage className='font-light' />
+                    </div>
                   </FormItem>
                 );
               }}
@@ -102,30 +111,33 @@ export const RegisterForm = () => {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type='password'
-                        placeholder={t("passwordPlaceholder")}
-                        disabled={isPending}
-                      />
-                    </FormControl>
-                    <FormMessage className='font-light' />
+                    <div className="grid gap-2">
+                      <FormLabel htmlFor="password">Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          id="password"
+                          type='password'
+                          placeholder={t("passwordPlaceholder")}
+                          disabled={isPending}
+                        />
+                      </FormControl>
+                      <FormMessage className='font-light' />
+                    </div>
                   </FormItem>
                 );
               }}
             />
+            <FormError message={loginError} />
+            <FormSuccess message={loginSuccess} />
+            <Button
+              type='submit'
+              className='w-full'
+              disabled={isPending}
+            >
+              {isPending ? "Creating account..." : t("registerButton")}
+            </Button>
           </div>
-          <FormError message={loginError} />
-          <FormSuccess message={loginSuccess} />
-          <Button
-            type='submit'
-            size='lg'
-            className='w-full'
-            disabled={isPending}
-          >
-            {t("registerButton")}
-          </Button>
         </form>
       </Form>
     </CardWrapper>

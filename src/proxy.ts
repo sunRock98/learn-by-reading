@@ -23,7 +23,9 @@ export default auth((req) => {
   const IS_LOGGED_IN = !!auth;
 
   const isApiAuthRoute = pathnameWithoutLocale.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(pathnameWithoutLocale);
+  const isPublicRoute =
+    publicRoutes.includes(pathnameWithoutLocale) ||
+    pathnameWithoutLocale === "";
   const isAuthRoute = authRoutes.includes(pathnameWithoutLocale);
 
   if (isApiAuthRoute) {
@@ -32,6 +34,11 @@ export default auth((req) => {
 
   if (!isContainsLocale) {
     console.log("redirecting to locale", locale);
+    return handleI18nRouting(req);
+  }
+
+  // Allow access to public routes (including landing page) without authentication
+  if (isPublicRoute) {
     return handleI18nRouting(req);
   }
 
@@ -48,7 +55,8 @@ export default auth((req) => {
     return handleI18nRouting(req);
   }
 
-  if (!IS_LOGGED_IN && !isPublicRoute) {
+  // Only redirect to login if user is not logged in and trying to access protected routes
+  if (!IS_LOGGED_IN) {
     let callbackUrl = nextUrl.pathname;
     if (nextUrl.search) {
       callbackUrl += nextUrl.search;
@@ -62,6 +70,7 @@ export default auth((req) => {
       )
     );
   }
+
   return handleI18nRouting(req);
 });
 
@@ -69,7 +78,14 @@ export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
-    "/(api|trpc)(.*)",
+    // // Always run for API routes
+    // "/(api|trpc)(.*)",
   ],
 };
+
+// export const config = {
+//   // Match all pathnames except for
+//   // - … if they start with `/api`, `/trpc`, `/_next` or `/_vercel`
+//   // - … the ones containing a dot (e.g. `favicon.ico`)
+//   matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)'
+// };
