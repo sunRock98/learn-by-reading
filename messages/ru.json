@@ -378,6 +378,12 @@
     "mastered": "Освоено",
     "ofTotal": "от общего"
   },
+  "Theme": {
+    "toggleTheme": "Переключить тему",
+    "light": "Светлая",
+    "dark": "Тёмная",
+    "system": "Системная"
+  },
   "LandingPage": {
     "login": "Войти",
     "getStarted": "Начать",

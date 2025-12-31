@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Globe, Brain, TrendingUp, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function LandingPage() {
   const t = useTranslations("LandingPage");
@@ -18,12 +19,13 @@ export function LandingPage() {
               <BookOpen className='text-primary h-6 w-6' />
               <span className='text-xl font-bold'>Read2Learn</span>
             </div>
-            <div className='flex items-center gap-3'>
+            <div className='flex items-center gap-2'>
+              <ThemeToggle />
               <Button variant='ghost' asChild>
                 <Link href='/auth/login'>{t("login")}</Link>
               </Button>
               <Button asChild>
-                <Link href='/auth/sign-up'>{t("getStarted")}</Link>
+                <Link href='/auth/register'>{t("getStarted")}</Link>
               </Button>
             </div>
           </div>
@@ -42,7 +44,7 @@ export function LandingPage() {
           </p>
           <div className='flex flex-col justify-center gap-4 sm:flex-row'>
             <Button size='lg' asChild>
-              <Link href='/auth/sign-up'>{t("startLearningFree")}</Link>
+              <Link href='/auth/register'>{t("startLearningFree")}</Link>
             </Button>
             <Button size='lg' variant='outline' asChild>
               <Link href='/auth/login'>{t("signIn")}</Link>
@@ -143,7 +145,7 @@ export function LandingPage() {
           <h2 className='mb-4 text-3xl font-bold'>{t("readyToStart")}</h2>
           <p className='text-muted-foreground mb-8'>{t("readyToStartDesc")}</p>
           <Button size='lg' asChild>
-            <Link href='/auth/sign-up'>{t("createFreeAccount")}</Link>
+            <Link href='/auth/register'>{t("createFreeAccount")}</Link>
           </Button>
         </div>
       </section>

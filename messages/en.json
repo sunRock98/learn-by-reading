@@ -378,6 +378,12 @@
     "mastered": "Mastered",
     "ofTotal": "of total"
   },
+  "Theme": {
+    "toggleTheme": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
   "LandingPage": {
     "login": "Login",
     "getStarted": "Get Started",
