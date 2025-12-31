@@ -1,6 +1,7 @@
 "use server";
 
 import { generateText } from "@/api/openai/generateText";
+import { generateImage } from "@/api/openai/generateImage";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -53,11 +54,21 @@ export const generateNewText = async ({
 
     console.log("Generated text data:", { title, textLength: text?.length });
 
-    // Add the text to the database
+    // Generate illustration in The New Yorker style
+    const imageUrl = await generateImage({
+      title: title || "Untitled",
+      textContent: text || "",
+      language: languageName,
+    });
+
+    console.log("Generated image URL:", imageUrl ? "success" : "failed");
+
+    // Add the text to the database with image
     const newText = await db.text.create({
       data: {
         title: title || "Untitled",
         content: text || "",
+        picture_url: imageUrl,
         course: { connect: { id: courseId } },
       },
     });

@@ -345,7 +345,8 @@
     "clickToTranslate": "Нажмите на любое слово, чтобы увидеть перевод и добавить его в словарь",
     "markComplete": "Отметить как завершённое",
     "greatJob": "Отлично!",
-    "returningToCourse": "Возвращение к курсу..."
+    "returningToCourse": "Возвращение к курсу...",
+    "illustration": "иллюстрация"
   },
   "TranslationPopup": {
     "translationUnavailable": "Перевод недоступен",

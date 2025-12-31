@@ -345,7 +345,8 @@
     "clickToTranslate": "Click on any word to see its translation and add it to your dictionary",
     "markComplete": "Mark as Complete",
     "greatJob": "Great job!",
-    "returningToCourse": "Returning to course..."
+    "returningToCourse": "Returning to course...",
+    "illustration": "illustration"
   },
   "TranslationPopup": {
     "translationUnavailable": "Translation unavailable",
