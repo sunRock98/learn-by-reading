@@ -33,6 +33,7 @@ import { useTranslations } from "next-intl";
 interface AudioReaderProps {
   text: string;
   language: string;
+  preload?: boolean;
 }
 
 const VOICES: { value: VoiceType; label: string; description: string }[] = [
@@ -46,11 +47,16 @@ const VOICES: { value: VoiceType; label: string; description: string }[] = [
 
 const SPEEDS = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
 
-export function AudioReader({ text, language: _language }: AudioReaderProps) {
+export function AudioReader({
+  text,
+  language: _language,
+  preload = true,
+}: AudioReaderProps) {
   const t = useTranslations("AudioReader");
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPreloading, setIsPreloading] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -62,10 +68,12 @@ export function AudioReader({ text, language: _language }: AudioReaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [isTextVisible, setIsTextVisible] = useState(true);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const wordsRef = useRef<HTMLSpanElement[]>([]);
   const textContainerRef = useRef<HTMLDivElement | null>(null);
+  const preloadStartedRef = useRef(false);
 
   // Split text into words
   const words = text.split(/(\s+)/).filter((w) => w.trim().length > 0);
@@ -81,37 +89,64 @@ export function AudioReader({ text, language: _language }: AudioReaderProps) {
   }, [duration, words]);
 
   // Generate audio
-  const handleGenerateAudio = useCallback(async () => {
-    if (audioUrl) {
-      // Audio already generated, just play
-      return;
-    }
+  const handleGenerateAudio = useCallback(
+    async (isPreload = false) => {
+      if (audioUrl) {
+        // Audio already generated, just play
+        return;
+      }
 
-    setIsLoading(true);
-    try {
-      const result = await generateAudio({
-        text,
-        voice,
-        speed,
-      });
+      if (isPreload) {
+        setIsPreloading(true);
+      } else {
+        setIsLoading(true);
+        setShouldAutoPlay(true); // Only auto-play when user explicitly clicks play
+      }
 
-      const audioBlob = new Blob(
-        [Uint8Array.from(atob(result.audioBase64), (c) => c.charCodeAt(0))],
-        { type: result.contentType }
-      );
-      const url = URL.createObjectURL(audioBlob);
-      setAudioUrl(url);
-    } catch (error) {
-      console.error("Failed to generate audio:", error);
-    } finally {
-      setIsLoading(false);
+      try {
+        const result = await generateAudio({
+          text,
+          voice,
+          speed,
+        });
+
+        const audioBlob = new Blob(
+          [Uint8Array.from(atob(result.audioBase64), (c) => c.charCodeAt(0))],
+          { type: result.contentType }
+        );
+        const url = URL.createObjectURL(audioBlob);
+        setAudioUrl(url);
+      } catch (error) {
+        console.error("Failed to generate audio:", error);
+      } finally {
+        if (isPreload) {
+          setIsPreloading(false);
+        } else {
+          setIsLoading(false);
+        }
+      }
+    },
+    [text, voice, speed, audioUrl]
+  );
+
+  // Preload audio when component mounts
+  useEffect(() => {
+    if (preload && !preloadStartedRef.current) {
+      preloadStartedRef.current = true;
+      handleGenerateAudio(true);
     }
-  }, [text, voice, speed, audioUrl]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount, ref prevents duplicate calls
 
   // Play/Pause toggle
   const togglePlayPause = useCallback(async () => {
+    // If preloading is in progress, wait for it
+    if (isPreloading) {
+      return;
+    }
+
     if (!audioUrl) {
-      await handleGenerateAudio();
+      await handleGenerateAudio(false);
       return;
     }
 
@@ -122,7 +157,7 @@ export function AudioReader({ text, language: _language }: AudioReaderProps) {
         audioRef.current.play();
       }
     }
-  }, [audioUrl, isPlaying, handleGenerateAudio]);
+  }, [audioUrl, isPlaying, isPreloading, handleGenerateAudio]);
 
   // Reset audio
   const handleReset = useCallback(() => {
@@ -162,6 +197,7 @@ export function AudioReader({ text, language: _language }: AudioReaderProps) {
     setVoice(newVoice);
     setAudioUrl(null); // Force regeneration
     setIsPlaying(false);
+    preloadStartedRef.current = false; // Allow new preload with new voice
     if (audioRef.current) {
       audioRef.current.pause();
     }
@@ -253,14 +289,17 @@ export function AudioReader({ text, language: _language }: AudioReaderProps) {
       setCurrentWordIndex(-1);
     });
 
-    // Auto-play when audio is loaded
-    audio.play();
+    // Only auto-play when user explicitly requested playback (not on preload)
+    if (shouldAutoPlay) {
+      audio.play();
+      setShouldAutoPlay(false);
+    }
 
     return () => {
       audio.pause();
       audio.src = "";
     };
-  }, [audioUrl]);
+  }, [audioUrl, shouldAutoPlay]);
 
   // Cleanup URL on unmount
   useEffect(() => {
@@ -341,7 +380,7 @@ export function AudioReader({ text, language: _language }: AudioReaderProps) {
           onClick={togglePlayPause}
           disabled={isLoading}
         >
-          {isLoading ? (
+          {isLoading || isPreloading ? (
             <Loader2 className='h-6 w-6 animate-spin' />
           ) : isPlaying ? (
             <Pause className='h-6 w-6' />
