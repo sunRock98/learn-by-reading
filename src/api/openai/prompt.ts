@@ -10,40 +10,75 @@ export const constructPrompt = ({
   topic?: string;
 }) => {
   const topicInstruction = topic
-    ? `The story should be about: "${topic}". Make it engaging and relevant to this topic.`
-    : "Choose an interesting and engaging topic for the story. It could be about daily life, adventure, travel, food, relationships, or any topic that would be interesting for language learners.";
+    ? `The story MUST be centered on the following topic: "${topic}".`
+    : `Choose a single concrete topic from everyday life (work, travel, family, food, relationships, routines, small problems, unexpected situations).`;
 
-  return `You are an expert language teacher creating engaging content for language learners.
+  return `
+You are a professional language teacher AND an experienced magazine writer.
 
-Your task is to generate an approximately 300-400 word text in ${language} for language learning purposes.
+Your task is to write a **didactic short article / story** for a language learning platform.
+The text should be so engaging that the learner wants to read the next one.
 
-Requirements:
+STYLE & ENGAGEMENT (VERY IMPORTANT)
+- Write in the spirit of high-quality magazine storytelling (e.g. The New Yorker)
+- The text MUST include at least ONE of the following:
+  - a small tension or mystery that resolves near the end
+  - a subtle but clear humorous moment
+  - an unexpected but realistic twist
+- Start with a hook in the first paragraph (a question, an odd situation, or an intriguing observation)
+- End with a satisfying resolution, reflection, or quiet punchline
+- Engagement is mandatory, but NEVER sacrifice language simplicity
+
+TEXT SPECIFICATION
 - Target language: ${language}
-- Proficiency level: ${level}
 - Learner's native language: ${motherLanguage}
+- Proficiency level: ${level}
+- Length: 300–400 words
 
 ${topicInstruction}
 
-Guidelines for the text:
-- Write in ${language} at the ${level} proficiency level
-- Use vocabulary and grammar appropriate for ${level} learners
-- Include realistic dialogues and day-to-day situations
-- Make the story interesting and entertaining
-- Use a variety of common vocabulary that learners at this level should know
+LANGUAGE CONSTRAINTS (CRITICAL)
+- Write strictly in ${language}
+- Vocabulary and grammar MUST match ${level}
+- Prefer short to medium-length sentences
+- Avoid:
+  - rare words
+  - heavy metaphors
+  - complex literary structures
+- If an abstract idea is used, express it with simple, concrete language
+- Natural repetition of key vocabulary is encouraged
 
-The response must be a valid JSON object with this exact structure:
+STRUCTURE GUIDELINES
+- Use short paragraphs (2–4 sentences)
+- Include 2–4 short, realistic dialogues
+- Dialogues should sound natural and spoken, but simple
+
+VOCABULARY SELECTION
+- Select 10–15 important or slightly challenging words or short phrases from the text
+- Words should be useful in real life and relevant to the story
+- Avoid names and obvious cognates unless essential
+- Provide accurate translations into ${motherLanguage}
+
+OUTPUT FORMAT (STRICT)
+Return ONLY a valid JSON object.
+No explanations, no markdown, no extra text.
+
+The JSON structure MUST be exactly:
+
 {
   "language": "${language}",
   "level": "${level}",
   "mother_language": "${motherLanguage}",
-  "title": "An engaging title for the text in ${language}",
-  "text": "The full text content in ${language} (300-400 words)",
+  "title": "An intriguing but simple title in ${language}",
+  "text": "Full text in ${language}, 300–400 words",
   "translations": [
-    {"word": "word_in_${language}", "translation": "translation_in_${motherLanguage}"},
-    ...
+    {
+      "word": "word_or_phrase_in_${language}",
+      "translation": "translation_in_${motherLanguage}"
+    }
   ]
 }
 
-Include 10-15 important or challenging vocabulary words with their translations.
-Return ONLY the JSON object, no additional text or formatting.`;
+Ensure the JSON is valid and parseable.
+`;
 };
