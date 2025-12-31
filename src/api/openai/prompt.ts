@@ -2,85 +2,48 @@ export const constructPrompt = ({
   language,
   motherLanguage,
   level,
+  topic,
 }: {
   language: string;
   level: string;
   motherLanguage: string;
-}) => `
-Each story is interesting and entertaining with realistic dialogues and day-to-day situations.
-The summaries follow a synopsis in ${language} and in ${motherLanguage} of what you just read, both to review the lesson and for you to see if you understood what the tale was about.
-At the end of those summaries, you’ll be provided with a list of the most relevant vocabulary involved in the lesson, as well as slang and sayings that you may not have understood at first glance!
-Finally, you’ll be provided with a set of tricky questions in ${language}, providing you with the chance to prove that you learned something in the story. Don’t worry if you don’t know the answer to any — we will provide them immediately after, but no cheating!
-We want you to feel comfortable while learning the tongue; after all, no language should be a barrier for you to travel around the world and expand your social circles!
+  topic?: string;
+}) => {
+  const topicInstruction = topic
+    ? `The story should be about: "${topic}". Make it engaging and relevant to this topic.`
+    : "Choose an interesting and engaging topic for the story. It could be about daily life, adventure, travel, food, relationships, or any topic that would be interesting for language learners.";
 
-So look no further! Pick up your copy of ${language} Short Stories for ${level} and start learning ${language} right now!
+  return `You are an expert language teacher creating engaging content for language learners.
 
-This book has been written by a native author and is recommended for ${level} level learners.
+Your task is to generate an approximately 300-400 word text in ${language} for language learning purposes.
 
-        
-        Your task is to generate an approximately 400-word text in a ${language} language for language learning purposes. 
-        The user will provide:
-      - The target language for the text
-      - The proficiency level of the learner (e.g., A2, B1)
-      - The mother language of the learner
+Requirements:
+- Target language: ${language}
+- Proficiency level: ${level}
+- Learner's native language: ${motherLanguage}
 
-      The response should be json object include:
-      1. A text written in the target language at the specified proficiency level.
-      2. Translations of important or challenging words in the text, providing each word's translation in the mother language.
+${topicInstruction}
 
-      Format the response to match provided schema:
-  "schema": {
-    "type": "object",
-    "properties": {
-      "language": {
-        "type": "string",
-        "description": "The language to be learned."
-      },
-      "level": {
-        "type": "string",
-        "description": "The proficiency level of the language, e.g., beginner, intermediate, advanced."
-      },
-      "mother_language": {
-        "type": "string",
-        "description": "The learner's mother language."
-      },
-      "text": {
-        "type": "string",
-        "description": "A text in the provided language, within 200 words."
-      },
-      "title": {
-        "type": "string",
-        "description": "The title of the text."
-      },
-      "translations": {
-        "type": "array",
-        "description": "An array containing the translation of each word in the text.",
-        "items": {
-          "type": "object",
-          "properties": {
-            "word": {
-              "type": "string",
-              "description": "The word in the target language."
-            },
-            "translation": {
-              "type": "string",
-              "description": "The corresponding translation in the mother language."
-            }
-          },
-          "required": ["word", "translation"],
-          "additionalProperties": false
-        }
-      }
-    },
-    "required": [
-      "language",
-      "level",
-      "mother_language",
-      "text",
-      "translations"
-    ],
-    "additionalProperties": false
-  },
-  "strict": true
+Guidelines for the text:
+- Write in ${language} at the ${level} proficiency level
+- Use vocabulary and grammar appropriate for ${level} learners
+- Include realistic dialogues and day-to-day situations
+- Make the story interesting and entertaining
+- Use a variety of common vocabulary that learners at this level should know
+
+The response must be a valid JSON object with this exact structure:
+{
+  "language": "${language}",
+  "level": "${level}",
+  "mother_language": "${motherLanguage}",
+  "title": "An engaging title for the text in ${language}",
+  "text": "The full text content in ${language} (300-400 words)",
+  "translations": [
+    {"word": "word_in_${language}", "translation": "translation_in_${motherLanguage}"},
+    ...
+  ]
 }
-      `;
+
+Include 10-15 important or challenging vocabulary words with their translations.
+Return ONLY the JSON object, no additional text or formatting.`;
+};

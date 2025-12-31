@@ -77,17 +77,14 @@ export async function getNextTextId(
       if (course) {
         try {
           // Generate a new text
-          await generateNewText(course);
-
-          // Get the newly created text (should be the last one created for this course)
-          const newText = await db.text.findFirst({
-            where: { courseId: courseIdNum },
-            orderBy: { id: "desc" },
-            select: { id: true },
+          const result = await generateNewText({
+            courseId: course.id,
+            languageName: course.language.name,
+            levelName: course.level.name,
           });
 
-          if (newText) {
-            return newText.id.toString();
+          if (result.success && result.textId) {
+            return result.textId.toString();
           }
         } catch (error) {
           console.error("Error generating new text:", error);
