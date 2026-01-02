@@ -1,12 +1,46 @@
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getUserDictionaryWords } from "@/actions/dictionary";
-import { DictionaryGrid } from "@/components/dictionary-grid";
-import { DictionaryStats } from "@/components/dictionary-stats";
+import { getUserDictionaryWordsByLanguage } from "@/actions/dictionary";
+import { DictionaryTabs } from "@/components/dictionary-tabs";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { Suspense } from "react";
+
+function DictionaryTabsSkeleton() {
+  return (
+    <div className='animate-pulse'>
+      <div className='mb-6 flex gap-2'>
+        <div className='h-9 w-24 rounded-lg bg-gray-200 dark:bg-gray-800' />
+        <div className='h-9 w-24 rounded-lg bg-gray-200 dark:bg-gray-800' />
+        <div className='h-9 w-32 rounded-lg bg-gray-200 dark:bg-gray-800' />
+      </div>
+      <div className='mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className='h-24 rounded-lg bg-gray-200 dark:bg-gray-800'
+          />
+        ))}
+      </div>
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className='h-48 rounded-lg bg-gray-200 dark:bg-gray-800'
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+async function DictionaryContent() {
+  const { groups, activeLanguageId } = await getUserDictionaryWordsByLanguage();
+
+  return <DictionaryTabs groups={groups} activeLanguageId={activeLanguageId} />;
+}
 
 export default async function DictionaryPage() {
   const user = await getCurrentUser();
@@ -16,8 +50,6 @@ export default async function DictionaryPage() {
   if (!user) {
     redirect("/auth/login");
   }
-
-  const { words } = await getUserDictionaryWords();
 
   return (
     <div className='container mx-auto max-w-6xl px-4 py-8'>
@@ -33,8 +65,9 @@ export default async function DictionaryPage() {
         <p className='text-muted-foreground text-lg'>{t("subtitle")}</p>
       </div>
 
-      <DictionaryStats words={words} />
-      <DictionaryGrid words={words} />
+      <Suspense fallback={<DictionaryTabsSkeleton />}>
+        <DictionaryContent />
+      </Suspense>
     </div>
   );
 }
