@@ -362,7 +362,7 @@
   },
   "Dictionary": {
     "title": "My Dictionary",
-    "subtitle": "All the words you've learned across all courses",
+    "subtitle": "Track your vocabulary across languages",
     "noWords": "No words yet",
     "noWordsDescription": "Start reading texts and click on words to add them to your dictionary.",
     "searchPlaceholder": "Search words...",
@@ -370,7 +370,8 @@
     "reviewing": "Reviewing",
     "mastered": "Mastered",
     "lookedUp": "Looked up {count} times",
-    "added": "Added {date}"
+    "added": "Added {date}",
+    "allLanguages": "All Languages"
   },
   "DictionaryStats": {
     "totalWords": "Total Words",

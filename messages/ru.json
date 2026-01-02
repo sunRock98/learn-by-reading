@@ -362,7 +362,7 @@
   },
   "Dictionary": {
     "title": "Мой словарь",
-    "subtitle": "Все слова, которые вы изучили на всех курсах",
+    "subtitle": "Отслеживайте словарный запас по языкам",
     "noWords": "Пока нет слов",
     "noWordsDescription": "Начните читать тексты и нажимайте на слова, чтобы добавить их в словарь.",
     "searchPlaceholder": "Поиск слов...",
@@ -370,7 +370,8 @@
     "reviewing": "Повторяю",
     "mastered": "Освоено",
     "lookedUp": "Просмотрено {count} раз",
-    "added": "Добавлено {date}"
+    "added": "Добавлено {date}",
+    "allLanguages": "Все языки"
   },
   "DictionaryStats": {
     "totalWords": "Всего слов",
