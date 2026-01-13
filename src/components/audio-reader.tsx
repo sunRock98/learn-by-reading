@@ -28,6 +28,15 @@ import {
   EyeOff,
 } from "lucide-react";
 import { generateAudio, VoiceType } from "@/api/openai/generateAudio";
+import {
+  generateCacheKey,
+  generateProgressKey,
+  getCachedAudio,
+  setCachedAudio,
+  savePlaybackProgress,
+  getPlaybackProgress,
+  clearPlaybackProgress,
+} from "@/lib/audioCache";
 import { useTranslations } from "next-intl";
 
 interface AudioReaderProps {
@@ -74,6 +83,8 @@ export function AudioReader({
   const wordsRef = useRef<HTMLSpanElement[]>([]);
   const textContainerRef = useRef<HTMLDivElement | null>(null);
   const preloadStartedRef = useRef(false);
+  const progressKeyRef = useRef(generateProgressKey(text));
+  const currentTimeRef = useRef(0); // Track current time for saving on unmount
 
   // Split text into words
   const words = text.split(/(\s+)/).filter((w) => w.trim().length > 0);
@@ -88,11 +99,34 @@ export function AudioReader({
     }));
   }, [duration, words]);
 
-  // Generate audio
+  // Generate audio (with caching)
   const handleGenerateAudio = useCallback(
     async (isPreload = false) => {
       if (audioUrl) {
         // Audio already generated, just play
+        return;
+      }
+
+      const cacheKey = generateCacheKey(text, voice, speed);
+
+      // Check cache first
+      const cachedAudio = getCachedAudio(cacheKey);
+      if (cachedAudio) {
+        // Use cached audio
+        const audioBlob = new Blob(
+          [
+            Uint8Array.from(atob(cachedAudio.audioBase64), (c) =>
+              c.charCodeAt(0)
+            ),
+          ],
+          { type: cachedAudio.contentType }
+        );
+        const url = URL.createObjectURL(audioBlob);
+        setAudioUrl(url);
+
+        if (!isPreload) {
+          setShouldAutoPlay(true);
+        }
         return;
       }
 
@@ -109,6 +143,9 @@ export function AudioReader({
           voice,
           speed,
         });
+
+        // Store in cache for future use
+        setCachedAudio(cacheKey, result.audioBase64, result.contentType);
 
         const audioBlob = new Blob(
           [Uint8Array.from(atob(result.audioBase64), (c) => c.charCodeAt(0))],
@@ -269,10 +306,19 @@ export function AudioReader({
 
     audio.addEventListener("loadedmetadata", () => {
       setDuration(audio.duration);
+
+      // Restore saved playback progress
+      const savedProgress = getPlaybackProgress(progressKeyRef.current);
+      if (savedProgress !== null && savedProgress > 0) {
+        audio.currentTime = savedProgress;
+        setCurrentTime(savedProgress);
+        setProgress((savedProgress / audio.duration) * 100);
+      }
     });
 
     audio.addEventListener("timeupdate", () => {
       setCurrentTime(audio.currentTime);
+      currentTimeRef.current = audio.currentTime; // Keep ref updated for unmount save
       setProgress((audio.currentTime / audio.duration) * 100);
     });
 
@@ -282,11 +328,15 @@ export function AudioReader({
 
     audio.addEventListener("pause", () => {
       setIsPlaying(false);
+      // Save progress when paused
+      savePlaybackProgress(progressKeyRef.current, audio.currentTime);
     });
 
     audio.addEventListener("ended", () => {
       setIsPlaying(false);
       setCurrentWordIndex(-1);
+      // Clear progress when finished
+      clearPlaybackProgress(progressKeyRef.current);
     });
 
     // Only auto-play when user explicitly requested playback (not on preload)
@@ -309,6 +359,17 @@ export function AudioReader({
       }
     };
   }, [audioUrl]);
+
+  // Save playback progress on unmount (when switching modes)
+  useEffect(() => {
+    const progressKey = progressKeyRef.current;
+    return () => {
+      // Save current playback position when component unmounts
+      if (currentTimeRef.current > 0) {
+        savePlaybackProgress(progressKey, currentTimeRef.current);
+      }
+    };
+  }, []);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
