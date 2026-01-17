@@ -52,7 +52,7 @@ export default async function DictionaryPage() {
   }
 
   return (
-    <div className='container mx-auto max-w-6xl px-4 py-8'>
+    <div className='container mx-auto max-w-6xl px-4 py-4 sm:py-6 lg:py-8'>
       <Button variant='ghost' size='sm' asChild className='mb-4'>
         <Link href='/dashboard'>
           <ArrowLeft className='mr-2 h-4 w-4' />

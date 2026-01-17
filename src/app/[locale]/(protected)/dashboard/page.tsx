@@ -99,7 +99,7 @@ export default async function DashboardPage() {
     await Promise.all([getDashboardData(user.id!), getLanguagesAndLevels()]);
 
   return (
-    <div className='container mx-auto max-w-6xl px-4 py-8'>
+    <div className='container mx-auto max-w-6xl px-4 py-4 sm:py-6 lg:py-8'>
       <div className='mb-8'>
         <h1 className='mb-2 text-balance text-4xl font-bold'>
           {t("welcomeBack")}

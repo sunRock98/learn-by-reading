@@ -9,7 +9,9 @@ const AuthProvider = async ({ children }: { children: ReactNode }) => {
     <SessionProvider session={session}>
       <div className='bg-background min-h-screen transition-colors duration-300'>
         <Navbar />
-        <main className='container mx-auto py-12'>{children}</main>
+        <main className='container mx-auto py-4 sm:py-8 lg:py-12'>
+          {children}
+        </main>
       </div>
     </SessionProvider>
   );

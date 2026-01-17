@@ -64,7 +64,7 @@ const TextPage = async ({ params }: TextPageProps) => {
   );
 
   return (
-    <div className='container mx-auto max-w-6xl px-4 py-8'>
+    <div className='container mx-auto max-w-6xl px-4 py-4 sm:py-6 lg:py-8'>
       <div className='mb-6'>
         <BackButton
           href={`/course/${courseId}`}
