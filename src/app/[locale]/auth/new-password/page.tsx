@@ -14,6 +14,7 @@ const NewPasswordPage = async () => {
         headerLabel={t("headerLabel")}
         backButtonLabel={t("backButtonLabel")}
         backButtonHref={AUTH_ROUTES.LOGIN}
+        description=''
       >
         <div className='flex w-full items-center justify-center'>
           <Suspense fallback={t("loading")}>

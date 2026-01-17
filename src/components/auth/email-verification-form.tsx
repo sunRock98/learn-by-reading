@@ -14,6 +14,7 @@ export const EmailVerificationForm = () => {
       headerLabel={t("headerLabel")}
       backButtonLabel={t("backButtonLabel")}
       backButtonHref={AUTH_ROUTES.LOGIN}
+      description=''
     >
       <div className='flex w-full items-center justify-center'>
         <TokenVerificationWrapper callback={verifyEmail}>

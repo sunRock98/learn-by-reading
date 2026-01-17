@@ -18,6 +18,7 @@ type Props = {
   backButtonLabel: string;
   backButtonHref: string;
   showSocial?: boolean;
+  description?: string;
 };
 export const CardWrapper = ({
   children,
@@ -25,6 +26,7 @@ export const CardWrapper = ({
   backButtonHref,
   backButtonLabel,
   showSocial,
+  description,
 }: Props) => {
   const tLogin = useTranslations("LoginForm");
   const tRegister = useTranslations("RegisterForm");
@@ -38,6 +40,7 @@ export const CardWrapper = ({
   const isResetPage = backButtonHref.includes("login") && !showSocial;
 
   const getDescription = () => {
+    if (description !== undefined) return description;
     if (isLoginPage) return tLogin("description");
     if (isRegisterPage) return tRegister("description");
     if (isResetPage) return tReset("description");
@@ -60,7 +63,9 @@ export const CardWrapper = ({
         <Card>
           <CardHeader>
             <CardTitle className='text-2xl'>{headerLabel}</CardTitle>
-            <CardDescription>{getDescription()}</CardDescription>
+            {getDescription() && (
+              <CardDescription>{getDescription()}</CardDescription>
+            )}
           </CardHeader>
           <CardContent className='flex flex-col gap-6'>
             {children}

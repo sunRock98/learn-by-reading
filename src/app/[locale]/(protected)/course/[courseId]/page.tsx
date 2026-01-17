@@ -67,7 +67,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
   }
 
   return (
-    <div className='container mx-auto max-w-4xl px-4 py-8'>
+    <div className='container mx-auto max-w-4xl px-4 py-4 sm:py-6 lg:py-8'>
       <CourseHeader
         course={{
           language: courseData.language,
