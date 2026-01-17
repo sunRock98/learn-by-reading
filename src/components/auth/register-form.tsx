@@ -19,9 +19,10 @@ import { Button } from "../ui/button";
 import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
 import { register } from "@/actions/register";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { AUTH_ROUTES } from "@/routes";
 import { useTranslations } from "next-intl";
+import { getLanguageNameFromCode } from "@/lib/native-languages";
 
 export const RegisterForm = () => {
   const t = useTranslations("RegisterForm");
@@ -30,7 +31,17 @@ export const RegisterForm = () => {
   const [loginSuccess, setLoginSuccess] = useState<string | undefined>(
     undefined
   );
+  const [browserLanguage, setBrowserLanguage] = useState<string>("English");
   const registerSchema = RegisterSchema(t);
+
+  // Detect browser language on mount
+  useEffect(() => {
+    if (typeof navigator !== "undefined") {
+      const browserLang = navigator.language || "en";
+      const languageName = getLanguageNameFromCode(browserLang);
+      setBrowserLanguage(languageName);
+    }
+  }, []);
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -38,12 +49,14 @@ export const RegisterForm = () => {
       email: "",
       password: "",
       name: "",
+      nativeLanguage: undefined,
     },
   });
 
   const handleSubmit = form.handleSubmit((values) => {
     startTransition(() => {
-      register(values).then((res) => {
+      // Include detected browser language
+      register({ ...values, nativeLanguage: browserLanguage }).then((res) => {
         setLoginError(res.error);
         setLoginSuccess(res.success);
       });

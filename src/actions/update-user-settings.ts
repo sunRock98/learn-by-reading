@@ -18,10 +18,12 @@ export const updateUserSettings = async (
     name?: string;
     email?: string;
     password?: string;
+    nativeLanguage?: string;
   } = {
     name: values.name,
     email: values.email,
     password: undefined,
+    nativeLanguage: values.nativeLanguage,
   };
 
   if (!user) {

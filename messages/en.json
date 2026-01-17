@@ -168,6 +168,11 @@
         "label": "New password",
         "min": "Minimum 6 characters is required",
         "required": "New password is required"
+      },
+      "nativeLanguage": {
+        "label": "Native Language",
+        "placeholder": "Select your native language",
+        "hint": "Translations will be shown in this language"
       }
     },
     "errors": {

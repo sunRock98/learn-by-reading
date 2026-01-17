@@ -13,7 +13,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCurrentUser } from "@/hooks/use-current-user";
+import { NATIVE_LANGUAGES } from "@/lib/native-languages";
 import { SettingsSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
@@ -22,7 +30,11 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-export const SettingsForm = () => {
+interface SettingsFormProps {
+  initialNativeLanguage: string;
+}
+
+export const SettingsForm = ({ initialNativeLanguage }: SettingsFormProps) => {
   const t = useTranslations("SettingsForm");
   const { update } = useSession();
   const user = useCurrentUser();
@@ -39,6 +51,7 @@ export const SettingsForm = () => {
       email: user?.email ?? "",
       password: undefined,
       newPassword: undefined,
+      nativeLanguage: initialNativeLanguage,
     },
   });
 
@@ -86,6 +99,41 @@ export const SettingsForm = () => {
                       disabled={isPending}
                     />
                   </FormControl>
+                  <FormMessage {...field} />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name='nativeLanguage'
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>{t("schema.nativeLanguage.label")}</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={isPending}
+                  >
+                    <FormControl>
+                      <SelectTrigger className='w-full'>
+                        <SelectValue
+                          placeholder={t("schema.nativeLanguage.placeholder")}
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {NATIVE_LANGUAGES.map((lang) => (
+                        <SelectItem key={lang.code} value={lang.name}>
+                          {lang.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className='text-muted-foreground text-xs'>
+                    {t("schema.nativeLanguage.hint")}
+                  </p>
                   <FormMessage {...field} />
                 </FormItem>
               );

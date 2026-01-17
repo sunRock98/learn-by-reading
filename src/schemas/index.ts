@@ -16,6 +16,7 @@ export const RegisterSchema = (
     email: z.string().email({ message: t("schema.email.required") }),
     password: z.string().min(6, { message: t("schema.password.min") }),
     name: z.string().min(1, { message: t("schema.name.required") }),
+    nativeLanguage: z.optional(z.string()),
   });
 
 export const ResetSchema = (
@@ -49,6 +50,7 @@ export const SettingsSchema = (
       newPassword: z.optional(
         z.string().min(6, { message: t("schema.newPassword.min") })
       ),
+      nativeLanguage: z.optional(z.string()),
     })
     .refine(
       (data) => {
