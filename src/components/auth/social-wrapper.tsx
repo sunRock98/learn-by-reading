@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { getLanguageNameFromCode } from "@/lib/native-languages";
 
 export const Socials = () => {
   const searchParams = useSearchParams();
@@ -15,6 +16,13 @@ export const Socials = () => {
   const t = useTranslations("common");
 
   const handleClick = (provider: "google" | "github") => {
+    // Store browser language in cookie before OAuth flow
+    // This will be read by auth.ts linkAccount event to set user's native language
+    if (typeof navigator !== "undefined") {
+      const browserLang = navigator.language || "en";
+      const languageName = getLanguageNameFromCode(browserLang);
+      document.cookie = `browser_language=${encodeURIComponent(languageName)}; path=/; max-age=300; SameSite=Lax`;
+    }
     signIn(provider, { callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT });
   };
   return (

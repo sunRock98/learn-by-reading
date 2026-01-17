@@ -1,5 +1,6 @@
 import NextAuth, { DefaultSession } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import { cookies } from "next/headers";
 
 import authConfig from "./auth.config";
 import { db } from "./lib/db";
@@ -10,11 +11,10 @@ import { getAccountByUserId } from "./data/account";
 import type { Adapter } from "next-auth/adapters";
 
 declare module "next-auth" {
-  // eslint-disable-next-line unused-imports/no-unused-vars
   interface User {
     role: UserRole;
   }
-  // eslint-disable-next-line unused-imports/no-unused-vars
+
   interface Session {
     user: {
       role: UserRole;
@@ -24,7 +24,6 @@ declare module "next-auth" {
 }
 
 declare module "@auth/core/jwt" {
-  // eslint-disable-next-line unused-imports/no-unused-vars
   interface JWT {
     role: UserRole;
     isOAuth: boolean;
@@ -38,10 +37,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   events: {
     async linkAccount({ user }) {
+      // Get browser language from cookie (set before OAuth flow)
+      const cookieStore = await cookies();
+      const browserLanguageCookie = cookieStore.get("browser_language");
+      const nativeLanguage = browserLanguageCookie
+        ? decodeURIComponent(browserLanguageCookie.value)
+        : "English";
+
       await db.user.update({
         where: { id: user.id },
-        data: { emailVerified: new Date() },
+        data: {
+          emailVerified: new Date(),
+          nativeLanguage,
+        },
       });
+
+      // Clear the cookie after use
+      cookieStore.delete("browser_language");
     },
   },
   callbacks: {

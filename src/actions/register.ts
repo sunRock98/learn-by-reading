@@ -21,7 +21,7 @@ export const register = async (
     return { error: t("schema.errors.invalidFields") };
   }
 
-  const { name, email, password } = validatedFields.data;
+  const { name, email, password, nativeLanguage } = validatedFields.data;
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -36,6 +36,7 @@ export const register = async (
       name,
       email,
       password: hashedPassword,
+      nativeLanguage: nativeLanguage || "English",
     },
   });
 
