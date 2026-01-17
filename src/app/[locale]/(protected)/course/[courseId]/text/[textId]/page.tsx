@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { TextNavigation } from "./components/TextNavigation";
 import { BackButton } from "@/components/ui/back-button";
 import { InteractiveText } from "@/components/interactive-text";
+import { getDictionaryWordsForHighlighting } from "@/actions/dictionary";
 
 interface TextPageProps {
   params: Promise<{
@@ -57,6 +58,11 @@ const TextPage = async ({ params }: TextPageProps) => {
 
   const userNativeLanguage = userWithLanguage?.nativeLanguage || "English";
 
+  // Get dictionary words for highlighting
+  const { words: dictionaryWords } = await getDictionaryWordsForHighlighting(
+    parseInt(courseId)
+  );
+
   return (
     <div className='container mx-auto max-w-6xl px-4 py-8'>
       <div className='mb-6'>
@@ -84,6 +90,7 @@ const TextPage = async ({ params }: TextPageProps) => {
           },
         }}
         userNativeLanguage={userNativeLanguage}
+        dictionaryWords={dictionaryWords}
       />
 
       <div className='mx-auto mt-8 max-w-4xl'>

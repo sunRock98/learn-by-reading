@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { X, BookmarkPlus, Volume2, Loader2, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { fastTranslate } from "@/api/translation/fastTranslate";
-import { addWordToDictionary } from "@/actions/dictionary";
+import {
+  addWordToDictionary,
+  checkWordAndRecordClick,
+} from "@/actions/dictionary";
 import { useTranslations } from "next-intl";
 
 interface TranslationPopupProps {
@@ -15,6 +18,7 @@ interface TranslationPopupProps {
   targetLanguage: string;
   position: { x: number; y: number };
   courseId: number;
+  textId?: number; // Optional: which text user is reading when clicking the word
   onClose: () => void;
 }
 
@@ -30,6 +34,7 @@ export function TranslationPopup({
   targetLanguage,
   position,
   courseId,
+  textId,
   onClose,
 }: TranslationPopupProps) {
   const [isLoading, setIsLoading] = useState(true);
@@ -42,17 +47,34 @@ export function TranslationPopup({
   const tCommon = useTranslations("common");
 
   useEffect(() => {
-    const fetchTranslation = async () => {
+    const initPopup = async () => {
       setIsLoading(true);
       try {
-        const result = await fastTranslate({
+        // First, check if word is in dictionary and record the click
+        // This tracks that user looked up this word (for mastery calculation)
+        const checkResult = await checkWordAndRecordClick({
+          courseId,
           word,
-          sourceLanguage,
-          targetLanguage,
+          textId,
         });
-        setTranslation({
-          translation: result.translation,
-        });
+
+        if (checkResult.isInDictionary && checkResult.translation) {
+          // Word is already saved - use saved translation and mark as saved
+          setIsSaved(true);
+          setTranslation({
+            translation: checkResult.translation,
+          });
+        } else {
+          // Word not in dictionary - fetch translation
+          const result = await fastTranslate({
+            word,
+            sourceLanguage,
+            targetLanguage,
+          });
+          setTranslation({
+            translation: result.translation,
+          });
+        }
       } catch (error) {
         console.error("Translation error:", error);
         setTranslation({
@@ -63,8 +85,8 @@ export function TranslationPopup({
       }
     };
 
-    fetchTranslation();
-  }, [word, sourceLanguage, targetLanguage, t]);
+    initPopup();
+  }, [word, sourceLanguage, targetLanguage, courseId, textId, t]);
 
   const handleSaveToDictionary = useCallback(async () => {
     if (!translation || isSaving) return;
@@ -77,6 +99,7 @@ export function TranslationPopup({
         translation: translation.translation,
         sourceLanguage,
         targetLanguage,
+        textId, // Pass textId to track word clicks per text
       });
 
       if (result.success) {
@@ -97,6 +120,7 @@ export function TranslationPopup({
     word,
     sourceLanguage,
     targetLanguage,
+    textId,
     onClose,
   ]);
 
@@ -183,7 +207,7 @@ export function TranslationPopup({
                 ) : (
                   <BookmarkPlus className='mr-2 h-4 w-4' />
                 )}
-                {isSaved ? t("saved") : tCommon("save")}
+                {isSaved ? t("inDictionary") : tCommon("save")}
               </Button>
             </div>
           </div>

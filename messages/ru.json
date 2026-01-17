@@ -350,7 +350,8 @@
   },
   "TranslationPopup": {
     "translationUnavailable": "Перевод недоступен",
-    "saved": "Сохранено!"
+    "saved": "Сохранено!",
+    "inDictionary": "В словаре"
   },
   "AudioReader": {
     "voice": "Голос",
@@ -378,7 +379,15 @@
     "learning": "Изучаю",
     "reviewing": "Повторяю",
     "mastered": "Освоено",
-    "ofTotal": "от общего"
+    "ofTotal": "от общего",
+    "masteryProgress": "Прогресс освоения",
+    "practiceInsights": "Рекомендации",
+    "almostMastered": "{count} слов почти освоено!",
+    "almostMasteredHint": "Продолжайте читать, не подглядывая в перевод",
+    "needsPractice": "{count} слов нуждаются в практике",
+    "needsPracticeHint": "Создайте новый текст для закрепления этих слов",
+    "keepReading": "Вы молодец!",
+    "keepReadingHint": "Продолжайте читать для практики словарного запаса"
   },
   "Theme": {
     "toggleTheme": "Переключить тему",
