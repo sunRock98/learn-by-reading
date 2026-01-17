@@ -350,7 +350,8 @@
   },
   "TranslationPopup": {
     "translationUnavailable": "Translation unavailable",
-    "saved": "Saved!"
+    "saved": "Saved!",
+    "inDictionary": "In Dictionary"
   },
   "AudioReader": {
     "voice": "Voice",
@@ -378,7 +379,15 @@
     "learning": "Learning",
     "reviewing": "Reviewing",
     "mastered": "Mastered",
-    "ofTotal": "of total"
+    "ofTotal": "of total",
+    "masteryProgress": "Mastery Progress",
+    "practiceInsights": "Practice Insights",
+    "almostMastered": "{count} words almost mastered!",
+    "almostMasteredHint": "Keep reading without looking up these words",
+    "needsPractice": "{count} words need practice",
+    "needsPracticeHint": "Generate a new text to reinforce these words",
+    "keepReading": "You're doing great!",
+    "keepReadingHint": "Continue reading to practice your vocabulary"
   },
   "Theme": {
     "toggleTheme": "Toggle theme",

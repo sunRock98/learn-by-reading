@@ -3,15 +3,30 @@ export const constructPrompt = ({
   motherLanguage,
   level,
   topic,
+  wordsToReinforce,
 }: {
   language: string;
   level: string;
   motherLanguage: string;
   topic?: string;
+  wordsToReinforce?: string[];
 }) => {
   const topicInstruction = topic
     ? `The story MUST be centered on the following topic: "${topic}".`
     : `Choose a single concrete topic from everyday life (work, travel, family, food, relationships, routines, small problems, unexpected situations).`;
+
+  const vocabularyReinforcementInstruction = wordsToReinforce?.length
+    ? `
+VOCABULARY REINFORCEMENT (IMPORTANT)
+The learner is practicing these words from their personal dictionary. You MUST naturally incorporate as many of these words as possible into the story:
+${wordsToReinforce.join(", ")}
+
+- Use each word at least once in a natural, contextually appropriate way
+- Do NOT force words if they don't fit the story naturally
+- These words should blend seamlessly into the narrative
+- Include these words in the "translations" array as well
+`
+    : "";
 
   return `
 You are a professional language teacher AND an experienced magazine writer.
@@ -52,7 +67,7 @@ STRUCTURE GUIDELINES
 - Use short paragraphs (2–4 sentences)
 - Include 2–4 short, realistic dialogues
 - Dialogues should sound natural and spoken, but simple
-
+${vocabularyReinforcementInstruction}
 VOCABULARY SELECTION
 - Select 10–15 important or slightly challenging words or short phrases from the text
 - Words should be useful in real life and relevant to the story

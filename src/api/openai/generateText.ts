@@ -17,13 +17,21 @@ export const generateText = async ({
   level,
   motherLanguage,
   topic,
+  wordsToReinforce,
 }: {
   language: string;
   level: string;
   motherLanguage: string;
   topic?: string;
+  wordsToReinforce?: string[];
 }) => {
-  const prompt = constructPrompt({ language, level, motherLanguage, topic });
+  const prompt = constructPrompt({
+    language,
+    level,
+    motherLanguage,
+    topic,
+    wordsToReinforce,
+  });
 
   try {
     const response = await openai.chat.completions.create({

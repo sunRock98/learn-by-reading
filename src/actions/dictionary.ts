@@ -11,6 +11,106 @@ interface AddWordToDictionaryProps {
   translation: string;
   sourceLanguage: string;
   targetLanguage: string;
+  textId?: number; // Optional: which text user is reading when clicking the word
+}
+
+/**
+ * Check if a word exists in user's dictionary and record the click.
+ * This is called when user clicks a word to see translation (before saving).
+ * Returns whether word is already saved and its mastery level.
+ */
+export async function checkWordAndRecordClick({
+  courseId,
+  word,
+  textId,
+}: {
+  courseId: number;
+  word: string;
+  textId?: number;
+}) {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user?.id) {
+      return { success: false, isInDictionary: false };
+    }
+
+    // Find user's dictionary for this course
+    const userDictionary = await db.userDictionary.findUnique({
+      where: {
+        userId_courseId: {
+          userId: user.id,
+          courseId,
+        },
+      },
+    });
+
+    if (!userDictionary) {
+      return { success: true, isInDictionary: false };
+    }
+
+    // Check if word exists in dictionary
+    const existingWord = await db.word.findFirst({
+      where: {
+        original: word.toLowerCase(),
+        dictionaryId: userDictionary.id,
+      },
+    });
+
+    if (!existingWord) {
+      return { success: true, isInDictionary: false };
+    }
+
+    // Word exists - record the click (user looked up the word)
+    const updateData: {
+      lookupCount: { increment: number };
+      lastSeenAt: Date;
+      consecutiveNoClicks: number;
+      masteryLevel?: MasteryLevel;
+    } = {
+      lookupCount: { increment: 1 },
+      lastSeenAt: new Date(),
+      consecutiveNoClicks: 0, // Reset since user clicked
+    };
+
+    // If word was MASTERED but user clicked it, demote to REVIEWING (they forgot)
+    if (existingWord.masteryLevel === MasteryLevel.MASTERED) {
+      updateData.masteryLevel = MasteryLevel.REVIEWING;
+    }
+
+    await db.word.update({
+      where: { id: existingWord.id },
+      data: updateData,
+    });
+
+    // If textId provided, mark the word appearance as clicked
+    if (textId) {
+      await db.wordTextAppearance.upsert({
+        where: {
+          wordId_textId: {
+            wordId: existingWord.id,
+            textId,
+          },
+        },
+        update: { clicked: true },
+        create: {
+          wordId: existingWord.id,
+          textId,
+          clicked: true,
+        },
+      });
+    }
+
+    return {
+      success: true,
+      isInDictionary: true,
+      masteryLevel: existingWord.masteryLevel,
+      translation: existingWord.translation,
+    };
+  } catch (error) {
+    console.error("Error checking word:", error);
+    return { success: false, isInDictionary: false };
+  }
 }
 
 export async function addWordToDictionary({
@@ -19,6 +119,7 @@ export async function addWordToDictionary({
   translation,
   sourceLanguage,
   targetLanguage,
+  textId,
 }: AddWordToDictionaryProps) {
   try {
     const user = await getCurrentUser();
@@ -66,18 +167,53 @@ export async function addWordToDictionary({
 
     if (existingWord) {
       // Update existing word (increment lookup count, update last seen)
+      const updateData: {
+        lookupCount: { increment: number };
+        lastSeenAt: Date;
+        consecutiveNoClicks?: number;
+        masteryLevel?: MasteryLevel;
+      } = {
+        lookupCount: { increment: 1 },
+        lastSeenAt: new Date(),
+      };
+
+      // If user clicked on a word they had previously mastered, demote to REVIEWING
+      if (existingWord.masteryLevel === MasteryLevel.MASTERED) {
+        updateData.masteryLevel = MasteryLevel.REVIEWING;
+        updateData.consecutiveNoClicks = 0;
+      } else {
+        // Reset consecutive no-clicks counter since user clicked the word
+        updateData.consecutiveNoClicks = 0;
+      }
+
       await db.word.update({
         where: { id: existingWord.id },
-        data: {
-          lookupCount: { increment: 1 },
-          lastSeenAt: new Date(),
-        },
+        data: updateData,
       });
+
+      // If textId provided, mark the word appearance as clicked
+      if (textId) {
+        await db.wordTextAppearance.upsert({
+          where: {
+            wordId_textId: {
+              wordId: existingWord.id,
+              textId,
+            },
+          },
+          update: { clicked: true },
+          create: {
+            wordId: existingWord.id,
+            textId,
+            clicked: true,
+          },
+        });
+      }
+
       return { success: true, message: "Word updated in dictionary" };
     }
 
     // Add new word to dictionary
-    await db.word.create({
+    const newWord = await db.word.create({
       data: {
         original: original.toLowerCase(),
         translation,
@@ -87,8 +223,20 @@ export async function addWordToDictionary({
         lookupCount: 1,
         lastSeenAt: new Date(),
         masteryLevel: MasteryLevel.LEARNING,
+        consecutiveNoClicks: 0,
       },
     });
+
+    // If textId provided, create the word appearance record
+    if (textId) {
+      await db.wordTextAppearance.create({
+        data: {
+          wordId: newWord.id,
+          textId,
+          clicked: true,
+        },
+      });
+    }
 
     revalidatePath(`/course/${courseId}`);
     revalidatePath("/dictionary");
@@ -97,6 +245,71 @@ export async function addWordToDictionary({
   } catch (error) {
     console.error("Error adding word to dictionary:", error);
     return { success: false, error: "Failed to add word to dictionary" };
+  }
+}
+
+/**
+ * Updates word mastery levels when a user completes reading a text.
+ * For words that appeared in the text but were not clicked:
+ * - Increments consecutiveNoClicks counter
+ * - If counter reaches 3, promotes word to MASTERED
+ */
+export async function updateWordMasteryOnTextComplete(textId: number) {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user?.id) {
+      return { success: false, error: "User not authenticated" };
+    }
+
+    // Get all word appearances for this text that belong to the user
+    const appearances = await db.wordTextAppearance.findMany({
+      where: {
+        textId,
+        word: {
+          dictionary: {
+            userId: user.id,
+          },
+        },
+      },
+      include: {
+        word: true,
+      },
+    });
+
+    if (appearances.length === 0) {
+      return { success: true, message: "No dictionary words in this text" };
+    }
+
+    // Process each word appearance
+    for (const appearance of appearances) {
+      if (!appearance.clicked) {
+        // User didn't click on this word - they might know it!
+        const newConsecutiveNoClicks = appearance.word.consecutiveNoClicks + 1;
+        const shouldMaster = newConsecutiveNoClicks >= 3; // 3 texts without clicking = mastered
+
+        await db.word.update({
+          where: { id: appearance.wordId },
+          data: {
+            consecutiveNoClicks: newConsecutiveNoClicks,
+            masteryLevel: shouldMaster
+              ? MasteryLevel.MASTERED
+              : MasteryLevel.REVIEWING,
+          },
+        });
+      }
+      // If clicked, the mastery was already handled in addWordToDictionary
+    }
+
+    revalidatePath("/dictionary");
+
+    return {
+      success: true,
+      message: `Processed ${appearances.length} word appearances`,
+    };
+  } catch (error) {
+    console.error("Error updating word mastery on text complete:", error);
+    return { success: false, error: "Failed to update word mastery" };
   }
 }
 
@@ -255,6 +468,7 @@ export interface DictionaryWord {
   lookupCount: number;
   lastSeenAt: Date;
   masteryLevel: MasteryLevel;
+  consecutiveNoClicks: number;
   createdAt: Date;
   languageFrom: { name: string };
   languageTo: { name: string };
@@ -272,6 +486,44 @@ export interface LanguageGroup {
   languageCode: string;
   words: DictionaryWord[];
   stats: LanguageStats;
+}
+
+/**
+ * Gets simplified dictionary words for a specific course (for highlighting in text)
+ * Returns only the essential data needed for word highlighting
+ */
+export async function getDictionaryWordsForHighlighting(courseId: number) {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user?.id) {
+      return { success: false, words: [] };
+    }
+
+    const words = await db.word.findMany({
+      where: {
+        dictionary: {
+          userId: user.id,
+          courseId,
+        },
+      },
+      select: {
+        original: true,
+        masteryLevel: true,
+      },
+    });
+
+    return {
+      success: true,
+      words: words.map((w) => ({
+        original: w.original.toLowerCase(),
+        masteryLevel: w.masteryLevel,
+      })),
+    };
+  } catch (error) {
+    console.error("Error fetching dictionary words for highlighting:", error);
+    return { success: false, words: [] };
+  }
 }
 
 export async function getUserDictionaryWordsByLanguage() {

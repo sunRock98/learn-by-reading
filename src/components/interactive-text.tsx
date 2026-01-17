@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { TranslationPopup } from "@/components/translation-popup";
@@ -10,6 +10,9 @@ import { CheckCircle2, BookOpen, Headphones } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AudioReader } from "@/components/audio-reader";
 import { useTranslations } from "next-intl";
+import { updateWordMasteryOnTextComplete } from "@/actions/dictionary";
+import { cn } from "@/lib/utils";
+import { MasteryLevel } from "@prisma/client";
 
 interface Text {
   id: number;
@@ -28,10 +31,16 @@ interface Course {
   };
 }
 
+interface DictionaryWord {
+  original: string;
+  masteryLevel: MasteryLevel;
+}
+
 interface InteractiveTextProps {
   text: Text;
   course: Course;
   userNativeLanguage: string;
+  dictionaryWords?: DictionaryWord[];
 }
 
 interface WordPosition {
@@ -46,12 +55,22 @@ export function InteractiveText({
   text,
   course,
   userNativeLanguage,
+  dictionaryWords = [],
 }: InteractiveTextProps) {
   const [selectedWord, setSelectedWord] = useState<WordPosition | null>(null);
   const [completedReading, setCompletedReading] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("read");
   const router = useRouter();
   const t = useTranslations("InteractiveText");
+
+  // Create a map for quick lookup of dictionary words
+  const dictionaryMap = useMemo(() => {
+    const map = new Map<string, MasteryLevel>();
+    for (const word of dictionaryWords) {
+      map.set(word.original.toLowerCase(), word.masteryLevel);
+    }
+    return map;
+  }, [dictionaryWords]);
 
   const handleWordClick = useCallback(
     (e: React.MouseEvent<HTMLSpanElement>) => {
@@ -80,12 +99,15 @@ export function InteractiveText({
     setSelectedWord(null);
   }, []);
 
-  const handleCompleteReading = useCallback(() => {
+  const handleCompleteReading = useCallback(async () => {
+    // Update word mastery based on which words were clicked/not clicked
+    await updateWordMasteryOnTextComplete(text.id);
+
     setCompletedReading(true);
     setTimeout(() => {
       router.push(`/course/${text.courseId}`);
     }, 2000);
-  }, [router, text.courseId]);
+  }, [router, text.courseId, text.id]);
 
   const renderInteractiveText = useCallback(
     (content: string) => {
@@ -104,13 +126,41 @@ export function InteractiveText({
           return <span key={index}>{word}</span>;
         }
 
+        // Check if word is in dictionary and get its mastery level
+        const cleanedWord = word
+          .toLowerCase()
+          .replace(/[.,!?;:'"()«»—–]/g, "")
+          .trim();
+        const masteryLevel = dictionaryMap.get(cleanedWord);
+
+        // Determine styling based on mastery level
+        const highlightClass = masteryLevel
+          ? cn(
+              "underline decoration-2 underline-offset-2",
+              masteryLevel === MasteryLevel.LEARNING &&
+                "decoration-yellow-500 dark:decoration-yellow-400",
+              masteryLevel === MasteryLevel.REVIEWING &&
+                "decoration-blue-500 dark:decoration-blue-400",
+              masteryLevel === MasteryLevel.MASTERED &&
+                "decoration-green-500 dark:decoration-green-400"
+            )
+          : "";
+
         return (
           <span
             key={index}
             onClick={handleWordClick}
-            className='hover:bg-accent/30 hover:text-accent-foreground cursor-pointer rounded px-0.5 transition-colors'
+            className={cn(
+              "hover:bg-accent/30 hover:text-accent-foreground cursor-pointer rounded px-0.5 transition-colors",
+              highlightClass
+            )}
             role='button'
             tabIndex={0}
+            title={
+              masteryLevel
+                ? `${masteryLevel === MasteryLevel.LEARNING ? "Learning" : masteryLevel === MasteryLevel.REVIEWING ? "Reviewing" : "Mastered"}`
+                : undefined
+            }
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
@@ -125,7 +175,7 @@ export function InteractiveText({
         );
       });
     },
-    [handleWordClick]
+    [handleWordClick, dictionaryMap]
   );
 
   return (
@@ -260,6 +310,7 @@ export function InteractiveText({
           targetLanguage={userNativeLanguage}
           position={{ x: selectedWord.x, y: selectedWord.y }}
           courseId={text.courseId}
+          textId={text.id}
           onClose={handleClosePopup}
         />
       )}

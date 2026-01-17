@@ -103,15 +103,16 @@ model Course {
 }
 
 model Text {
-  id          Int            @id @default(autoincrement())
-  title       String
-  content     String
-  course      Course         @relation(fields: [courseId], references: [id])
-  courseId    Int
-  picture_url String?
-  audio_url   String?
-  exercises   Exercise[]
-  progress    UserProgress[] // User progress for this text
+  id              Int                  @id @default(autoincrement())
+  title           String
+  content         String
+  course          Course               @relation(fields: [courseId], references: [id])
+  courseId        Int
+  picture_url     String?
+  audio_url       String?
+  exercises       Exercise[]
+  progress        UserProgress[] // User progress for this text
+  wordAppearances WordTextAppearance[] // Tracks which dictionary words appeared in this text
 }
 
 model Exercise {
@@ -167,18 +168,33 @@ enum MasteryLevel {
 
 // Represents a word and its translation in a user's dictionary
 model Word {
-  id             Int          @id @default(autoincrement())
-  original       String // The original word
-  translation    String // The translation of the word
-  languageFrom   Language     @relation("LanguageFrom", fields: [fromLanguageId], references: [id])
-  fromLanguageId Int // The language of the original word
-  languageTo     Language     @relation("LanguageTo", fields: [toLanguageId], references: [id])
-  toLanguageId   Int // The language of the translation
-  lookupCount    Int          @default(0) // How many times user looked up this word
-  lastSeenAt     DateTime     @default(now()) // When word last appeared in a text
-  masteryLevel   MasteryLevel @default(LEARNING) // Current mastery status
-  createdAt      DateTime     @default(now())
+  id                  Int                  @id @default(autoincrement())
+  original            String // The original word
+  translation         String // The translation of the word
+  languageFrom        Language             @relation("LanguageFrom", fields: [fromLanguageId], references: [id])
+  fromLanguageId      Int // The language of the original word
+  languageTo          Language             @relation("LanguageTo", fields: [toLanguageId], references: [id])
+  toLanguageId        Int // The language of the translation
+  lookupCount         Int                  @default(0) // How many times user looked up this word
+  lastSeenAt          DateTime             @default(now()) // When word last appeared in a text
+  masteryLevel        MasteryLevel         @default(LEARNING) // Current mastery status
+  consecutiveNoClicks Int                  @default(0) // Texts in a row where user didn't click this word
+  createdAt           DateTime             @default(now())
 
-  dictionary   UserDictionary @relation(fields: [dictionaryId], references: [id])
+  dictionary   UserDictionary       @relation(fields: [dictionaryId], references: [id])
   dictionaryId Int
+  appearances  WordTextAppearance[] // Tracks appearances of this word in texts
+}
+
+// Tracks when dictionary words appear in generated texts and whether user clicked them
+model WordTextAppearance {
+  id        Int      @id @default(autoincrement())
+  word      Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  wordId    Int
+  text      Text     @relation(fields: [textId], references: [id], onDelete: Cascade)
+  textId    Int
+  clicked   Boolean  @default(false) // Did user click this word in this text?
+  createdAt DateTime @default(now())
+
+  @@unique([wordId, textId])
 }
