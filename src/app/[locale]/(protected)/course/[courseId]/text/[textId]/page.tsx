@@ -4,7 +4,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { TextNavigation } from "./components/TextNavigation";
 import { BackButton } from "@/components/ui/back-button";
 import { InteractiveText } from "@/components/interactive-text";
+import { ExerciseSection } from "@/components/exercises/exercise-section";
 import { getDictionaryWordsForHighlighting } from "@/actions/dictionary";
+import { getExercisesForText } from "@/actions/exercises";
 
 interface TextPageProps {
   params: Promise<{
@@ -63,6 +65,10 @@ const TextPage = async ({ params }: TextPageProps) => {
     parseInt(courseId)
   );
 
+  // Get exercises for this text
+  const exercisesResult = await getExercisesForText(text.id);
+  const exercises = exercisesResult.exercises || [];
+
   return (
     <div className='container mx-auto max-w-6xl px-4 py-4 sm:py-6 lg:py-8'>
       <div className='mb-6'>
@@ -92,6 +98,15 @@ const TextPage = async ({ params }: TextPageProps) => {
         userNativeLanguage={userNativeLanguage}
         dictionaryWords={dictionaryWords}
       />
+
+      {/* Exercises Section */}
+      <div className='mx-auto mt-8 max-w-4xl'>
+        <ExerciseSection
+          textId={text.id}
+          courseId={text.courseId}
+          exercises={exercises}
+        />
+      </div>
 
       <div className='mx-auto mt-8 max-w-4xl'>
         <TextNavigation courseId={courseId} textId={textId} />

@@ -2,9 +2,10 @@
 
 import { generateText } from "@/api/openai/generateText";
 import { generateImage } from "@/api/openai/generateImage";
+import { generateExercises } from "@/api/openai/generateExercises";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
-import { MasteryLevel } from "@prisma/client";
+import { MasteryLevel, ExerciseType } from "@prisma/client";
 
 interface GenerateNewTextParams {
   courseId: number;
@@ -165,6 +166,39 @@ export const generateNewText = async ({
           },
         });
       }
+    }
+
+    // Generate exercises for the text (non-blocking - don't fail text creation if exercises fail)
+    try {
+      const exercises = await generateExercises({
+        textContent: text || "",
+        textTitle: title || "Untitled",
+        language: languageName,
+        level: levelName,
+        motherLanguage,
+      });
+
+      if (exercises && exercises.length > 0) {
+        await db.exercise.createMany({
+          data: exercises.map((exercise, index) => ({
+            type: exercise.type as ExerciseType,
+            question: exercise.question,
+            options: exercise.options ? JSON.stringify(exercise.options) : null,
+            correctAnswer: exercise.correctAnswer,
+            explanation: exercise.explanation || "",
+            content: exercise.question,
+            textId: newText.id,
+            orderIndex: index,
+          })),
+        });
+
+        console.log(
+          `Generated ${exercises.length} exercises for text ${newText.id}`
+        );
+      }
+    } catch (exerciseError) {
+      console.error("Error generating exercises (non-fatal):", exerciseError);
+      // Don't fail the overall text generation if exercises fail
     }
 
     return { success: true, textId: newText.id };
