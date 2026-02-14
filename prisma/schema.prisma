@@ -115,12 +115,26 @@ model Text {
   wordAppearances WordTextAppearance[] // Tracks which dictionary words appeared in this text
 }
 
+enum ExerciseType {
+  MULTIPLE_CHOICE
+  FILL_BLANK
+  TRUE_FALSE
+  TRANSLATION
+  SENTENCE_ORDER
+}
+
 model Exercise {
-  id       Int                    @id @default(autoincrement())
-  content  String
-  text     Text                   @relation(fields: [textId], references: [id])
-  textId   Int
-  progress UserExerciseProgress[] // User progress for this exercise
+  id            Int                    @id @default(autoincrement())
+  type          ExerciseType
+  question      String                 // The question or prompt
+  options       String?                // JSON array of options (for multiple choice, sentence order)
+  correctAnswer String                 // The correct answer (or JSON for complex answers)
+  explanation   String?                // Explanation of the correct answer
+  content       String                 // Legacy field / additional context
+  text          Text                   @relation(fields: [textId], references: [id], onDelete: Cascade)
+  textId        Int
+  orderIndex    Int                    @default(0) // Display order within the text
+  progress      UserExerciseProgress[] // User progress for this exercise
 }
 
 // Tracks user-specific progress on each text
@@ -141,9 +155,13 @@ model UserExerciseProgress {
   id         Int      @id @default(autoincrement())
   user       User     @relation(fields: [userId], references: [id])
   userId     String
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   exerciseId Int
   completed  Boolean  @default(false)
+  correct    Boolean? // Whether the answer was correct
+  userAnswer String?  // What the user answered
+  attempts   Int      @default(0) // Number of attempts
+  answeredAt DateTime? // When the user last answered
 
   @@unique([userId, exerciseId])
 }
