@@ -22,9 +22,15 @@ const fetchTextWithCourse = async (courseId: string, textId: string) => {
         id: parseInt(textId),
         courseId: parseInt(courseId),
       },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        courseId: true,
+        picture_url: true,
+        // Deliberately omit picture_data — it's large binary data served via /api/images/[textId]
         course: {
-          include: {
+          select: {
             language: true,
             level: true,
           },

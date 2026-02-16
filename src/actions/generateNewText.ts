@@ -103,23 +103,31 @@ export const generateNewText = async ({
     console.log("Generated text data:", { title, textLength: text?.length });
 
     // Generate illustration in The New Yorker style
-    const imageUrl = await generateImage({
+    const imageData = await generateImage({
       title: title || "Untitled",
       textContent: text || "",
       language: languageName,
     });
 
-    console.log("Generated image URL:", imageUrl ? "success" : "failed");
+    console.log("Generated image:", imageData ? "success" : "failed");
 
-    // Add the text to the database with image
+    // Add the text to the database with image data stored directly
     const newText = await db.text.create({
       data: {
         title: title || "Untitled",
         content: text || "",
-        picture_url: imageUrl,
+        picture_data: imageData,
         course: { connect: { id: courseId } },
       },
     });
+
+    // Set picture_url to our own API route (permanent, unlike OpenAI's temporary URLs)
+    if (imageData) {
+      await db.text.update({
+        where: { id: newText.id },
+        data: { picture_url: `/api/images/${newText.id}` },
+      });
+    }
 
     // Create WordTextAppearance records for dictionary words that appear in the text
     if (dictionaryWords.length > 0 && text) {
