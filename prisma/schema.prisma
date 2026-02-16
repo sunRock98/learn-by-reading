@@ -109,6 +109,7 @@ model Text {
   course          Course               @relation(fields: [courseId], references: [id])
   courseId        Int
   picture_url     String?
+  picture_data    Bytes? // Stored image binary data (DALL-E images are temporary URLs)
   audio_url       String?
   exercises       Exercise[]
   progress        UserProgress[] // User progress for this text
