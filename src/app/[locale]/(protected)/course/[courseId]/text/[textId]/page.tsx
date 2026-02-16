@@ -71,6 +71,17 @@ const TextPage = async ({ params }: TextPageProps) => {
     parseInt(courseId)
   );
 
+  // Check if user already completed this text
+  const userProgress = await db.userProgress.findUnique({
+    where: {
+      userId_textId: {
+        userId: user.id!,
+        textId: text.id,
+      },
+    },
+    select: { seen: true },
+  });
+
   // Get exercises for this text
   const exercisesResult = await getExercisesForText(text.id);
   const exercises = exercisesResult.exercises || [];
@@ -103,6 +114,7 @@ const TextPage = async ({ params }: TextPageProps) => {
         }}
         userNativeLanguage={userNativeLanguage}
         dictionaryWords={dictionaryWords}
+        isCompleted={userProgress?.seen ?? false}
       />
 
       {/* Exercises Section */}

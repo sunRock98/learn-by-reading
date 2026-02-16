@@ -351,6 +351,7 @@
     "markComplete": "Mark as Complete",
     "greatJob": "Great job!",
     "returningToCourse": "Returning to course...",
+    "alreadyCompleted": "You've already completed this text",
     "illustration": "illustration"
   },
   "TranslationPopup": {
