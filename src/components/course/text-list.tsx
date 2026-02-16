@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Clock, CheckCircle2, Sparkles } from "lucide-react";
+import {
+  BookOpen,
+  Clock,
+  CheckCircle2,
+  Sparkles,
+  ArrowRight,
+} from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { GenerateTextModal } from "./generate-text-modal";
 import { useTranslations } from "next-intl";
@@ -25,7 +30,7 @@ interface TextListProps {
 
 function estimateReadingTime(content: string): number {
   const wordCount = content.split(/\s+/).length;
-  return Math.ceil(wordCount / 150); // Average reading speed
+  return Math.ceil(wordCount / 150);
 }
 
 function getWordCount(content: string): number {
@@ -46,23 +51,26 @@ export function TextList({
     return (
       <div>
         <h2 className='mb-6 text-2xl font-bold'>{t("readingTexts")}</h2>
-        <Card className='p-12'>
-          <div className='flex flex-col items-center justify-center text-center'>
-            <BookOpen className='text-muted-foreground mb-4 h-12 w-12' />
-            <h3 className='mb-2 text-xl font-semibold'>{t("noTexts")}</h3>
+        <div className='card-hover border-border bg-card/50 relative overflow-hidden rounded-2xl border border-dashed p-12'>
+          <div className='bg-linear-to-br from-primary/3 absolute inset-0 to-transparent' />
+          <div className='relative flex flex-col items-center justify-center text-center'>
+            <div className='gradient-bg animate-bounce-subtle mb-5 flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg'>
+              <BookOpen className='h-7 w-7 text-white' />
+            </div>
+            <h3 className='mb-2 text-xl font-bold'>{t("noTexts")}</h3>
             <p className='text-muted-foreground mb-6'>
               {t("noTextsDescription")}
             </p>
             <Button
               size='lg'
-              className='gap-2'
+              className='gradient-bg gap-2 border-0 text-white shadow-lg hover:shadow-xl hover:brightness-110'
               onClick={() => setIsModalOpen(true)}
             >
               <Sparkles className='h-5 w-5' />
               {t("generateFirst")}
             </Button>
           </div>
-        </Card>
+        </div>
         <GenerateTextModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -81,10 +89,10 @@ export function TextList({
         <Button
           variant='outline'
           size='sm'
-          className='gap-2'
+          className='group gap-2'
           onClick={() => setIsModalOpen(true)}
         >
-          <Sparkles className='h-4 w-4' />
+          <Sparkles className='h-4 w-4 transition-transform group-hover:rotate-12' />
           {t("generateNew")}
         </Button>
       </div>
@@ -95,33 +103,43 @@ export function TextList({
           const estimatedTime = estimateReadingTime(text.content);
 
           return (
-            <Card
+            <div
               key={text.id}
-              className='p-6 transition-shadow hover:shadow-lg'
+              className='card-hover card-shine border-border/50 bg-card group relative overflow-hidden rounded-2xl border p-6'
+              style={{ animationDelay: `${index * 0.05}s` }}
             >
-              <div className='flex items-center justify-between'>
+              {/* Status indicator bar */}
+              {text.completed && (
+                <div className='bg-linear-to-b absolute left-0 top-0 h-full w-1 from-[oklch(0.55_0.14_175)] to-[oklch(0.58_0.13_165)]' />
+              )}
+
+              <div
+                className={`flex items-center justify-between ${text.completed ? "pl-4" : ""}`}
+              >
                 <div className='flex-1'>
                   <div className='mb-2 flex items-center gap-3'>
                     {text.completed ? (
-                      <CheckCircle2 className='h-5 w-5 flex-shrink-0 text-green-600' />
+                      <CheckCircle2 className='h-5 w-5 shrink-0 text-[oklch(0.55_0.14_175)]' />
                     ) : (
-                      <span className='bg-muted flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium'>
+                      <span className='gradient-bg flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm'>
                         {index + 1}
                       </span>
                     )}
-                    <h3 className='text-xl font-bold'>{text.title}</h3>
-                    <Badge variant='outline'>{levelName}</Badge>
+                    <h3 className='text-lg font-bold'>{text.title}</h3>
+                    <Badge variant='outline' className='rounded-full text-xs'>
+                      {levelName}
+                    </Badge>
                   </div>
 
                   <div className='text-muted-foreground flex items-center gap-4 text-sm'>
-                    <div className='flex items-center gap-1'>
-                      <BookOpen className='h-4 w-4' />
+                    <div className='flex items-center gap-1.5'>
+                      <BookOpen className='h-3.5 w-3.5' />
                       <span>
                         {wordCount} {tCommon("words")}
                       </span>
                     </div>
-                    <div className='flex items-center gap-1'>
-                      <Clock className='h-4 w-4' />
+                    <div className='flex items-center gap-1.5'>
+                      <Clock className='h-3.5 w-3.5' />
                       <span>
                         {estimatedTime} {tCommon("min")}
                       </span>
@@ -129,13 +147,18 @@ export function TextList({
                   </div>
                 </div>
 
-                <Button asChild>
+                <Button
+                  asChild
+                  className={`group/btn ${text.completed ? "" : "gradient-bg border-0 text-white shadow-md hover:shadow-lg hover:brightness-110"}`}
+                  variant={text.completed ? "outline" : "default"}
+                >
                   <Link href={`/course/${courseId}/text/${text.id}`}>
                     {text.completed ? t("readAgain") : t("startReading")}
+                    <ArrowRight className='ml-1.5 h-4 w-4 transition-transform group-hover/btn:translate-x-0.5' />
                   </Link>
                 </Button>
               </div>
-            </Card>
+            </div>
           );
         })}
       </div>

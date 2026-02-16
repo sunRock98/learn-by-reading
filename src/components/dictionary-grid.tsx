@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -34,6 +33,24 @@ interface Word {
 interface DictionaryGridProps {
   words: Word[];
 }
+
+const MASTERY_STYLES: Record<string, { badge: string; dot: string }> = {
+  LEARNING: {
+    badge:
+      "bg-[oklch(0.93_0.06_75)] text-[oklch(0.42_0.1_75)] dark:bg-[oklch(0.25_0.04_75)] dark:text-[oklch(0.82_0.07_75)]",
+    dot: "bg-[oklch(0.72_0.13_75)]",
+  },
+  REVIEWING: {
+    badge:
+      "bg-[oklch(0.93_0.04_255)] text-[oklch(0.4_0.1_255)] dark:bg-[oklch(0.25_0.03_255)] dark:text-[oklch(0.82_0.08_255)]",
+    dot: "bg-[oklch(0.55_0.14_255)]",
+  },
+  MASTERED: {
+    badge:
+      "bg-[oklch(0.93_0.05_175)] text-[oklch(0.35_0.1_175)] dark:bg-[oklch(0.25_0.04_175)] dark:text-[oklch(0.8_0.1_175)]",
+    dot: "bg-[oklch(0.58_0.14_175)]",
+  },
+};
 
 export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
   const [words, setWords] = useState(initialWords);
@@ -86,17 +103,8 @@ export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
     await removeWordFromDictionary({ wordId: id });
   }, []);
 
-  const getMasteryColor = (level: MasteryLevel) => {
-    switch (level) {
-      case MasteryLevel.LEARNING:
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200";
-      case MasteryLevel.REVIEWING:
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-200";
-      case MasteryLevel.MASTERED:
-        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200";
-      default:
-        return "";
-    }
+  const getMasteryStyle = (level: MasteryLevel) => {
+    return MASTERY_STYLES[level] || MASTERY_STYLES.LEARNING;
   };
 
   const getMasteryLabel = (level: MasteryLevel) => {
@@ -114,15 +122,18 @@ export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
 
   if (words.length === 0) {
     return (
-      <Card className='p-12'>
-        <div className='flex flex-col items-center justify-center text-center'>
-          <BookOpen className='text-muted-foreground mb-4 h-12 w-12' />
-          <h3 className='mb-2 text-lg font-semibold'>{t("noWords")}</h3>
+      <div className='border-border bg-card/50 relative overflow-hidden rounded-2xl border border-dashed p-12'>
+        <div className='bg-linear-to-br from-primary/3 absolute inset-0 to-transparent' />
+        <div className='relative flex flex-col items-center justify-center text-center'>
+          <div className='gradient-bg animate-bounce-subtle mb-5 flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg'>
+            <BookOpen className='h-7 w-7 text-white' />
+          </div>
+          <h3 className='mb-2 text-lg font-bold'>{t("noWords")}</h3>
           <p className='text-muted-foreground max-w-md'>
             {t("noWordsDescription")}
           </p>
         </div>
-      </Card>
+      </div>
     );
   }
 
@@ -136,116 +147,123 @@ export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
             placeholder={t("searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className='pl-10'
+            className='rounded-xl pl-10'
           />
         </div>
         <div className='flex gap-2'>
-          <Button
-            variant={filter === "all" ? "default" : "outline"}
-            size='sm'
-            onClick={() => setFilter("all")}
-          >
-            {tCommon("all")}
-          </Button>
-          <Button
-            variant={filter === MasteryLevel.LEARNING ? "default" : "outline"}
-            size='sm'
-            onClick={() => setFilter(MasteryLevel.LEARNING)}
-          >
-            {t("learning")}
-          </Button>
-          <Button
-            variant={filter === MasteryLevel.REVIEWING ? "default" : "outline"}
-            size='sm'
-            onClick={() => setFilter(MasteryLevel.REVIEWING)}
-          >
-            {t("reviewing")}
-          </Button>
-          <Button
-            variant={filter === MasteryLevel.MASTERED ? "default" : "outline"}
-            size='sm'
-            onClick={() => setFilter(MasteryLevel.MASTERED)}
-          >
-            {t("mastered")}
-          </Button>
+          {(
+            [
+              ["all", tCommon("all")],
+              [MasteryLevel.LEARNING, t("learning")],
+              [MasteryLevel.REVIEWING, t("reviewing")],
+              [MasteryLevel.MASTERED, t("mastered")],
+            ] as const
+          ).map(([value, label]) => (
+            <Button
+              key={value}
+              variant={filter === value ? "default" : "outline"}
+              size='sm'
+              onClick={() => setFilter(value as MasteryLevel | "all")}
+              className={
+                filter === value ? "gradient-bg border-0 text-white" : ""
+              }
+            >
+              {label}
+            </Button>
+          ))}
         </div>
       </div>
 
       <div className='mb-4 flex items-center justify-between'>
-        <h2 className='text-xl font-semibold'>
+        <h2 className='text-xl font-bold'>
           {filteredWords.length} {tCommon("words")}
           {filter !== "all" && ` (${getMasteryLabel(filter as MasteryLevel)})`}
         </h2>
       </div>
 
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
-        {filteredWords.map((word) => (
-          <Card key={word.id} className='p-5 transition-shadow hover:shadow-lg'>
-            <div className='mb-3 flex items-start justify-between'>
-              <div className='flex-1'>
-                <div className='mb-1 flex items-center gap-2'>
-                  <h3 className='text-xl font-bold'>{word.original}</h3>
-                  {word.masteryLevel === MasteryLevel.MASTERED && (
-                    <Star className='h-4 w-4 fill-yellow-500 text-yellow-500' />
-                  )}
+        {filteredWords.map((word, index) => {
+          const style = getMasteryStyle(word.masteryLevel);
+          return (
+            <div
+              key={word.id}
+              className='card-hover card-shine border-border/50 bg-card group relative overflow-hidden rounded-2xl border p-5'
+              style={{ animationDelay: `${index * 0.03}s` }}
+            >
+              <div className='mb-3 flex items-start justify-between'>
+                <div className='flex-1'>
+                  <div className='mb-1 flex items-center gap-2'>
+                    <h3 className='text-xl font-bold'>{word.original}</h3>
+                    {word.masteryLevel === MasteryLevel.MASTERED && (
+                      <Star className='h-4 w-4 fill-[oklch(0.72_0.13_75)] text-[oklch(0.72_0.13_75)]' />
+                    )}
+                  </div>
+                </div>
+                <Button
+                  variant='ghost'
+                  size='icon-sm'
+                  onClick={() =>
+                    handleToggleMastered(word.id, word.masteryLevel)
+                  }
+                  className='rounded-full'
+                >
+                  <Star
+                    className={`h-4 w-4 ${word.masteryLevel === MasteryLevel.MASTERED ? "fill-[oklch(0.72_0.13_75)] text-[oklch(0.72_0.13_75)]" : ""}`}
+                  />
+                </Button>
+              </div>
+
+              <div className='mb-4 space-y-2'>
+                <div className='flex flex-wrap items-center gap-2'>
+                  <Badge className={`rounded-full ${style.badge}`}>
+                    <span
+                      className={`mr-1.5 inline-block h-1.5 w-1.5 rounded-full ${style.dot}`}
+                    />
+                    {getMasteryLabel(word.masteryLevel)}
+                  </Badge>
+                  <Badge variant='secondary' className='rounded-full'>
+                    {word.dictionary.course.language.name}
+                  </Badge>
+                </div>
+
+                <p className='gradient-text text-lg font-bold'>
+                  {word.translation}
+                </p>
+
+                <div className='text-muted-foreground flex items-center justify-between text-xs'>
+                  <span>{t("lookedUp", { count: word.lookupCount })}</span>
+                  <span>
+                    {t("added", {
+                      date: new Date(word.createdAt).toLocaleDateString(),
+                    })}
+                  </span>
                 </div>
               </div>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={() => handleToggleMastered(word.id, word.masteryLevel)}
-              >
-                <Star
-                  className={`h-4 w-4 ${word.masteryLevel === MasteryLevel.MASTERED ? "fill-yellow-500 text-yellow-500" : ""}`}
-                />
-              </Button>
-            </div>
 
-            <div className='mb-4 space-y-2'>
-              <div className='flex flex-wrap items-center gap-2'>
-                <Badge className={getMasteryColor(word.masteryLevel)}>
-                  {getMasteryLabel(word.masteryLevel)}
-                </Badge>
-                <Badge variant='secondary'>
-                  {word.dictionary.course.language.name}
-                </Badge>
-              </div>
-
-              <p className='text-lg font-semibold'>{word.translation}</p>
-
-              <div className='text-muted-foreground flex items-center justify-between text-xs'>
-                <span>{t("lookedUp", { count: word.lookupCount })}</span>
-                <span>
-                  {t("added", {
-                    date: new Date(word.createdAt).toLocaleDateString(),
-                  })}
-                </span>
+              <div className='flex gap-2'>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={() =>
+                    handlePlayAudio(word.original, word.languageFrom.name)
+                  }
+                  className='flex-1 rounded-xl'
+                >
+                  <Volume2 className='mr-2 h-4 w-4' />
+                  {tCommon("listen")}
+                </Button>
+                <Button
+                  variant='outline'
+                  size='icon-sm'
+                  onClick={() => handleDelete(word.id)}
+                  className='text-destructive hover:bg-destructive/10 hover:text-destructive rounded-xl'
+                >
+                  <Trash2 className='h-4 w-4' />
+                </Button>
               </div>
             </div>
-
-            <div className='flex gap-2'>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() =>
-                  handlePlayAudio(word.original, word.languageFrom.name)
-                }
-                className='flex-1'
-              >
-                <Volume2 className='mr-2 h-4 w-4' />
-                {tCommon("listen")}
-              </Button>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => handleDelete(word.id)}
-                className='text-destructive'
-              >
-                <Trash2 className='h-4 w-4' />
-              </Button>
-            </div>
-          </Card>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

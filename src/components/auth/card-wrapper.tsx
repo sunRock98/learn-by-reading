@@ -33,8 +33,6 @@ export const CardWrapper = ({
   const tReset = useTranslations("ResetForm");
   const tCommon = useTranslations("common");
 
-  // Determine which page we're on based on back button href
-  // Login page links to register, Register page links to login
   const isLoginPage = backButtonHref.includes("register");
   const isRegisterPage = backButtonHref.includes("login") && showSocial;
   const isResetPage = backButtonHref.includes("login") && !showSocial;
@@ -50,17 +48,21 @@ export const CardWrapper = ({
   const getBottomText = () => {
     if (isLoginPage) return tLogin("noAccount");
     if (isRegisterPage) return tRegister("hasAccount");
-    return null; // Reset page just shows link
+    return null;
   };
 
   return (
     <div className='w-full max-w-sm'>
       <div className='flex flex-col gap-6'>
-        <div className='mb-4 flex items-center justify-center gap-2'>
-          <BookOpen className='text-primary h-8 w-8' />
-          <span className='text-2xl font-bold'>Read2Learn</span>
+        {/* Animated Logo */}
+        <div className='mb-2 flex items-center justify-center gap-2.5'>
+          <div className='gradient-bg flex h-10 w-10 items-center justify-center rounded-xl shadow-lg'>
+            <BookOpen className='h-6 w-6 text-white' />
+          </div>
+          <span className='text-2xl font-bold tracking-tight'>Read2Learn</span>
         </div>
-        <Card>
+
+        <Card className='border-border/50 shadow-lg'>
           <CardHeader>
             <CardTitle className='text-2xl'>{headerLabel}</CardTitle>
             {getDescription() && (
@@ -73,10 +75,10 @@ export const CardWrapper = ({
               <>
                 <div className='relative'>
                   <div className='absolute inset-0 flex items-center'>
-                    <span className='w-full border-t' />
+                    <span className='border-border/50 w-full border-t' />
                   </div>
                   <div className='relative flex justify-center text-xs uppercase'>
-                    <span className='bg-card text-muted-foreground px-2'>
+                    <span className='bg-card text-muted-foreground px-3'>
                       {tCommon("orContinueWith")}
                     </span>
                   </div>
@@ -87,10 +89,12 @@ export const CardWrapper = ({
             <div className='text-center text-sm'>
               {getBottomText() ? (
                 <>
-                  {getBottomText()}{" "}
+                  <span className='text-muted-foreground'>
+                    {getBottomText()}
+                  </span>{" "}
                   <Link
                     href={backButtonHref}
-                    className='underline underline-offset-4'
+                    className='text-primary font-medium underline-offset-4 transition-colors hover:underline'
                   >
                     {backButtonLabel}
                   </Link>
@@ -98,7 +102,7 @@ export const CardWrapper = ({
               ) : (
                 <Link
                   href={backButtonHref}
-                  className='underline underline-offset-4'
+                  className='text-primary font-medium underline-offset-4 transition-colors hover:underline'
                 >
                   {backButtonLabel}
                 </Link>

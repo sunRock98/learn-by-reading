@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useTransition } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -126,7 +125,6 @@ export function ExerciseSection({
       try {
         const result = await generateExercisesForText({ textId, courseId });
         if (result.success) {
-          // Reload the page to get fresh exercises
           window.location.reload();
         }
       } catch (error) {
@@ -137,25 +135,24 @@ export function ExerciseSection({
     });
   }, [textId, courseId, startTransition]);
 
-  // No exercises yet — show generate button
   if (exercises.length === 0) {
     return (
-      <Card className='border-0 bg-[#fffef8] shadow-lg dark:bg-[#1a1a18]'>
-        <div className='flex flex-col items-center gap-4 px-8 py-12 text-center'>
-          <div className='flex h-16 w-16 items-center justify-center rounded-full bg-[#c41e3a]/10'>
-            <Sparkles className='h-8 w-8 text-[#c41e3a]' />
+      <div className='border-border/50 bg-card overflow-hidden rounded-2xl border shadow-lg'>
+        <div className='flex flex-col items-center gap-5 px-8 py-12 text-center'>
+          <div className='gradient-bg animate-bounce-subtle flex h-16 w-16 items-center justify-center rounded-2xl shadow-lg'>
+            <Sparkles className='h-8 w-8 text-white' />
           </div>
-          <h3 className='font-serif text-2xl font-medium text-[#1a1a18] dark:text-[#e8e6dc]'>
+          <h3 className='font-serif text-2xl font-bold'>
             {t("practiceExercises")}
           </h3>
-          <p className='max-w-md font-serif text-[#5a5a52] dark:text-[#9a9a8f]'>
+          <p className='text-muted-foreground max-w-md font-serif'>
             {t("generateDescription")}
           </p>
           <Button
             onClick={handleGenerateExercises}
             disabled={isGenerating || isPending}
             size='lg'
-            className='gap-2'
+            className='gradient-bg gap-2 border-0 text-white shadow-md hover:shadow-lg hover:brightness-110'
           >
             {isGenerating || isPending ? (
               <Loader2 className='h-5 w-5 animate-spin' />
@@ -167,38 +164,37 @@ export function ExerciseSection({
               : t("generateExercises")}
           </Button>
         </div>
-      </Card>
+      </div>
     );
   }
 
-  // Show results summary
   if (showResults) {
     return (
-      <Card className='border-0 bg-[#fffef8] shadow-lg dark:bg-[#1a1a18]'>
+      <div className='animate-scale-in border-border/50 bg-card overflow-hidden rounded-2xl border shadow-lg'>
         {/* Results Header */}
         <div className='flex flex-col items-center gap-4 px-8 pt-10 text-center'>
           <div
             className={cn(
-              "flex h-20 w-20 items-center justify-center rounded-full",
+              "flex h-20 w-20 items-center justify-center rounded-2xl",
               accuracy >= 80
-                ? "bg-green-100 dark:bg-green-950/30"
+                ? "bg-[oklch(0.93_0.05_175)]"
                 : accuracy >= 50
-                  ? "bg-amber-100 dark:bg-amber-950/30"
-                  : "bg-red-100 dark:bg-red-950/30"
+                  ? "bg-[oklch(0.93_0.06_75)]"
+                  : "bg-[oklch(0.93_0.06_25)]"
             )}
           >
             <Trophy
               className={cn(
                 "h-10 w-10",
                 accuracy >= 80
-                  ? "text-green-600"
+                  ? "text-[oklch(0.48_0.14_175)]"
                   : accuracy >= 50
-                    ? "text-amber-600"
-                    : "text-red-600"
+                    ? "text-[oklch(0.5_0.1_75)]"
+                    : "text-[oklch(0.55_0.18_25)]"
               )}
             />
           </div>
-          <h3 className='font-serif text-3xl font-medium text-[#1a1a18] dark:text-[#e8e6dc]'>
+          <h3 className='font-serif text-3xl font-bold'>
             {accuracy >= 80
               ? t("excellent")
               : accuracy >= 50
@@ -209,30 +205,26 @@ export function ExerciseSection({
 
         {/* Stats Grid */}
         <div className='grid grid-cols-3 gap-4 px-8 py-8'>
-          <div className='flex flex-col items-center gap-1 rounded-lg border border-[#d4d0c4] bg-[#f5f3e8]/50 p-4 dark:border-[#3a3a38] dark:bg-[#151513]/50'>
-            <Target className='h-6 w-6 text-[#c41e3a]' />
-            <span className='font-serif text-2xl font-bold text-[#1a1a18] dark:text-[#e8e6dc]'>
-              {accuracy}%
-            </span>
-            <span className='font-serif text-xs text-[#8a8677] dark:text-[#6a6a5f]'>
+          <div className='border-border/50 bg-muted/30 flex flex-col items-center gap-1 rounded-xl border p-4'>
+            <Target className='text-primary h-6 w-6' />
+            <span className='font-serif text-2xl font-bold'>{accuracy}%</span>
+            <span className='text-muted-foreground font-serif text-xs'>
               {t("accuracy")}
             </span>
           </div>
-          <div className='flex flex-col items-center gap-1 rounded-lg border border-[#d4d0c4] bg-[#f5f3e8]/50 p-4 dark:border-[#3a3a38] dark:bg-[#151513]/50'>
-            <BarChart3 className='h-6 w-6 text-green-600' />
-            <span className='font-serif text-2xl font-bold text-[#1a1a18] dark:text-[#e8e6dc]'>
+          <div className='border-border/50 bg-muted/30 flex flex-col items-center gap-1 rounded-xl border p-4'>
+            <BarChart3 className='h-6 w-6 text-[oklch(0.55_0.14_175)]' />
+            <span className='font-serif text-2xl font-bold'>
               {correctCount}/{totalCount}
             </span>
-            <span className='font-serif text-xs text-[#8a8677] dark:text-[#6a6a5f]'>
+            <span className='text-muted-foreground font-serif text-xs'>
               {t("correctAnswers")}
             </span>
           </div>
-          <div className='flex flex-col items-center gap-1 rounded-lg border border-[#d4d0c4] bg-[#f5f3e8]/50 p-4 dark:border-[#3a3a38] dark:bg-[#151513]/50'>
-            <BookOpen className='h-6 w-6 text-blue-600' />
-            <span className='font-serif text-2xl font-bold text-[#1a1a18] dark:text-[#e8e6dc]'>
-              {totalCount}
-            </span>
-            <span className='font-serif text-xs text-[#8a8677] dark:text-[#6a6a5f]'>
+          <div className='border-border/50 bg-muted/30 flex flex-col items-center gap-1 rounded-xl border p-4'>
+            <BookOpen className='h-6 w-6 text-[oklch(0.52_0.13_220)]' />
+            <span className='font-serif text-2xl font-bold'>{totalCount}</span>
+            <span className='text-muted-foreground font-serif text-xs'>
               {t("totalExercises")}
             </span>
           </div>
@@ -250,7 +242,7 @@ export function ExerciseSection({
                     setShowResults(false);
                     setCurrentIndex(index);
                   }}
-                  className='border-border hover:bg-accent/30 flex w-full items-center gap-3 rounded-lg border px-4 py-2.5 text-left transition-colors'
+                  className='border-border/50 hover:bg-muted/30 flex w-full items-center gap-3 rounded-xl border px-4 py-2.5 text-left transition-colors'
                 >
                   <span className='text-lg'>
                     {EXERCISE_TYPE_ICONS[ex.type]}
@@ -260,16 +252,18 @@ export function ExerciseSection({
                   </span>
                   {exResult ? (
                     exResult.correct ? (
-                      <Badge className='bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'>
+                      <Badge className='rounded-full bg-[oklch(0.93_0.05_175)] text-[oklch(0.35_0.1_175)]'>
                         {t("correctBadge")}
                       </Badge>
                     ) : (
-                      <Badge className='bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'>
+                      <Badge className='rounded-full bg-[oklch(0.93_0.06_25)] text-[oklch(0.42_0.12_25)]'>
                         {t("incorrectBadge")}
                       </Badge>
                     )
                   ) : (
-                    <Badge variant='outline'>{t("skipped")}</Badge>
+                    <Badge variant='outline' className='rounded-full'>
+                      {t("skipped")}
+                    </Badge>
                   )}
                 </button>
               );
@@ -278,33 +272,36 @@ export function ExerciseSection({
         </div>
 
         {/* Actions */}
-        <div className='border-t border-[#d4d0c4] px-8 py-4 dark:border-[#3a3a38]'>
+        <div className='border-border/50 border-t px-8 py-4'>
           <div className='flex justify-center gap-3'>
-            <Button variant='outline' onClick={handleRestart} className='gap-2'>
-              <RefreshCw className='h-4 w-4' />
+            <Button
+              variant='outline'
+              onClick={handleRestart}
+              className='group gap-2'
+            >
+              <RefreshCw className='h-4 w-4 transition-transform group-hover:rotate-180' />
               {t("tryAgain")}
             </Button>
           </div>
         </div>
-      </Card>
+      </div>
     );
   }
 
-  // Render individual exercise
   return (
-    <Card className='border-0 bg-[#fffef8] shadow-lg dark:bg-[#1a1a18]'>
+    <div className='animate-fade-in border-border/50 bg-card overflow-hidden rounded-2xl border shadow-lg'>
       {/* Exercise Header */}
       <div className='px-8 pt-6'>
         <div className='mb-4 flex items-center justify-between'>
           <div className='flex items-center gap-3'>
-            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-[#c41e3a]/10'>
-              <BookOpen className='h-5 w-5 text-[#c41e3a]' />
+            <div className='gradient-bg flex h-10 w-10 items-center justify-center rounded-xl shadow-md'>
+              <BookOpen className='h-5 w-5 text-white' />
             </div>
             <div>
-              <h3 className='font-serif text-lg font-medium text-[#1a1a18] dark:text-[#e8e6dc]'>
+              <h3 className='font-serif text-lg font-bold'>
                 {t("practiceExercises")}
               </h3>
-              <p className='font-serif text-sm text-[#8a8677] dark:text-[#6a6a5f]'>
+              <p className='text-muted-foreground font-serif text-sm'>
                 {t("exerciseOf", {
                   current: currentIndex + 1,
                   total: totalCount,
@@ -312,15 +309,15 @@ export function ExerciseSection({
               </p>
             </div>
           </div>
-          <Badge variant='outline' className='font-serif'>
+          <Badge variant='outline' className='rounded-full font-serif'>
             {t(EXERCISE_TYPE_LABELS[currentExercise.type])}
           </Badge>
         </div>
 
-        {/* Progress Bar */}
+        {/* Progress */}
         <div className='mb-2 flex items-center gap-3'>
           <Progress value={progressPercentage} className='flex-1' />
-          <span className='font-serif text-sm text-[#8a8677] dark:text-[#6a6a5f]'>
+          <span className='text-muted-foreground font-serif text-sm'>
             {completedCount}/{totalCount}
           </span>
         </div>
@@ -336,12 +333,12 @@ export function ExerciseSection({
                 className={cn(
                   "h-2 flex-1 rounded-full transition-all",
                   index === currentIndex
-                    ? "bg-[#c41e3a]"
+                    ? "gradient-bg"
                     : exResult
                       ? exResult.correct
-                        ? "bg-green-500"
-                        : "bg-red-400"
-                      : "bg-[#d4d0c4] dark:bg-[#3a3a38]"
+                        ? "bg-[oklch(0.58_0.14_175)]"
+                        : "bg-[oklch(0.62_0.14_25)]"
+                      : "bg-secondary"
                 )}
               />
             );
@@ -351,11 +348,11 @@ export function ExerciseSection({
 
       {/* Divider */}
       <div className='flex items-center justify-center gap-4 px-8 pb-2'>
-        <div className='h-px flex-1 bg-[#d4d0c4] dark:bg-[#3a3a38]' />
+        <div className='bg-linear-to-r via-border h-px flex-1 from-transparent to-transparent' />
         <span className='text-lg'>
           {EXERCISE_TYPE_ICONS[currentExercise.type]}
         </span>
-        <div className='h-px flex-1 bg-[#d4d0c4] dark:bg-[#3a3a38]' />
+        <div className='bg-linear-to-r via-border h-px flex-1 from-transparent to-transparent' />
       </div>
 
       {/* Exercise Content */}
@@ -403,15 +400,15 @@ export function ExerciseSection({
       </div>
 
       {/* Navigation Footer */}
-      <div className='border-t border-[#d4d0c4] px-8 py-4 dark:border-[#3a3a38]'>
+      <div className='border-border/50 border-t px-8 py-4'>
         <div className='flex items-center justify-between'>
           <Button
             variant='ghost'
             onClick={handlePrevious}
             disabled={currentIndex === 0}
-            className='gap-2 font-serif'
+            className='group gap-2 font-serif'
           >
-            <ChevronLeft className='h-4 w-4' />
+            <ChevronLeft className='h-4 w-4 transition-transform group-hover:-translate-x-0.5' />
             {t("previous")}
           </Button>
 
@@ -429,13 +426,16 @@ export function ExerciseSection({
           <Button
             variant={results[currentExercise.id] ? "default" : "ghost"}
             onClick={handleNext}
-            className='gap-2 font-serif'
+            className={cn(
+              "group gap-2 font-serif",
+              results[currentExercise.id] && "gradient-bg border-0 text-white"
+            )}
           >
             {currentIndex === exercises.length - 1 ? t("finish") : t("next")}
-            <ChevronRight className='h-4 w-4' />
+            <ChevronRight className='h-4 w-4 transition-transform group-hover:translate-x-0.5' />
           </Button>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

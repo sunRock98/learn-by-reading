@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { X, BookmarkPlus, Volume2, Loader2, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +17,7 @@ interface TranslationPopupProps {
   targetLanguage: string;
   position: { x: number; y: number };
   courseId: number;
-  textId?: number; // Optional: which text user is reading when clicking the word
+  textId?: number;
   onClose: () => void;
 }
 
@@ -50,8 +49,6 @@ export function TranslationPopup({
     const initPopup = async () => {
       setIsLoading(true);
       try {
-        // First, check if word is in dictionary and record the click
-        // This tracks that user looked up this word (for mastery calculation)
         const checkResult = await checkWordAndRecordClick({
           courseId,
           word,
@@ -59,13 +56,11 @@ export function TranslationPopup({
         });
 
         if (checkResult.isInDictionary && checkResult.translation) {
-          // Word is already saved - use saved translation and mark as saved
           setIsSaved(true);
           setTranslation({
             translation: checkResult.translation,
           });
         } else {
-          // Word not in dictionary - fetch translation
           const result = await fastTranslate({
             word,
             sourceLanguage,
@@ -99,7 +94,7 @@ export function TranslationPopup({
         translation: translation.translation,
         sourceLanguage,
         targetLanguage,
-        textId, // Pass textId to track word clicks per text
+        textId,
       });
 
       if (result.success) {
@@ -125,10 +120,8 @@ export function TranslationPopup({
   ]);
 
   const handlePlayAudio = useCallback(() => {
-    // Use browser's speech synthesis for audio playback
     if ("speechSynthesis" in window) {
       const utterance = new SpeechSynthesisUtterance(word);
-      // Try to find a voice for the source language
       const voices = speechSynthesis.getVoices();
       const langCode = sourceLanguage.toLowerCase().slice(0, 2);
       const voice = voices.find((v) =>
@@ -141,7 +134,6 @@ export function TranslationPopup({
     }
   }, [word, sourceLanguage]);
 
-  // Calculate position to keep popup in viewport
   const popupStyle = {
     left: `${Math.min(Math.max(position.x, 160), window.innerWidth - 160)}px`,
     top: `${position.y - 10}px`,
@@ -150,8 +142,17 @@ export function TranslationPopup({
 
   return (
     <>
-      <div className='fixed inset-0 z-40' onClick={onClose} />
-      <Card className='fixed z-50 w-80 p-4 shadow-xl' style={popupStyle}>
+      <div
+        className='bg-foreground/5 fixed inset-0 z-40 backdrop-blur-[2px]'
+        onClick={onClose}
+      />
+      <div
+        className='glass-strong animate-scale-in fixed z-50 w-80 rounded-2xl p-5 shadow-2xl'
+        style={popupStyle}
+      >
+        {/* Accent gradient bar at top */}
+        <div className='gradient-bg absolute left-4 right-4 top-0 h-0.5 rounded-full' />
+
         <div className='mb-3 flex items-start justify-between'>
           <div className='flex-1'>
             <h3 className='mb-1 text-xl font-bold'>{word}</h3>
@@ -161,24 +162,34 @@ export function TranslationPopup({
               </p>
             )}
           </div>
-          <Button variant='ghost' size='sm' onClick={onClose}>
+          <Button
+            variant='ghost'
+            size='icon-sm'
+            onClick={onClose}
+            className='hover:bg-destructive/10 hover:text-destructive rounded-full'
+          >
             <X className='h-4 w-4' />
           </Button>
         </div>
 
         {isLoading ? (
           <div className='flex items-center justify-center py-8'>
-            <Loader2 className='text-muted-foreground h-6 w-6 animate-spin' />
+            <div className='relative'>
+              <Loader2 className='text-primary h-8 w-8 animate-spin' />
+              <div className='bg-primary/10 absolute inset-0 h-8 w-8 animate-ping rounded-full' />
+            </div>
           </div>
         ) : (
           <div className='space-y-3'>
             <div>
               {translation?.partOfSpeech && (
                 <div className='mb-2 flex items-center gap-2'>
-                  <Badge variant='outline'>{translation.partOfSpeech}</Badge>
+                  <Badge variant='outline' className='rounded-full text-xs'>
+                    {translation.partOfSpeech}
+                  </Badge>
                 </div>
               )}
-              <p className='text-lg font-semibold'>
+              <p className='gradient-text text-lg font-bold'>
                 {translation?.translation}
               </p>
             </div>
@@ -188,7 +199,7 @@ export function TranslationPopup({
                 variant='outline'
                 size='sm'
                 onClick={handlePlayAudio}
-                className='flex-1 bg-transparent'
+                className='flex-1 rounded-xl'
               >
                 <Volume2 className='mr-2 h-4 w-4' />
                 {tCommon("listen")}
@@ -198,7 +209,7 @@ export function TranslationPopup({
                 size='sm'
                 onClick={handleSaveToDictionary}
                 disabled={isSaved || isSaving}
-                className='flex-1'
+                className={`flex-1 rounded-xl ${!isSaved ? "gradient-bg border-0 text-white" : ""}`}
               >
                 {isSaving ? (
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
@@ -212,7 +223,7 @@ export function TranslationPopup({
             </div>
           </div>
         )}
-      </Card>
+      </div>
     </>
   );
 }

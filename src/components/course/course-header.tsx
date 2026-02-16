@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, Target } from "lucide-react";
+import { ArrowLeft, BookOpen, Target, TrendingUp } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 
@@ -25,10 +25,10 @@ export function CourseHeader({ course }: CourseHeaderProps) {
       : 0;
 
   return (
-    <div className='mb-8'>
-      <Button variant='ghost' size='sm' asChild className='mb-4'>
+    <div className='animate-fade-in mb-8'>
+      <Button variant='ghost' size='sm' asChild className='group mb-4'>
         <Link href='/dashboard'>
-          <ArrowLeft className='mr-2 h-4 w-4' />
+          <ArrowLeft className='mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1' />
           {tBack("backToDashboard")}
         </Link>
       </Button>
@@ -36,12 +36,17 @@ export function CourseHeader({ course }: CourseHeaderProps) {
       <div className='flex items-start justify-between'>
         <div className='flex-1'>
           <div className='mb-3 flex items-center gap-3'>
-            <h1 className='text-4xl font-bold'>{course.language}</h1>
-            <Badge variant='secondary' className='text-sm'>
+            <h1 className='text-4xl font-extrabold tracking-tight'>
+              {course.language}
+            </h1>
+            <Badge
+              variant='secondary'
+              className='rounded-full px-3 text-sm font-medium'
+            >
               {course.level}
             </Badge>
           </div>
-          <p className='text-muted-foreground mb-4 text-lg'>
+          <p className='text-muted-foreground mb-5 text-lg'>
             {t("learnThrough", {
               language: course.language,
               level: course.level,
@@ -49,21 +54,21 @@ export function CourseHeader({ course }: CourseHeaderProps) {
           </p>
 
           {/* Progress Bar */}
-          <div className='mb-4 max-w-md'>
+          <div className='mb-5 max-w-md'>
             <div className='mb-2 flex items-center justify-between text-sm'>
               <span className='text-muted-foreground'>
                 {t("courseProgress")}
               </span>
-              <span className='font-medium'>
+              <span className='font-semibold'>
                 {t("textsCompleted", {
                   completed: course.completedTexts,
                   total: course.textsCount,
                 })}
               </span>
             </div>
-            <div className='bg-muted h-2 overflow-hidden rounded-full'>
+            <div className='bg-secondary h-2.5 overflow-hidden rounded-full'>
               <div
-                className='bg-primary h-full transition-all duration-300'
+                className={`gradient-bg h-full rounded-full transition-all duration-700 ease-out ${progressPercentage > 0 ? "animate-progress-stripe" : ""}`}
                 style={{ width: `${progressPercentage}%` }}
               />
             </div>
@@ -78,6 +83,12 @@ export function CourseHeader({ course }: CourseHeaderProps) {
               <Target className='h-4 w-4' />
               <span>{t("complete", { percentage: progressPercentage })}</span>
             </div>
+            {progressPercentage > 0 && (
+              <div className='text-primary flex items-center gap-2'>
+                <TrendingUp className='h-4 w-4' />
+                <span className='font-medium'>{t("onTrack")}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

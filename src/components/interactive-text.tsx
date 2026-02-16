@@ -3,10 +3,9 @@
 import type React from "react";
 import { useState, useCallback, useMemo } from "react";
 import Image from "next/image";
-import { Card } from "@/components/ui/card";
 import { TranslationPopup } from "@/components/translation-popup";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, BookOpen, Headphones } from "lucide-react";
+import { CheckCircle2, BookOpen, Headphones, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AudioReader } from "@/components/audio-reader";
 import { useTranslations } from "next-intl";
@@ -67,7 +66,6 @@ export function InteractiveText({
   const router = useRouter();
   const t = useTranslations("InteractiveText");
 
-  // Create a map for quick lookup of dictionary words
   const dictionaryMap = useMemo(() => {
     const map = new Map<string, MasteryLevel>();
     for (const word of dictionaryWords) {
@@ -82,7 +80,6 @@ export function InteractiveText({
       const word = target.textContent || "";
       const rect = target.getBoundingClientRect();
 
-      // Clean the word (remove punctuation)
       const cleanedWord = word
         .toLowerCase()
         .replace(/[.,!?;:'"()]/g, "")
@@ -104,12 +101,8 @@ export function InteractiveText({
   }, []);
 
   const handleCompleteReading = useCallback(async () => {
-    // Update word mastery based on which words were clicked/not clicked
     await updateWordMasteryOnTextComplete(text.id);
-
-    // Mark the text as completed in user progress
     await markTextAsComplete(text.id, text.courseId);
-
     setCompletedReading(true);
     setJustCompleted(true);
     setTimeout(() => {
@@ -119,7 +112,6 @@ export function InteractiveText({
 
   const renderInteractiveText = useCallback(
     (content: string) => {
-      // Split by whitespace but keep the separators
       const words = content.split(/(\s+)/);
 
       return words.map((word, index) => {
@@ -127,30 +119,23 @@ export function InteractiveText({
           return <span key={index}>{word}</span>;
         }
 
-        // Check if it's a clickable word (contains letters)
         const hasLetters = /[a-zA-ZÀ-ÿ]/.test(word);
 
         if (!hasLetters) {
           return <span key={index}>{word}</span>;
         }
 
-        // Check if word is in dictionary and get its mastery level
         const cleanedWord = word
           .toLowerCase()
           .replace(/[.,!?;:'"()«»—–]/g, "")
           .trim();
         const masteryLevel = dictionaryMap.get(cleanedWord);
 
-        // Determine styling based on mastery level
-        const highlightClass = masteryLevel
+        const masteryClass = masteryLevel
           ? cn(
-              "underline decoration-2 underline-offset-2",
-              masteryLevel === MasteryLevel.LEARNING &&
-                "decoration-yellow-500 dark:decoration-yellow-400",
-              masteryLevel === MasteryLevel.REVIEWING &&
-                "decoration-blue-500 dark:decoration-blue-400",
-              masteryLevel === MasteryLevel.MASTERED &&
-                "decoration-green-500 dark:decoration-green-400"
+              masteryLevel === MasteryLevel.LEARNING && "mastery-learning",
+              masteryLevel === MasteryLevel.REVIEWING && "mastery-reviewing",
+              masteryLevel === MasteryLevel.MASTERED && "mastery-mastered"
             )
           : "";
 
@@ -158,10 +143,7 @@ export function InteractiveText({
           <span
             key={index}
             onClick={handleWordClick}
-            className={cn(
-              "hover:bg-accent/30 hover:text-accent-foreground cursor-pointer rounded px-0.5 transition-colors",
-              highlightClass
-            )}
+            className={cn("word-clickable", masteryClass)}
             role='button'
             tabIndex={0}
             title={
@@ -187,27 +169,30 @@ export function InteractiveText({
   );
 
   return (
-    <div>
-      {/* New Yorker Magazine Style Layout - Split Header */}
-      <Card className='mb-6 overflow-hidden border-0 bg-[#fffef8] shadow-lg dark:bg-[#1a1a18]'>
-        {/* Hero Section - Split Grid Layout */}
+    <div className='animate-fade-in'>
+      {/* Magazine Style Card */}
+      <div className='border-border/50 bg-card mb-6 overflow-hidden rounded-2xl border shadow-xl'>
+        {/* Hero Section */}
         <div
           className={`grid min-h-[400px] ${text.pictureUrl ? "md:grid-cols-2" : "grid-cols-1"}`}
         >
-          {/* Left Side - Title & Info */}
+          {/* Left - Title & Info */}
           <div className='flex flex-col justify-center px-8 py-12 md:px-12 lg:px-16'>
             {/* Category Tag */}
-            <span className='mb-6 font-serif text-sm font-medium uppercase tracking-[0.25em] text-[#c41e3a]'>
-              {course.language.name} · {course.level.name}
-            </span>
+            <div className='mb-6 flex items-center gap-2'>
+              <span className='bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-serif text-xs font-semibold uppercase tracking-widest'>
+                <Sparkles className='h-3 w-3' />
+                {course.language.name} · {course.level.name}
+              </span>
+            </div>
 
-            {/* Title - New Yorker Style */}
-            <h1 className='mb-6 font-serif text-3xl font-normal uppercase leading-[1.1] tracking-[-0.02em] text-[#1a1a18] md:text-4xl lg:text-5xl dark:text-[#e8e6dc]'>
+            {/* Title */}
+            <h1 className='mb-6 font-serif text-3xl font-bold leading-[1.15] tracking-tight md:text-4xl lg:text-5xl'>
               {text.title}
             </h1>
 
-            {/* Subtitle / Description */}
-            <p className='mb-8 font-serif text-lg italic text-[#5a5a52] dark:text-[#9a9a8f]'>
+            {/* Subtitle */}
+            <p className='text-muted-foreground mb-8 font-serif text-lg italic'>
               {t("clickToTranslate")}
             </p>
 
@@ -217,7 +202,11 @@ export function InteractiveText({
                 variant={viewMode === "read" ? "default" : "outline"}
                 size='sm'
                 onClick={() => setViewMode("read")}
-                className='gap-2 font-serif'
+                className={cn(
+                  "gap-2 font-serif",
+                  viewMode === "read" &&
+                    "gradient-bg border-0 text-white shadow-md"
+                )}
               >
                 <BookOpen className='h-4 w-4' />
                 {t("read")}
@@ -226,7 +215,11 @@ export function InteractiveText({
                 variant={viewMode === "listen" ? "default" : "outline"}
                 size='sm'
                 onClick={() => setViewMode("listen")}
-                className='gap-2 font-serif'
+                className={cn(
+                  "gap-2 font-serif",
+                  viewMode === "listen" &&
+                    "gradient-bg border-0 text-white shadow-md"
+                )}
               >
                 <Headphones className='h-4 w-4' />
                 {t("listen")}
@@ -234,36 +227,35 @@ export function InteractiveText({
             </div>
           </div>
 
-          {/* Right Side - Large Image */}
+          {/* Right - Image */}
           {text.pictureUrl && (
             <div className='relative min-h-[300px] md:min-h-full'>
               <Image
                 src={text.pictureUrl}
-                alt={`Illustration for ${text.title}`}
+                alt={`${t("clickToTranslate")} - ${text.title}`}
                 fill
-                className='object-cover'
+                className='object-cover transition-transform duration-700 hover:scale-105'
                 sizes='(max-width: 768px) 100vw, 50vw'
                 priority
               />
-              {/* Gradient overlay for better text contrast on mobile */}
-              <div className='absolute inset-0 bg-gradient-to-t from-[#1a1a18]/20 to-transparent md:hidden' />
+              <div className='bg-linear-to-l to-card/10 absolute inset-0 from-transparent' />
+              <div className='bg-linear-to-t from-card/30 absolute inset-0 to-transparent md:hidden' />
             </div>
           )}
         </div>
 
-        {/* Divider Line */}
-        <div className='flex items-center justify-center gap-4 px-8 py-6'>
-          <div className='h-px flex-1 bg-[#d4d0c4] dark:bg-[#3a3a38]' />
-          <div className='h-2 w-2 rotate-45 bg-[#c41e3a]' />
-          <div className='h-px flex-1 bg-[#d4d0c4] dark:bg-[#3a3a38]' />
+        {/* Elegant Divider */}
+        <div className='flex items-center justify-center gap-4 px-8 py-5'>
+          <div className='bg-linear-to-r via-border h-px flex-1 from-transparent to-transparent' />
+          <div className='gradient-bg h-2 w-2 rotate-45 rounded-[1px]' />
+          <div className='bg-linear-to-r via-border h-px flex-1 from-transparent to-transparent' />
         </div>
 
-        {/* Content Section */}
+        {/* Content */}
         <div className='px-8 pb-8 md:px-12 lg:px-16'>
-          {/* Read Mode */}
           {viewMode === "read" && (
             <div className='mx-auto max-w-2xl'>
-              <div className='font-serif text-lg leading-[1.9] text-[#1a1a18] dark:text-[#e8e6dc]'>
+              <div className='text-foreground font-serif text-lg leading-[1.95]'>
                 <div className='whitespace-pre-line'>
                   {renderInteractiveText(text.content)}
                 </div>
@@ -271,7 +263,6 @@ export function InteractiveText({
             </div>
           )}
 
-          {/* Listen Mode */}
           {viewMode === "listen" && (
             <div className='mx-auto max-w-2xl'>
               <AudioReader
@@ -283,39 +274,44 @@ export function InteractiveText({
         </div>
 
         {/* Magazine Footer */}
-        <div className='border-t border-[#d4d0c4] bg-[#f5f3e8] px-8 py-4 dark:border-[#3a3a38] dark:bg-[#151513]'>
-          <div className='flex items-center justify-center gap-2 font-serif text-xs uppercase tracking-widest text-[#8a8677] dark:text-[#6a6a5f]'>
-            <span>◆</span>
-            <span>Learn by Reading</span>
-            <span>◆</span>
+        <div className='border-border/50 bg-muted/30 border-t px-8 py-4'>
+          <div className='text-muted-foreground flex items-center justify-center gap-2 font-serif text-xs uppercase tracking-[0.2em]'>
+            <span className='gradient-text'>◆</span>
+            <span>Read2Learn</span>
+            <span className='gradient-text'>◆</span>
           </div>
         </div>
-      </Card>
+      </div>
 
+      {/* Action / Status */}
       {!completedReading ? (
         <div className='flex justify-center'>
-          <Button onClick={handleCompleteReading} size='lg' className='gap-2'>
-            <CheckCircle2 className='h-5 w-5' />
+          <Button
+            onClick={handleCompleteReading}
+            size='lg'
+            className='gradient-bg group h-12 border-0 px-8 text-white shadow-lg hover:shadow-xl hover:brightness-110'
+          >
+            <CheckCircle2 className='mr-2 h-5 w-5' />
             {t("markComplete")}
           </Button>
         </div>
       ) : isCompleted && !justCompleted ? (
-        <Card className='border-green-200 bg-green-50 p-6 dark:border-green-800 dark:bg-green-950'>
-          <div className='flex items-center gap-3 text-green-800 dark:text-green-200'>
+        <div className='animate-fade-in rounded-2xl border border-[oklch(0.7_0.14_175/0.3)] bg-[oklch(0.95_0.03_175)] p-6 dark:border-[oklch(0.4_0.08_175/0.3)] dark:bg-[oklch(0.2_0.02_175)]'>
+          <div className='flex items-center gap-3 text-[oklch(0.35_0.12_175)] dark:text-[oklch(0.78_0.1_175)]'>
             <CheckCircle2 className='h-6 w-6' />
             <p className='font-semibold'>{t("alreadyCompleted")}</p>
           </div>
-        </Card>
+        </div>
       ) : (
-        <Card className='border-green-200 bg-green-50 p-6 dark:border-green-800 dark:bg-green-950'>
-          <div className='flex items-center gap-3 text-green-800 dark:text-green-200'>
+        <div className='animate-scale-in rounded-2xl border border-[oklch(0.7_0.14_175/0.3)] bg-[oklch(0.95_0.03_175)] p-6 dark:border-[oklch(0.4_0.08_175/0.3)] dark:bg-[oklch(0.2_0.02_175)]'>
+          <div className='flex items-center gap-3 text-[oklch(0.35_0.12_175)] dark:text-[oklch(0.78_0.1_175)]'>
             <CheckCircle2 className='h-6 w-6' />
             <div>
               <p className='font-semibold'>{t("greatJob")}</p>
-              <p className='text-sm'>{t("returningToCourse")}</p>
+              <p className='text-sm opacity-80'>{t("returningToCourse")}</p>
             </div>
           </div>
-        </Card>
+        </div>
       )}
 
       {selectedWord && viewMode === "read" && (

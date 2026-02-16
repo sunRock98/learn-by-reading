@@ -311,7 +311,8 @@
     "courseProgress": "Course Progress",
     "textsCompleted": "{completed}/{total} texts completed",
     "textsAvailable": "{count} texts available",
-    "complete": "{percentage}% complete"
+    "complete": "{percentage}% complete",
+    "onTrack": "On track"
   },
   "TextList": {
     "readingTexts": "Reading Texts",
@@ -442,18 +443,32 @@
   "LandingPage": {
     "login": "Login",
     "getStarted": "Get Started",
+    "badge": "AI-Powered Language Learning",
     "heroTitle": "Master Languages Through",
     "heroHighlight": "Authentic Reading",
     "heroDescription": "Learn naturally by reading texts tailored to your level and interests. Click any word for instant translations and build your vocabulary effortlessly.",
     "startLearningFree": "Start Learning Free",
     "signIn": "Sign In",
+    "statsLanguages": "Languages",
+    "statsGenerated": "Generated Content",
+    "statsPersonalized": "Personalized",
+    "featuresTitle": "Everything you need to",
+    "featuresHighlight": "master languages",
+    "featuresDesc": "Powerful tools designed to make language learning engaging, effective, and fun",
     "multipleLanguages": "Multiple Languages",
     "multipleLanguagesDesc": "Learn Spanish, French, German, Italian, and more with content adapted to your level",
     "aiPoweredLearning": "AI-Powered Learning",
     "aiPoweredLearningDesc": "Generate custom texts based on your interests and get instant translations for any word",
     "trackProgress": "Track Progress",
     "trackProgressDesc": "Monitor your vocabulary growth and reading progress with detailed analytics",
+    "smartDictionary": "Smart Dictionary",
+    "smartDictionaryDesc": "Build your personal vocabulary with instant translations and mastery tracking",
+    "listenAndLearn": "Listen & Learn",
+    "listenAndLearnDesc": "High-quality AI voices with word-by-word highlighting as you follow along",
+    "interactiveExercises": "Interactive Exercises",
+    "interactiveExercisesDesc": "AI-generated quizzes, fill-in-the-blanks, and translation challenges",
     "howItWorks": "How It Works",
+    "startInMinutes": "Start learning in minutes",
     "step1Title": "Choose Your Language & Level",
     "step1Desc": "Select the language you want to learn and your current proficiency level (A1-C2)",
     "step2Title": "Read Engaging Content",
@@ -463,6 +478,7 @@
     "readyToStart": "Ready to Start Learning?",
     "readyToStartDesc": "Join thousands of learners mastering new languages through reading",
     "createFreeAccount": "Create Free Account",
+    "learnByReading": "Learn by Reading",
     "footer": "© 2025 Read2Learn. Master languages through authentic reading."
   }
 }
