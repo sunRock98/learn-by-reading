@@ -7,16 +7,34 @@ import { ArrowUpDown, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ExerciseComponentProps } from "./types";
 
+function shuffleArray<T>(arr: T[]): T[] {
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 export function SentenceOrderExercise({
   exercise,
   onSubmit,
   result,
   disabled,
 }: ExerciseComponentProps) {
-  const shuffledWords = useMemo<string[]>(
-    () => (exercise.options ? JSON.parse(exercise.options) : []),
-    [exercise.options]
-  );
+  const shuffledWords = useMemo<string[]>(() => {
+    const raw: string[] = exercise.options ? JSON.parse(exercise.options) : [];
+
+    // If options contain multi-word strings (bad AI output), derive
+    // individual words from correctAnswer and shuffle them instead
+    const hasMultiWordOptions = raw.some((opt) => opt.trim().includes(" "));
+    if (hasMultiWordOptions && exercise.correctAnswer) {
+      const words = exercise.correctAnswer.split(/\s+/).filter(Boolean);
+      return shuffleArray(words);
+    }
+
+    return raw;
+  }, [exercise.options, exercise.correctAnswer]);
 
   const [availableWords, setAvailableWords] = useState<string[]>(shuffledWords);
   const [selectedWords, setSelectedWords] = useState<string[]>([]);

@@ -50,7 +50,7 @@ Generate exactly 8 exercises with the following distribution:
 - 2 FILL_BLANK: Sentences from the text with a key word removed (marked as ___). The sentence MUST come from or be closely based on the text. Provide the missing word as correctAnswer.
 - 1 TRUE_FALSE: A statement about the text that is either true or false. Statement should be in ${language}. correctAnswer must be exactly "true" or "false".
 - 2 TRANSLATION: A word or short phrase from the text to translate from ${language} to ${motherLanguage}. The correctAnswer should be the translation in ${motherLanguage}.
-- 1 SENTENCE_ORDER: A sentence from the text split into words/chunks that need to be reordered. The "options" array contains the shuffled words/chunks. The "correctAnswer" is the correctly ordered sentence.
+- 1 SENTENCE_ORDER: A sentence from the text split into INDIVIDUAL words that need to be reordered. The "options" array must contain SINGLE WORDS (one word per array element), shuffled randomly. The "correctAnswer" is the correctly ordered full sentence.
 
 IMPORTANT RULES:
 - All questions and options for MULTIPLE_CHOICE, FILL_BLANK, TRUE_FALSE, and SENTENCE_ORDER should be in ${language}
@@ -59,7 +59,7 @@ IMPORTANT RULES:
 - Questions should test actual comprehension of the text, not just surface-level details
 - Explanations should be concise and in ${motherLanguage} to help the learner understand
 - For FILL_BLANK: the sentence with ___ should have enough context to identify the missing word
-- For SENTENCE_ORDER: split into 4-7 meaningful chunks, not individual characters
+- For SENTENCE_ORDER: each element in "options" MUST be exactly ONE word. Do NOT put multiple words in one option. Do NOT generate full sentence permutations. Example: ["muitos", "fizeram", "eles", "risadas"] NOT ["eles risadas fizeram muitos", "fizeram muitos eles risadas"]. Use 4-7 words from a short sentence.
 - For MULTIPLE_CHOICE: all 4 options must be plausible, only 1 correct
 
 OUTPUT FORMAT (STRICT):

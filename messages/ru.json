@@ -351,6 +351,7 @@
     "markComplete": "Отметить как завершённое",
     "greatJob": "Отлично!",
     "returningToCourse": "Возвращение к курсу...",
+    "alreadyCompleted": "Вы уже завершили этот текст",
     "illustration": "иллюстрация"
   },
   "TranslationPopup": {

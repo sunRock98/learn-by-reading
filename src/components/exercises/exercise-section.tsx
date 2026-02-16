@@ -362,6 +362,7 @@ export function ExerciseSection({
       <div className='px-8 py-6'>
         {currentExercise.type === "MULTIPLE_CHOICE" && (
           <MultipleChoiceExercise
+            key={currentExercise.id}
             exercise={currentExercise}
             onSubmit={handleSubmitAnswer}
             result={results[currentExercise.id] || null}
@@ -369,6 +370,7 @@ export function ExerciseSection({
         )}
         {currentExercise.type === "FILL_BLANK" && (
           <FillBlankExercise
+            key={currentExercise.id}
             exercise={currentExercise}
             onSubmit={handleSubmitAnswer}
             result={results[currentExercise.id] || null}
@@ -376,6 +378,7 @@ export function ExerciseSection({
         )}
         {currentExercise.type === "TRUE_FALSE" && (
           <TrueFalseExercise
+            key={currentExercise.id}
             exercise={currentExercise}
             onSubmit={handleSubmitAnswer}
             result={results[currentExercise.id] || null}
@@ -383,6 +386,7 @@ export function ExerciseSection({
         )}
         {currentExercise.type === "TRANSLATION" && (
           <TranslationExercise
+            key={currentExercise.id}
             exercise={currentExercise}
             onSubmit={handleSubmitAnswer}
             result={results[currentExercise.id] || null}
@@ -390,6 +394,7 @@ export function ExerciseSection({
         )}
         {currentExercise.type === "SENTENCE_ORDER" && (
           <SentenceOrderExercise
+            key={currentExercise.id}
             exercise={currentExercise}
             onSubmit={handleSubmitAnswer}
             result={results[currentExercise.id] || null}

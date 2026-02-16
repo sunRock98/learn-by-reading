@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { AudioReader } from "@/components/audio-reader";
 import { useTranslations } from "next-intl";
 import { updateWordMasteryOnTextComplete } from "@/actions/dictionary";
+import { markTextAsComplete } from "@/actions/text-progress";
 import { cn } from "@/lib/utils";
 import { MasteryLevel } from "@prisma/client";
 
@@ -41,6 +42,7 @@ interface InteractiveTextProps {
   course: Course;
   userNativeLanguage: string;
   dictionaryWords?: DictionaryWord[];
+  isCompleted?: boolean;
 }
 
 interface WordPosition {
@@ -56,9 +58,11 @@ export function InteractiveText({
   course,
   userNativeLanguage,
   dictionaryWords = [],
+  isCompleted = false,
 }: InteractiveTextProps) {
   const [selectedWord, setSelectedWord] = useState<WordPosition | null>(null);
-  const [completedReading, setCompletedReading] = useState(false);
+  const [completedReading, setCompletedReading] = useState(isCompleted);
+  const [justCompleted, setJustCompleted] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("read");
   const router = useRouter();
   const t = useTranslations("InteractiveText");
@@ -103,7 +107,11 @@ export function InteractiveText({
     // Update word mastery based on which words were clicked/not clicked
     await updateWordMasteryOnTextComplete(text.id);
 
+    // Mark the text as completed in user progress
+    await markTextAsComplete(text.id, text.courseId);
+
     setCompletedReading(true);
+    setJustCompleted(true);
     setTimeout(() => {
       router.push(`/course/${text.courseId}`);
     }, 2000);
@@ -291,6 +299,13 @@ export function InteractiveText({
             {t("markComplete")}
           </Button>
         </div>
+      ) : isCompleted && !justCompleted ? (
+        <Card className='border-green-200 bg-green-50 p-6 dark:border-green-800 dark:bg-green-950'>
+          <div className='flex items-center gap-3 text-green-800 dark:text-green-200'>
+            <CheckCircle2 className='h-6 w-6' />
+            <p className='font-semibold'>{t("alreadyCompleted")}</p>
+          </div>
+        </Card>
       ) : (
         <Card className='border-green-200 bg-green-50 p-6 dark:border-green-800 dark:bg-green-950'>
           <div className='flex items-center gap-3 text-green-800 dark:text-green-200'>
