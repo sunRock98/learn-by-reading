@@ -18,12 +18,14 @@ export const generateText = async ({
   motherLanguage,
   topic,
   wordsToReinforce,
+  interests,
 }: {
   language: string;
   level: string;
   motherLanguage: string;
   topic?: string;
   wordsToReinforce?: string[];
+  interests?: string[];
 }) => {
   const prompt = constructPrompt({
     language,
@@ -31,6 +33,7 @@ export const generateText = async ({
     motherLanguage,
     topic,
     wordsToReinforce,
+    interests,
   });
 
   try {

@@ -60,17 +60,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const interestTopic =
-      topic ||
-      (interests?.length > 0
-        ? interests[Math.floor(Math.random() * interests.length)]
-        : undefined);
-
     const prompt = constructPrompt({
       language,
       level,
       motherLanguage: "English",
-      topic: interestTopic,
+      topic: topic || undefined,
+      interests: topic ? undefined : interests,
     });
 
     const response = await openai.chat.completions.create({
@@ -79,8 +74,8 @@ export async function POST(request: Request) {
         { role: "system", content: prompt },
         {
           role: "user",
-          content: interestTopic
-            ? `Generate a text about: ${interestTopic}`
+          content: topic
+            ? `Generate a text about: ${topic}`
             : "Generate an interesting text for me to read",
         },
       ],

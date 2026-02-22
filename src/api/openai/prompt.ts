@@ -4,16 +4,23 @@ export const constructPrompt = ({
   level,
   topic,
   wordsToReinforce,
+  interests,
 }: {
   language: string;
   level: string;
   motherLanguage: string;
   topic?: string;
   wordsToReinforce?: string[];
+  interests?: string[];
 }) => {
-  const topicInstruction = topic
-    ? `The story MUST be centered on the following topic: "${topic}".`
-    : `Choose a single concrete topic from everyday life (work, travel, family, food, relationships, routines, small problems, unexpected situations).`;
+  let topicInstruction: string;
+  if (topic) {
+    topicInstruction = `The story MUST be centered on the following topic: "${topic}".`;
+  } else if (interests?.length) {
+    topicInstruction = `The learner is interested in: ${interests.join(", ")}. Pick ONE of these interests and write a story centered on that theme. Choose a concrete, everyday angle within that interest.`;
+  } else {
+    topicInstruction = `Choose a single concrete topic from everyday life (work, travel, family, food, relationships, routines, small problems, unexpected situations).`;
+  }
 
   const vocabularyReinforcementInstruction = wordsToReinforce?.length
     ? `
