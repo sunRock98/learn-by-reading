@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import {
   Select,
   SelectContent,
@@ -172,10 +173,9 @@ export const SettingsForm = ({ initialNativeLanguage }: SettingsFormProps) => {
                     <FormItem>
                       <FormLabel>{t("schema.password.label")}</FormLabel>
                       <FormControl>
-                        <Input
+                        <PasswordInput
                           id='password'
-                          // type='password'
-                          autoComplete='password'
+                          autoComplete='current-password'
                           {...field}
                           placeholder='*******'
                           className='mt-1 block w-full'
@@ -195,10 +195,9 @@ export const SettingsForm = ({ initialNativeLanguage }: SettingsFormProps) => {
                     <FormItem>
                       <FormLabel>{t("schema.newPassword.label")}</FormLabel>
                       <FormControl>
-                        <Input
+                        <PasswordInput
                           id='newPassword'
-                          // type='password'
-                          autoComplete='password'
+                          autoComplete='new-password'
                           {...field}
                           placeholder='*******'
                           className='mt-1 block w-full'

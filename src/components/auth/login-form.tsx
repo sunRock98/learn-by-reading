@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import { PasswordInput } from "../ui/password-input";
 import { Button } from "../ui/button";
 import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
@@ -115,10 +116,9 @@ export const LoginForm = () => {
                         </Button>
                       </div>
                       <FormControl>
-                        <Input
+                        <PasswordInput
                           {...field}
                           id='password'
-                          type='password'
                           placeholder={t("passwordPlaceholder")}
                           disabled={isPending}
                         />

@@ -6,7 +6,16 @@
 
 export const LANDING_PAGE = "/";
 
-export const publicRoutes = [LANDING_PAGE, ""];
+export const ONBOARDING = "/onboarding";
+
+export const publicRoutes = [LANDING_PAGE, "", ONBOARDING];
+
+/**
+ * Guest routes allow unauthenticated users to access certain features
+ * These are prefix-matched (any route starting with these paths is allowed)
+ * @type {string[]}
+ */
+export const guestRoutesPrefixes = ["/guest/"];
 
 /**
  * Auth routes are routes that are used for authentication

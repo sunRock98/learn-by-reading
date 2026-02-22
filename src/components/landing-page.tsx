@@ -25,7 +25,7 @@ export function LandingPage() {
                 <Link href='/auth/login'>{t("login")}</Link>
               </Button>
               <Button asChild>
-                <Link href='/auth/register'>{t("getStarted")}</Link>
+                <Link href='/onboarding'>{t("getStarted")}</Link>
               </Button>
             </div>
           </div>
@@ -44,7 +44,7 @@ export function LandingPage() {
           </p>
           <div className='flex flex-col justify-center gap-4 sm:flex-row'>
             <Button size='lg' asChild>
-              <Link href='/auth/register'>{t("startLearningFree")}</Link>
+              <Link href='/onboarding'>{t("startLearningFree")}</Link>
             </Button>
             <Button size='lg' variant='outline' asChild>
               <Link href='/auth/login'>{t("signIn")}</Link>
@@ -145,7 +145,7 @@ export function LandingPage() {
           <h2 className='mb-4 text-3xl font-bold'>{t("readyToStart")}</h2>
           <p className='text-muted-foreground mb-8'>{t("readyToStartDesc")}</p>
           <Button size='lg' asChild>
-            <Link href='/auth/register'>{t("createFreeAccount")}</Link>
+            <Link href='/onboarding'>{t("createFreeAccount")}</Link>
           </Button>
         </div>
       </section>

@@ -6,6 +6,7 @@ import {
   authRoutes,
   DEFAULT_LOGIN_REDIRECT,
   publicRoutes,
+  guestRoutesPrefixes,
 } from "./routes";
 import createNextIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
@@ -33,6 +34,9 @@ export default auth((req) => {
     publicRoutes.includes(pathnameWithoutLocale) ||
     pathnameWithoutLocale === "";
   const isAuthRoute = authRoutes.includes(pathnameWithoutLocale);
+  const isGuestRoute = guestRoutesPrefixes.some((prefix) =>
+    pathnameWithoutLocale.startsWith(prefix)
+  );
 
   if (isApiAuthRoute) {
     return;
@@ -45,6 +49,11 @@ export default auth((req) => {
 
   // Allow access to public routes (including landing page) without authentication
   if (isPublicRoute) {
+    return handleI18nRouting(req);
+  }
+
+  // Allow guest routes without authentication (onboarding, guest reading)
+  if (isGuestRoute) {
     return handleI18nRouting(req);
   }
 

@@ -14,7 +14,7 @@ import {
   FormItem,
   FormMessage,
 } from "../ui/form";
-import { Input } from "../ui/input";
+import { PasswordInput } from "../ui/password-input";
 import { NewPasswordSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { changePassword } from "@/actions/change-password";
@@ -62,9 +62,8 @@ export const NewPasswordForm = () => {
               return (
                 <FormItem>
                   <FormControl>
-                    <Input
+                    <PasswordInput
                       {...field}
-                      type='password'
                       placeholder={t("passwordPlaceholder")}
                       disabled={isPending}
                     />
