@@ -42,13 +42,14 @@ model User {
   password         String?
   activeCourseId   Int?
   activeCourse     Course?                @relation(fields: [activeCourseId], references: [id])
-  nativeLanguage   String?                @default("English") // User's mother language for translations
+  nativeLanguage   String?                @default("English")
+  interests        String[]               @default([])
   role             UserRole               @default(USER)
   accounts         Account[]
   subscriptions    Course[]               @relation("UserSubscriptions")
-  progress         UserProgress[] // User's progress across texts
-  exerciseProgress UserExerciseProgress[] // User's progress across exercises
-  dictionaries     UserDictionary[] // User's dictionaries per course
+  progress         UserProgress[]
+  exerciseProgress UserExerciseProgress[]
+  dictionaries     UserDictionary[]
 
   @@map("users")
 }

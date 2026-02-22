@@ -56,13 +56,13 @@ export const generateNewText = async ({
       return { success: false, error: "Not authenticated" };
     }
 
-    // Get user's native language for translations
     const userData = await db.user.findUnique({
       where: { id: user.id },
-      select: { nativeLanguage: true },
+      select: { nativeLanguage: true, interests: true },
     });
 
     const motherLanguage = userData?.nativeLanguage || "English";
+    const interests = userData?.interests ?? [];
 
     // Fetch user's dictionary words to reinforce (prioritize LEARNING and REVIEWING)
     const dictionaryWords = await db.word.findMany({
@@ -92,6 +92,7 @@ export const generateNewText = async ({
       motherLanguage,
       topic,
       wordsToReinforce,
+      interests: topic ? undefined : interests,
     });
 
     if (!data) {

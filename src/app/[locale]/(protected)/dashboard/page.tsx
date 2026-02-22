@@ -38,7 +38,13 @@ async function getDashboardData(userId: string) {
       language: true,
       level: true,
       texts: {
-        include: {
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          courseId: true,
+          picture_url: true,
+          audio_url: true,
           progress: {
             where: { userId },
           },
@@ -87,12 +93,25 @@ async function getDashboardData(userId: string) {
   };
 }
 
+async function needsOnboarding(userId: string): Promise<boolean> {
+  const userData = await db.user.findUnique({
+    where: { id: userId },
+    select: { interests: true },
+  });
+
+  return !userData || userData.interests.length === 0;
+}
+
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   const t = await getTranslations("Dashboard");
 
   if (!user) {
     redirect("/auth/login");
+  }
+
+  if (await needsOnboarding(user.id!)) {
+    redirect("/onboarding");
   }
 
   const [{ courses, recentWords, stats }, { languages, levels }] =
