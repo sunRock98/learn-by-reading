@@ -3,8 +3,7 @@
 import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { DictionaryStats } from "@/components/dictionary-stats";
-import { DictionaryGrid } from "@/components/dictionary-grid";
+import { DictionaryStudy } from "@/components/dictionary-study";
 import { Globe } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { LanguageGroup, LanguageStats } from "@/actions/dictionary";
@@ -65,12 +64,7 @@ export function DictionaryTabs({
 
   // If no groups (no words at all), show empty state
   if (groups.length === 0) {
-    return (
-      <>
-        <DictionaryStats words={[]} />
-        <DictionaryGrid words={[]} />
-      </>
-    );
+    return <DictionaryStudy words={[]} />;
   }
 
   // If only one language, no need for tabs
@@ -82,8 +76,7 @@ export function DictionaryTabs({
           <Globe className='text-muted-foreground h-5 w-5' />
           <span className='text-lg font-medium'>{group.languageName}</span>
         </div>
-        <DictionaryStats words={group.words} />
-        <DictionaryGrid words={group.words} />
+        <DictionaryStudy words={group.words} />
       </>
     );
   }
@@ -119,15 +112,13 @@ export function DictionaryTabs({
       {/* Content for each language tab */}
       {groups.map((group) => (
         <TabsContent key={group.languageId} value={String(group.languageId)}>
-          <DictionaryStats words={group.words} />
-          <DictionaryGrid words={group.words} />
+          <DictionaryStudy words={group.words} />
         </TabsContent>
       ))}
 
       {/* Content for "All Languages" tab */}
       <TabsContent value='all'>
-        <DictionaryStats words={allWords} />
-        <DictionaryGrid words={allWords} />
+        <DictionaryStudy words={allWords} />
       </TabsContent>
     </Tabs>
   );
