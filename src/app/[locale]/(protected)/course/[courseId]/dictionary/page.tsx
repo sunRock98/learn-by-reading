@@ -2,8 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getUserDictionaryWords } from "@/actions/dictionary";
-import { DictionaryGrid } from "@/components/dictionary-grid";
-import { DictionaryStats } from "@/components/dictionary-stats";
+import { DictionaryStudy } from "@/components/dictionary-study";
 import { BackButton } from "@/components/ui/back-button";
 
 interface CourseDictionaryPageProps {
@@ -55,8 +54,7 @@ export default async function CourseDictionaryPage({
         </p>
       </div>
 
-      <DictionaryStats words={words} />
-      <DictionaryGrid words={words} />
+      <DictionaryStudy words={words} />
     </div>
   );
 }

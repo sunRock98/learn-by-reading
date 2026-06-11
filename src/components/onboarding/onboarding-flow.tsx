@@ -124,8 +124,7 @@ export function OnboardingFlow({
             return;
           }
           clearGuestData();
-          router.push("/dashboard");
-          router.refresh();
+          window.location.href = "/dashboard";
         } catch {
           setError(t("sthWentWrong"));
         }
@@ -167,8 +166,7 @@ export function OnboardingFlow({
         }
 
         clearGuestData();
-        router.push("/dashboard");
-        router.refresh();
+        window.location.href = "/dashboard";
       } catch {
         setError(t("sthWentWrong"));
       }

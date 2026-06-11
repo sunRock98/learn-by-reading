@@ -10,37 +10,27 @@ import {
   removeWordFromDictionary,
   updateWordMastery,
 } from "@/actions/dictionary";
+import type { DictionaryWord } from "@/actions/dictionary";
 import { MasteryLevel } from "@prisma/client";
 import { useTranslations } from "next-intl";
 
-interface Word {
-  id: number;
-  original: string;
-  translation: string;
-  lookupCount: number;
-  lastSeenAt: Date;
-  masteryLevel: MasteryLevel;
-  createdAt: Date;
-  languageFrom: { name: string };
-  languageTo: { name: string };
-  dictionary: {
-    course: {
-      language: { name: string };
-      level: { name: string };
-    };
-  };
-}
-
 interface DictionaryGridProps {
-  words: Word[];
+  words: DictionaryWord[];
+  onWordsChange: (words: DictionaryWord[]) => void;
 }
 
-export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
-  const [words, setWords] = useState(initialWords);
+export function DictionaryGrid({ words, onWordsChange }: DictionaryGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<MasteryLevel | "all">("all");
   const t = useTranslations("Dictionary");
   const tCommon = useTranslations("common");
+
+  const setWords = useCallback(
+    (updater: (currentWords: DictionaryWord[]) => DictionaryWord[]) => {
+      onWordsChange(updater(words));
+    },
+    [onWordsChange, words]
+  );
 
   const filteredWords = words.filter((word) => {
     const matchesSearch =
@@ -78,13 +68,16 @@ export function DictionaryGrid({ words: initialWords }: DictionaryGridProps) {
 
       await updateWordMastery({ wordId: id, masteryLevel: newLevel });
     },
-    []
+    [setWords]
   );
 
-  const handleDelete = useCallback(async (id: number) => {
-    setWords((prev) => prev.filter((w) => w.id !== id));
-    await removeWordFromDictionary({ wordId: id });
-  }, []);
+  const handleDelete = useCallback(
+    async (id: number) => {
+      setWords((prev) => prev.filter((w) => w.id !== id));
+      await removeWordFromDictionary({ wordId: id });
+    },
+    [setWords]
+  );
 
   const getMasteryColor = (level: MasteryLevel) => {
     switch (level) {
