@@ -10,9 +10,9 @@ interface GenerateImageParams {
 
 /**
  * Generates an illustration in The New Yorker magazine style for a text.
- * Uses DALL-E 3 to create sophisticated, editorial-style artwork.
+ * Uses GPT Image to create sophisticated, editorial-style artwork.
  * Returns the image as a Buffer so it can be stored permanently in the database,
- * avoiding the issue of OpenAI's temporary URLs expiring after ~1-2 hours.
+ * avoiding the issue of temporary image URLs expiring.
  */
 export const generateImage = async ({
   title,
@@ -43,10 +43,10 @@ export const generateImage = async ({
       throw new Error("Failed to generate scene description");
     }
 
-    // Generate the image with New Yorker style, using b64_json to get actual image data
-    // (OpenAI's URL responses are temporary and expire after ~1-2 hours)
+    // GPT Image models return b64_json by default. Do not send DALL-E-only
+    // params such as response_format or style.
     const imageResponse = await openai.images.generate({
-      model: "dall-e-3",
+      model: process.env.OPENAI_IMAGE_MODEL ?? "gpt-image-1",
       prompt: `Create an elegant editorial illustration in the distinctive style of The New Yorker magazine covers and illustrations. The style should feature: sophisticated linework, subtle watercolor washes, muted yet refined color palette with occasional bold accents, whimsical but intelligent artistic sensibility, clean composition with negative space, slightly surreal or dreamlike quality. 
 
 Scene to illustrate: ${sceneDescription}
@@ -54,12 +54,10 @@ Scene to illustrate: ${sceneDescription}
 Important: No text, letters, words, or typography in the image. Pure illustration only. The mood should be contemplative and literary.`,
       n: 1,
       size: "1024x1024",
-      quality: "standard",
-      style: "vivid",
-      response_format: "b64_json",
     });
 
-    const b64Data = imageResponse.data[0]?.b64_json;
+    const image = imageResponse.data[0];
+    const b64Data = image?.b64_json;
 
     if (!b64Data) {
       throw new Error("No image data in response");
