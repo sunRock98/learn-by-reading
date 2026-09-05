@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
@@ -85,18 +85,36 @@ export function AudioReader({
   const preloadStartedRef = useRef(false);
   const progressKeyRef = useRef(generateProgressKey(text));
   const currentTimeRef = useRef(0); // Track current time for saving on unmount
+  const displayedTimeRef = useRef(0);
+  const isSeekingRef = useRef(false);
+  const animationFrameRef = useRef<number | null>(null);
 
-  // Split text into words
-  const words = text.split(/(\s+)/).filter((w) => w.trim().length > 0);
+  // Split text into words once per text change.
+  const words = useMemo(
+    () => text.split(/(\s+)/).filter((word) => word.trim().length > 0),
+    [text]
+  );
 
-  // Calculate estimated word timing based on audio duration
-  const getWordTimings = useCallback(() => {
-    if (duration === 0) return [];
-    const avgTimePerWord = duration / words.length;
-    return words.map((_, index) => ({
-      start: index * avgTimePerWord,
-      end: (index + 1) * avgTimePerWord,
-    }));
+  // Estimate spoken time from the word's length rather than giving every word
+  // an equal slice. Punctuation adds a small weight for natural speech pauses.
+  const wordTimings = useMemo(() => {
+    if (duration === 0 || words.length === 0) return [];
+
+    const weights = words.map((word) => {
+      const characters = (word.match(/[\p{L}\p{N}]/gu) ?? []).length;
+      const shortPauses = (word.match(/[,;:—–-]/g) ?? []).length * 2;
+      const longPauses = (word.match(/[.!?…]/g) ?? []).length * 4;
+
+      return Math.max(1, characters) + shortPauses + longPauses;
+    });
+    const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+    let elapsed = 0;
+
+    return weights.map((weight) => {
+      const start = elapsed;
+      elapsed += (weight / totalWeight) * duration;
+      return { start, end: elapsed };
+    });
   }, [duration, words]);
 
   // Generate audio (with caching)
@@ -200,6 +218,8 @@ export function AudioReader({
   const handleReset = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
+      currentTimeRef.current = 0;
+      displayedTimeRef.current = 0;
       setCurrentWordIndex(-1);
       setProgress(0);
       setCurrentTime(0);
@@ -249,15 +269,32 @@ export function AudioReader({
     }
   }, []);
 
-  // Handle progress bar seek
-  const handleSeek = useCallback(
+  // Keep the thumb responsive while it is dragged. Applying currentTime on every
+  // pointer movement makes the browser repeatedly seek and can make it jump.
+  const handleSeekPreview = useCallback(
     (value: number[]) => {
-      const seekTime = (value[0] / 100) * duration;
+      const nextProgress = value[0] ?? 0;
+      const nextTime = (nextProgress / 100) * duration;
+      isSeekingRef.current = true;
+      displayedTimeRef.current = nextTime;
+      setProgress(nextProgress);
+      setCurrentTime(nextTime);
+    },
+    [duration]
+  );
+
+  const handleSeekCommit = useCallback(
+    (value: number[]) => {
+      const nextProgress = value[0] ?? 0;
+      const seekTime = (nextProgress / 100) * duration;
       if (audioRef.current) {
         audioRef.current.currentTime = seekTime;
-        setCurrentTime(seekTime);
-        setProgress(value[0]);
+        currentTimeRef.current = seekTime;
       }
+      displayedTimeRef.current = seekTime;
+      setCurrentTime(seekTime);
+      setProgress(nextProgress);
+      isSeekingRef.current = false;
     },
     [duration]
   );
@@ -266,8 +303,7 @@ export function AudioReader({
   useEffect(() => {
     if (!isPlaying || duration === 0) return;
 
-    const timings = getWordTimings();
-    const currentIndex = timings.findIndex(
+    const currentIndex = wordTimings.findIndex(
       (timing) => currentTime >= timing.start && currentTime < timing.end
     );
 
@@ -295,7 +331,7 @@ export function AudioReader({
         });
       }
     }
-  }, [currentTime, isPlaying, duration, getWordTimings, currentWordIndex]);
+  }, [currentTime, isPlaying, duration, wordTimings, currentWordIndex]);
 
   // Audio event listeners
   useEffect(() => {
@@ -304,6 +340,38 @@ export function AudioReader({
     const audio = new Audio(audioUrl);
     audioRef.current = audio;
 
+    const syncPlaybackPosition = () => {
+      if (!isSeekingRef.current && Number.isFinite(audio.duration)) {
+        const nextTime = audio.currentTime;
+        currentTimeRef.current = nextTime;
+        // Reading the clock on every animation frame avoids the coarse and
+        // browser-dependent `timeupdate` cadence. Limit React updates to 30fps
+        // so the text rendering cannot make the control itself feel sluggish.
+        if (Math.abs(nextTime - displayedTimeRef.current) >= 1 / 30) {
+          displayedTimeRef.current = nextTime;
+          setCurrentTime(nextTime);
+          setProgress((nextTime / audio.duration) * 100);
+        }
+      }
+
+      if (!audio.paused && !audio.ended) {
+        animationFrameRef.current = requestAnimationFrame(syncPlaybackPosition);
+      }
+    };
+
+    const startPositionSync = () => {
+      if (animationFrameRef.current === null) {
+        animationFrameRef.current = requestAnimationFrame(syncPlaybackPosition);
+      }
+    };
+
+    const stopPositionSync = () => {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+    };
+
     audio.addEventListener("loadedmetadata", () => {
       setDuration(audio.duration);
 
@@ -311,28 +379,28 @@ export function AudioReader({
       const savedProgress = getPlaybackProgress(progressKeyRef.current);
       if (savedProgress !== null && savedProgress > 0) {
         audio.currentTime = savedProgress;
+        currentTimeRef.current = savedProgress;
+        displayedTimeRef.current = savedProgress;
         setCurrentTime(savedProgress);
         setProgress((savedProgress / audio.duration) * 100);
       }
     });
 
-    audio.addEventListener("timeupdate", () => {
-      setCurrentTime(audio.currentTime);
-      currentTimeRef.current = audio.currentTime; // Keep ref updated for unmount save
-      setProgress((audio.currentTime / audio.duration) * 100);
-    });
-
     audio.addEventListener("play", () => {
       setIsPlaying(true);
+      startPositionSync();
     });
 
     audio.addEventListener("pause", () => {
+      stopPositionSync();
+      syncPlaybackPosition();
       setIsPlaying(false);
       // Save progress when paused
       savePlaybackProgress(progressKeyRef.current, audio.currentTime);
     });
 
     audio.addEventListener("ended", () => {
+      stopPositionSync();
       setIsPlaying(false);
       setCurrentWordIndex(-1);
       // Clear progress when finished
@@ -346,6 +414,7 @@ export function AudioReader({
     }
 
     return () => {
+      stopPositionSync();
       audio.pause();
       audio.src = "";
     };
@@ -415,7 +484,8 @@ export function AudioReader({
           value={[progress]}
           max={100}
           step={0.1}
-          onValueChange={handleSeek}
+          onValueChange={handleSeekPreview}
+          onValueCommit={handleSeekCommit}
           className='cursor-pointer'
         />
         <div className='text-muted-foreground mt-1 flex justify-between text-xs'>
