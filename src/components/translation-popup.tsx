@@ -11,12 +11,15 @@ import {
   checkWordAndRecordClick,
 } from "@/actions/dictionary";
 import { useTranslations } from "next-intl";
+import { getLanguageCodeFromName } from "@/lib/native-languages";
+import { playAzureSpeech } from "@/lib/azure-speech-client";
 
 interface TranslationPopupProps {
   word: string;
   sourceLanguage: string;
   targetLanguage: string;
   position: { x: number; y: number };
+  browserTranslation: Promise<string> | null;
   courseId: number;
   textId?: number; // Optional: which text user is reading when clicking the word
   onClose: () => void;
@@ -28,11 +31,67 @@ interface TranslationResult {
   pronunciation?: string;
 }
 
+const BROWSER_TRANSLATION_WAIT_MS = 750;
+
+// Prefer a consistent regional pronunciation where the browser has one.
+// Users can still fall back to any installed voice for the base language.
+const PREFERRED_SPEECH_LOCALES: Record<string, string[]> = {
+  en: ["en-US", "en-GB"],
+  es: ["es-ES", "es-MX"],
+  fr: ["fr-FR", "fr-CA"],
+  pt: ["pt-BR", "pt-PT"],
+  de: ["de-DE"],
+  it: ["it-IT"],
+  ru: ["ru-RU"],
+  ja: ["ja-JP"],
+  ko: ["ko-KR"],
+  zh: ["zh-CN", "zh-TW"],
+};
+
+function getPreferredVoice(
+  voices: SpeechSynthesisVoice[],
+  languageCode: string
+) {
+  const preferredLocales = PREFERRED_SPEECH_LOCALES[languageCode] ?? [];
+
+  for (const locale of preferredLocales) {
+    const exactMatch = voices.find(
+      (voice) => voice.lang.toLowerCase() === locale.toLowerCase()
+    );
+    if (exactMatch) return exactMatch;
+  }
+
+  return voices.find((voice) =>
+    voice.lang.toLowerCase().startsWith(languageCode.toLowerCase())
+  );
+}
+
+async function getFastBrowserTranslation(
+  browserTranslation: Promise<string>
+): Promise<string | null> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    return await Promise.race([
+      browserTranslation.catch(() => null),
+      new Promise<null>((resolve) => {
+        timeoutId = setTimeout(
+          () => resolve(null),
+          BROWSER_TRANSLATION_WAIT_MS
+        );
+      }),
+    ]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
+
 export function TranslationPopup({
   word,
   sourceLanguage,
   targetLanguage,
   position,
+  browserTranslation,
   courseId,
   textId,
   onClose,
@@ -60,16 +119,43 @@ export function TranslationPopup({
 
         if (checkResult.isInDictionary && checkResult.translation) {
           // Word is already saved - use saved translation and mark as saved
+          console.info("[translation] result", {
+            word,
+            sourceLanguage,
+            targetLanguage,
+            provider: "saved dictionary",
+            translation: checkResult.translation,
+          });
           setIsSaved(true);
           setTranslation({
             translation: checkResult.translation,
           });
         } else {
-          // Word not in dictionary - fetch translation
-          const result = await fastTranslate({
+          // Prefer Chrome's on-device Translator API when its language model
+          // is already available. Any browser error transparently falls back
+          // to the existing server translation. On first use Chrome may need
+          // to download a language pack, so don't make the popup wait for it;
+          // the download continues and later clicks can use it instantly.
+          const localTranslation = browserTranslation
+            ? await getFastBrowserTranslation(browserTranslation)
+            : null;
+          const result = localTranslation
+            ? {
+                translation: localTranslation,
+                provider: "Chrome Translator API" as const,
+              }
+            : await fastTranslate({
+                word,
+                sourceLanguage,
+                targetLanguage,
+              });
+
+          console.info("[translation] result", {
             word,
             sourceLanguage,
             targetLanguage,
+            provider: result.provider,
+            translation: result.translation,
           });
           setTranslation({
             translation: result.translation,
@@ -86,7 +172,15 @@ export function TranslationPopup({
     };
 
     initPopup();
-  }, [word, sourceLanguage, targetLanguage, courseId, textId, t]);
+  }, [
+    word,
+    sourceLanguage,
+    targetLanguage,
+    courseId,
+    textId,
+    browserTranslation,
+    t,
+  ]);
 
   const handleSaveToDictionary = useCallback(async () => {
     if (!translation || isSaving) return;
@@ -125,20 +219,35 @@ export function TranslationPopup({
   ]);
 
   const handlePlayAudio = useCallback(() => {
-    // Use browser's speech synthesis for audio playback
-    if ("speechSynthesis" in window) {
+    const langCode = getLanguageCodeFromName(sourceLanguage);
+    const preferredLocale = PREFERRED_SPEECH_LOCALES[langCode]?.[0] ?? langCode;
+
+    const speakWithBrowser = () => {
+      if (!("speechSynthesis" in window)) return;
+
+      const synth = window.speechSynthesis;
+      const voices = synth.getVoices();
       const utterance = new SpeechSynthesisUtterance(word);
-      // Try to find a voice for the source language
-      const voices = speechSynthesis.getVoices();
-      const langCode = sourceLanguage.toLowerCase().slice(0, 2);
-      const voice = voices.find((v) =>
-        v.lang.toLowerCase().startsWith(langCode)
-      );
-      if (voice) {
-        utterance.voice = voice;
-      }
-      speechSynthesis.speak(utterance);
-    }
+      utterance.lang = preferredLocale;
+      utterance.rate = 0.85;
+      const voice = getPreferredVoice(voices, langCode);
+      if (voice) utterance.voice = voice;
+
+      synth.cancel();
+      synth.speak(utterance);
+    };
+
+    void playAzureSpeech(word, sourceLanguage)
+      .then(() => {
+        console.info("[speech] Azure Neural TTS", {
+          word,
+          language: sourceLanguage,
+        });
+      })
+      .catch((error) => {
+        console.warn("[speech] Azure unavailable; using browser voice", error);
+        speakWithBrowser();
+      });
   }, [word, sourceLanguage]);
 
   // Calculate position to keep popup in viewport
