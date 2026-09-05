@@ -76,13 +76,15 @@ export async function POST(request: Request) {
     );
   }
 
+  const text = body.text;
+  const language = body.language;
   if (
-    typeof body.text !== "string" ||
-    typeof body.language !== "string" ||
-    !body.text.trim() ||
-    body.text.length > MAX_TEXT_LENGTH ||
+    typeof text !== "string" ||
+    typeof language !== "string" ||
+    !text.trim() ||
+    text.length > MAX_TEXT_LENGTH ||
     !NATIVE_LANGUAGES.some(
-      (language) => language.name.toLowerCase() === body.language.toLowerCase()
+      (entry) => entry.name.toLowerCase() === language.toLowerCase()
     )
   ) {
     return NextResponse.json(
@@ -91,11 +93,9 @@ export async function POST(request: Request) {
     );
   }
 
-  // Validated as a string and against NATIVE_LANGUAGES above.
-  const language = body.language as string;
   const languageCode = getLanguageCodeFromName(language);
   const voice = VOICES[languageCode] ?? VOICES.en;
-  const ssml = `<speak version="1.0" xml:lang="${voice.locale}"><voice name="${voice.name}">${escapeXml(body.text.trim())}</voice></speak>`;
+  const ssml = `<speak version="1.0" xml:lang="${voice.locale}"><voice name="${voice.name}">${escapeXml(text.trim())}</voice></speak>`;
 
   try {
     const response = await fetch(
