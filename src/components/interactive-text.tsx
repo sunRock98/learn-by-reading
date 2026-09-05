@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { TranslationPopup } from "@/components/translation-popup";
@@ -14,6 +14,10 @@ import { updateWordMasteryOnTextComplete } from "@/actions/dictionary";
 import { markTextAsComplete } from "@/actions/text-progress";
 import { cn } from "@/lib/utils";
 import { MasteryLevel } from "@prisma/client";
+import {
+  isBrowserTranslationSupported,
+  translateWithBrowser,
+} from "@/lib/browser-translation";
 
 interface Text {
   id: number;
@@ -49,6 +53,7 @@ interface WordPosition {
   word: string;
   x: number;
   y: number;
+  browserTranslation: Promise<string> | null;
 }
 
 type ViewMode = "read" | "listen";
@@ -64,8 +69,25 @@ export function InteractiveText({
   const [completedReading, setCompletedReading] = useState(isCompleted);
   const [justCompleted, setJustCompleted] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("read");
+  const [isBrowserTranslatorSupported, setIsBrowserTranslatorSupported] =
+    useState(false);
   const router = useRouter();
   const t = useTranslations("InteractiveText");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    isBrowserTranslationSupported(
+      course.language.name,
+      userNativeLanguage
+    ).then((isSupported) => {
+      if (!cancelled) setIsBrowserTranslatorSupported(isSupported);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [course.language.name, userNativeLanguage]);
 
   // Create a map for quick lookup of dictionary words
   const dictionaryMap = useMemo(() => {
@@ -94,9 +116,18 @@ export function InteractiveText({
         word: cleanedWord,
         x: rect.left + rect.width / 2,
         y: rect.top,
+        // Translator.create() is intentionally started inside the click event:
+        // Chrome rejects creation without recent user activation.
+        browserTranslation: isBrowserTranslatorSupported
+          ? translateWithBrowser(
+              cleanedWord,
+              course.language.name,
+              userNativeLanguage
+            )
+          : null,
       });
     },
-    []
+    [course.language.name, isBrowserTranslatorSupported, userNativeLanguage]
   );
 
   const handleClosePopup = useCallback(() => {
@@ -324,6 +355,7 @@ export function InteractiveText({
           sourceLanguage={course.language.name}
           targetLanguage={userNativeLanguage}
           position={{ x: selectedWord.x, y: selectedWord.y }}
+          browserTranslation={selectedWord.browserTranslation}
           courseId={text.courseId}
           textId={text.id}
           onClose={handleClosePopup}
