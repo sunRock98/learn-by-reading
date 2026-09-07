@@ -76,13 +76,17 @@ export async function POST(request: Request) {
     );
   }
 
+  const requestedLanguage =
+    typeof body.language === "string" ? body.language : null;
+
   if (
     typeof body.text !== "string" ||
-    typeof body.language !== "string" ||
+    !requestedLanguage ||
     !body.text.trim() ||
     body.text.length > MAX_TEXT_LENGTH ||
     !NATIVE_LANGUAGES.some(
-      (language) => language.name.toLowerCase() === body.language.toLowerCase()
+      (language) =>
+        language.name.toLowerCase() === requestedLanguage.toLowerCase()
     )
   ) {
     return NextResponse.json(
@@ -91,9 +95,8 @@ export async function POST(request: Request) {
     );
   }
 
-  // Validated as a string and against NATIVE_LANGUAGES above.
-  const language = body.language as string;
-  const languageCode = getLanguageCodeFromName(language);
+  // Validated against NATIVE_LANGUAGES above.
+  const languageCode = getLanguageCodeFromName(requestedLanguage);
   const voice = VOICES[languageCode] ?? VOICES.en;
   const ssml = `<speak version="1.0" xml:lang="${voice.locale}"><voice name="${voice.name}">${escapeXml(body.text.trim())}</voice></speak>`;
 
