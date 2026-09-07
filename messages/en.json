@@ -592,6 +592,8 @@
     "freeTexts": "{count}/{max} free texts",
     "reachedLimit": "You've reached the free limit",
     "reachedLimitDescription": "You've generated {max} free texts. Create a free account to unlock unlimited texts, track your progress, and build your personal dictionary.",
+    "translationLimitTitle": "Free translation limit reached",
+    "translationLimitDescription": "You've used all {max} word translations for this text. Create a free account to keep translating words.",
     "createFreeAccount": "Create Free Account",
     "continueReading": "Continue Reading",
     "clickToTranslate": "Click on any word to see its translation",

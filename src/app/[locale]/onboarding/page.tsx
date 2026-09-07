@@ -1,6 +1,9 @@
 import { db } from "@/lib/db";
 import { OnboardingFlow } from "@/components/onboarding/onboarding-flow";
 import { getCurrentUser } from "@/lib/auth";
+import { getOnboardingUserData, needsOnboarding } from "@/lib/onboarding";
+import { redirect } from "next/navigation";
+import { GuestDataSync } from "@/components/onboarding/guest-data-sync";
 
 async function getLanguages() {
   return await db.language.findMany({
@@ -11,17 +14,6 @@ async function getLanguages() {
 async function getLevels() {
   return await db.level.findMany({
     select: { id: true, name: true },
-  });
-}
-
-async function getUserData(userId: string) {
-  return await db.user.findUnique({
-    where: { id: userId },
-    select: {
-      name: true,
-      interests: true,
-      subscriptions: { select: { id: true } },
-    },
   });
 }
 
@@ -38,21 +30,28 @@ export default async function OnboardingPage() {
   let userHasCourses = false;
 
   if (user?.id) {
+    if (!(await needsOnboarding(user.id))) {
+      redirect("/dashboard");
+    }
+
     isAuthenticated = true;
-    const userData = await getUserData(user.id);
+    const userData = await getOnboardingUserData(user.id);
     userName = userData?.name ?? user.name ?? null;
     userInterests = userData?.interests ?? [];
     userHasCourses = (userData?.subscriptions.length ?? 0) > 0;
   }
 
   return (
-    <OnboardingFlow
-      languages={languages}
-      levels={levels}
-      isAuthenticated={isAuthenticated}
-      userName={userName}
-      userInterests={userInterests}
-      userHasCourses={userHasCourses}
-    />
+    <>
+      {isAuthenticated && <GuestDataSync />}
+      <OnboardingFlow
+        languages={languages}
+        levels={levels}
+        isAuthenticated={isAuthenticated}
+        userName={userName}
+        userInterests={userInterests}
+        userHasCourses={userHasCourses}
+      />
+    </>
   );
 }

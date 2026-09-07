@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { StatsOverview } from "@/components/dashboard/stats-overview";
 import { CourseGrid } from "@/components/dashboard/course-grid";
 import { RecentWords } from "@/components/dashboard/recent-words";
+import { needsOnboarding } from "@/lib/onboarding";
 import { getTranslations } from "next-intl/server";
 
 async function getLanguagesAndLevels() {
@@ -91,15 +92,6 @@ async function getDashboardData(userId: string) {
       coursesCount: courses.length,
     },
   };
-}
-
-async function needsOnboarding(userId: string): Promise<boolean> {
-  const userData = await db.user.findUnique({
-    where: { id: userId },
-    select: { interests: true },
-  });
-
-  return !userData || userData.interests.length === 0;
 }
 
 export default async function DashboardPage() {

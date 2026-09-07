@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
 } as const;
 
 export const MAX_GUEST_TEXTS = 2;
+export const MAX_GUEST_TRANSLATION_CLICKS = 25;
 
 export interface GuestLanguage {
   id: number;
@@ -27,6 +28,35 @@ export interface GuestText {
   translations: { word: string; translation: string }[];
   createdAt: string;
   topic?: string;
+  exercises?: GuestExercise[];
+  translationClicks?: GuestTranslationClick[];
+  exerciseProgress?: Record<number, GuestExerciseProgress>;
+  completed?: boolean;
+}
+
+export interface GuestExercise {
+  type:
+    | "MULTIPLE_CHOICE"
+    | "FILL_BLANK"
+    | "TRUE_FALSE"
+    | "TRANSLATION"
+    | "SENTENCE_ORDER";
+  question: string;
+  options?: string[];
+  correctAnswer: string;
+  explanation: string;
+}
+
+export interface GuestTranslationClick {
+  word: string;
+  translation: string;
+  count: number;
+}
+
+export interface GuestExerciseProgress {
+  userAnswer: string;
+  correct: boolean;
+  attempts: number;
 }
 
 export interface GuestData {
@@ -94,6 +124,21 @@ export function addGuestText(text: GuestText): void {
   texts.push(text);
   setItem(STORAGE_KEYS.TEXTS, texts);
   setItem(STORAGE_KEYS.TEXT_COUNT, texts.length);
+}
+
+export function updateGuestText(
+  textId: string,
+  update: (text: GuestText) => GuestText
+): GuestText | null {
+  let updatedText: GuestText | null = null;
+  const texts = getGuestTexts().map((text) => {
+    if (text.id !== textId) return text;
+    updatedText = update(text);
+    return updatedText;
+  });
+
+  if (updatedText) setItem(STORAGE_KEYS.TEXTS, texts);
+  return updatedText;
 }
 
 export function getGuestTextCount(): number {

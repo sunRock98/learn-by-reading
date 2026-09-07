@@ -33,9 +33,14 @@ interface ExerciseSectionProps {
   textId: number;
   courseId: number;
   exercises: ExerciseData[];
+  initialResults?: Record<number, ExerciseResult>;
+  onSubmitAnswer?: (
+    exerciseId: number,
+    answer: string
+  ) => Promise<ExerciseResult | null>;
 }
 
-interface ExerciseResult {
+export interface ExerciseResult {
   correct: boolean;
   correctAnswer: string;
   explanation?: string;
@@ -61,10 +66,13 @@ export function ExerciseSection({
   textId,
   courseId,
   exercises: initialExercises,
+  initialResults = {},
+  onSubmitAnswer,
 }: ExerciseSectionProps) {
   const [exercises] = useState<ExerciseData[]>(initialExercises);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [results, setResults] = useState<Record<number, ExerciseResult>>({});
+  const [results, setResults] =
+    useState<Record<number, ExerciseResult>>(initialResults);
   const [showResults, setShowResults] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -82,11 +90,13 @@ export function ExerciseSection({
 
   const handleSubmitAnswer = useCallback(
     async (exerciseId: number, answer: string) => {
-      const response = await submitExerciseAnswer({
-        exerciseId,
-        userAnswer: answer,
-      });
-      if (response.success && response.correct !== undefined) {
+      const response = onSubmitAnswer
+        ? await onSubmitAnswer(exerciseId, answer)
+        : await submitExerciseAnswer({
+            exerciseId,
+            userAnswer: answer,
+          });
+      if (response && response.correct !== undefined) {
         setResults((prev) => ({
           ...prev,
           [exerciseId]: {
@@ -97,7 +107,7 @@ export function ExerciseSection({
         }));
       }
     },
-    []
+    [onSubmitAnswer]
   );
 
   const handleNext = useCallback(() => {

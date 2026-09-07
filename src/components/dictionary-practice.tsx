@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { playWordSpeech } from "@/lib/word-speech";
 
 interface DictionaryPracticeProps {
   words: DictionaryWord[];
@@ -80,21 +81,8 @@ export function DictionaryPractice({
     [words]
   );
 
-  const handlePlayAudio = (text: string, language: string) => {
-    if (!("speechSynthesis" in window)) return;
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    const langCode = language.toLowerCase().slice(0, 2);
-    const voice = speechSynthesis
-      .getVoices()
-      .find((item) => item.lang.toLowerCase().startsWith(langCode));
-
-    if (voice) {
-      utterance.voice = voice;
-    }
-
-    speechSynthesis.speak(utterance);
-  };
+  const handlePlayAudio = (text: string, language: string) =>
+    playWordSpeech(text, language);
 
   const moveToCard = (index: number) => {
     setCurrentIndex(index);
@@ -249,7 +237,7 @@ export function DictionaryPractice({
                 variant='outline'
                 size='sm'
                 onClick={() =>
-                  handlePlayAudio(frontText ?? "", sourceLanguage ?? "")
+                  void handlePlayAudio(frontText ?? "", sourceLanguage ?? "")
                 }
               >
                 <Volume2 className='h-4 w-4' />

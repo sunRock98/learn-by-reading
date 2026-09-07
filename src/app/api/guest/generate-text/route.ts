@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import openai from "@/lib/openaiClient";
 import { constructPrompt } from "@/api/openai/prompt";
+import { generateExercises } from "@/api/openai/generateExercises";
 
 const MAX_GUEST_TEXTS = 2;
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour
@@ -105,11 +106,19 @@ export async function POST(request: Request) {
     cleanContent = cleanContent.trim();
 
     const data = JSON.parse(cleanContent);
+    const exercises = await generateExercises({
+      textContent: data.text,
+      textTitle: data.title,
+      language,
+      level,
+      motherLanguage: "English",
+    });
 
     return NextResponse.json({
       title: data.title,
       text: data.text,
       translations: data.translations || [],
+      exercises,
     });
   } catch (error) {
     console.error("Error generating guest text:", error);

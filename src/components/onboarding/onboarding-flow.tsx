@@ -211,6 +211,7 @@ export function OnboardingFlow({
           title: data.title,
           content: data.text,
           translations: data.translations || [],
+          exercises: data.exercises || [],
           createdAt: new Date().toISOString(),
           topic,
         };
