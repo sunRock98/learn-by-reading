@@ -85,6 +85,18 @@ const TextPage = async ({ params }: TextPageProps) => {
   // Get exercises for this text
   const exercisesResult = await getExercisesForText(text.id);
   const exercises = exercisesResult.exercises || [];
+  const exerciseResults = Object.fromEntries(
+    exercises
+      .filter((exercise) => exercise.userProgress?.completed)
+      .map((exercise) => [
+        exercise.id,
+        {
+          correct: exercise.userProgress?.correct ?? false,
+          correctAnswer: exercise.correctAnswer,
+          explanation: exercise.explanation || undefined,
+        },
+      ])
+  );
 
   return (
     <div className='container mx-auto max-w-6xl px-4 py-4 sm:py-6 lg:py-8'>
@@ -123,6 +135,7 @@ const TextPage = async ({ params }: TextPageProps) => {
           textId={text.id}
           courseId={text.courseId}
           exercises={exercises}
+          initialResults={exerciseResults}
         />
       </div>
 

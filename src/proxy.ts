@@ -64,7 +64,7 @@ export default auth((req) => {
 
     if (IS_LOGGED_IN) {
       return Response.redirect(
-        new URL("/" + locale + "/" + DEFAULT_LOGIN_REDIRECT, nextUrl)
+        new URL(`/${locale}${DEFAULT_LOGIN_REDIRECT}`, nextUrl)
       );
     }
     return handleI18nRouting(req);

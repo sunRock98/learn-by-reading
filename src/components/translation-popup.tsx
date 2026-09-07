@@ -11,8 +11,7 @@ import {
   checkWordAndRecordClick,
 } from "@/actions/dictionary";
 import { useTranslations } from "next-intl";
-import { getLanguageCodeFromName } from "@/lib/native-languages";
-import { playAzureSpeech } from "@/lib/azure-speech-client";
+import { playWordSpeech } from "@/lib/word-speech";
 
 interface TranslationPopupProps {
   word: string;
@@ -32,39 +31,6 @@ interface TranslationResult {
 }
 
 const BROWSER_TRANSLATION_WAIT_MS = 750;
-
-// Prefer a consistent regional pronunciation where the browser has one.
-// Users can still fall back to any installed voice for the base language.
-const PREFERRED_SPEECH_LOCALES: Record<string, string[]> = {
-  en: ["en-US", "en-GB"],
-  es: ["es-ES", "es-MX"],
-  fr: ["fr-FR", "fr-CA"],
-  pt: ["pt-BR", "pt-PT"],
-  de: ["de-DE"],
-  it: ["it-IT"],
-  ru: ["ru-RU"],
-  ja: ["ja-JP"],
-  ko: ["ko-KR"],
-  zh: ["zh-CN", "zh-TW"],
-};
-
-function getPreferredVoice(
-  voices: SpeechSynthesisVoice[],
-  languageCode: string
-) {
-  const preferredLocales = PREFERRED_SPEECH_LOCALES[languageCode] ?? [];
-
-  for (const locale of preferredLocales) {
-    const exactMatch = voices.find(
-      (voice) => voice.lang.toLowerCase() === locale.toLowerCase()
-    );
-    if (exactMatch) return exactMatch;
-  }
-
-  return voices.find((voice) =>
-    voice.lang.toLowerCase().startsWith(languageCode.toLowerCase())
-  );
-}
 
 async function getFastBrowserTranslation(
   browserTranslation: Promise<string>
@@ -219,35 +185,7 @@ export function TranslationPopup({
   ]);
 
   const handlePlayAudio = useCallback(() => {
-    const langCode = getLanguageCodeFromName(sourceLanguage);
-    const preferredLocale = PREFERRED_SPEECH_LOCALES[langCode]?.[0] ?? langCode;
-
-    const speakWithBrowser = () => {
-      if (!("speechSynthesis" in window)) return;
-
-      const synth = window.speechSynthesis;
-      const voices = synth.getVoices();
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.lang = preferredLocale;
-      utterance.rate = 0.85;
-      const voice = getPreferredVoice(voices, langCode);
-      if (voice) utterance.voice = voice;
-
-      synth.cancel();
-      synth.speak(utterance);
-    };
-
-    void playAzureSpeech(word, sourceLanguage)
-      .then(() => {
-        console.info("[speech] Azure Neural TTS", {
-          word,
-          language: sourceLanguage,
-        });
-      })
-      .catch((error) => {
-        console.warn("[speech] Azure unavailable; using browser voice", error);
-        speakWithBrowser();
-      });
+    void playWordSpeech(word, sourceLanguage);
   }, [word, sourceLanguage]);
 
   // Calculate position to keep popup in viewport

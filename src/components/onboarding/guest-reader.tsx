@@ -22,9 +22,17 @@ import {
   addGuestText,
   canGuestGenerateText,
   MAX_GUEST_TEXTS,
+  MAX_GUEST_TRANSLATION_CLICKS,
+  updateGuestText,
   type GuestText,
 } from "@/lib/guest-storage";
 import { useTranslations } from "next-intl";
+import {
+  ExerciseSection,
+  type ExerciseResult,
+} from "@/components/exercises/exercise-section";
+import type { ExerciseData } from "@/components/exercises/types";
+import { checkExerciseAnswer } from "@/lib/exercise-answer";
 
 interface GuestReaderProps {
   textId?: string;
@@ -36,6 +44,9 @@ export function GuestReader({ textId }: GuestReaderProps) {
   const [texts, setTexts] = useState<GuestText[]>([]);
   const [currentText, setCurrentText] = useState<GuestText | null>(null);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+  const [signupReason, setSignupReason] = useState<"texts" | "translations">(
+    "texts"
+  );
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -77,6 +88,42 @@ export function GuestReader({ textId }: GuestReaderProps) {
       );
 
       if (translation) {
+        const translationClickCount = (
+          currentText.translationClicks ?? []
+        ).reduce((total, click) => total + click.count, 0);
+        if (translationClickCount >= MAX_GUEST_TRANSLATION_CLICKS) {
+          setSignupReason("translations");
+          setShowSignupPrompt(true);
+          return;
+        }
+
+        const updatedText = updateGuestText(currentText.id, (text) => {
+          const clicks = [...(text.translationClicks ?? [])];
+          const existingClick = clicks.find(
+            (click) => click.word.toLowerCase() === cleanedWord
+          );
+
+          if (existingClick) {
+            existingClick.count += 1;
+          } else {
+            clicks.push({
+              word: cleanedWord,
+              translation: translation.translation,
+              count: 1,
+            });
+          }
+
+          return { ...text, translationClicks: clicks };
+        });
+        if (updatedText) {
+          setCurrentText(updatedText);
+          setTexts((allTexts) =>
+            allTexts.map((text) =>
+              text.id === updatedText.id ? updatedText : text
+            )
+          );
+        }
+
         target.setAttribute("title", translation.translation);
         target.classList.add("bg-primary/20");
 
@@ -135,6 +182,7 @@ export function GuestReader({ textId }: GuestReaderProps) {
 
   const handleGenerateNext = () => {
     if (!canGuestGenerateText()) {
+      setSignupReason("texts");
       setShowSignupPrompt(true);
       return;
     }
@@ -183,6 +231,7 @@ export function GuestReader({ textId }: GuestReaderProps) {
           title: data.title,
           content: data.text,
           translations: data.translations || [],
+          exercises: data.exercises || [],
           createdAt: new Date().toISOString(),
           topic,
         };
@@ -207,6 +256,72 @@ export function GuestReader({ textId }: GuestReaderProps) {
       setCurrentText(nextText);
       router.push(`/guest/reading/${nextText.id}`);
     }
+  };
+
+  const guestExercises: ExerciseData[] = (currentText?.exercises ?? []).map(
+    (exercise, index) => ({
+      ...exercise,
+      id: index,
+      options: exercise.options ? JSON.stringify(exercise.options) : null,
+      orderIndex: index,
+    })
+  );
+
+  const guestExerciseResults = Object.fromEntries(
+    Object.entries(currentText?.exerciseProgress ?? {}).map(
+      ([index, progress]) => {
+        const exercise = currentText?.exercises?.[Number(index)];
+        return [
+          Number(index),
+          {
+            correct: progress.correct,
+            correctAnswer: exercise?.correctAnswer ?? "",
+            explanation: exercise?.explanation,
+          },
+        ];
+      }
+    )
+  );
+
+  const handleGuestExerciseAnswer = async (
+    exerciseId: number,
+    userAnswer: string
+  ): Promise<ExerciseResult | null> => {
+    const exercise = currentText?.exercises?.[exerciseId];
+    if (!currentText || !exercise) return null;
+
+    const correct = checkExerciseAnswer(
+      exercise.type,
+      userAnswer,
+      exercise.correctAnswer
+    );
+    const previous = currentText.exerciseProgress?.[exerciseId];
+    const updatedText = updateGuestText(currentText.id, (text) => ({
+      ...text,
+      exerciseProgress: {
+        ...text.exerciseProgress,
+        [exerciseId]: {
+          userAnswer,
+          correct,
+          attempts: (previous?.attempts ?? 0) + 1,
+        },
+      },
+    }));
+
+    if (updatedText) {
+      setCurrentText(updatedText);
+      setTexts((allTexts) =>
+        allTexts.map((text) =>
+          text.id === updatedText.id ? updatedText : text
+        )
+      );
+    }
+
+    return {
+      correct,
+      correctAnswer: exercise.correctAnswer,
+      explanation: exercise.explanation,
+    };
   };
 
   if (!currentText && texts.length === 0) {
@@ -272,9 +387,17 @@ export function GuestReader({ textId }: GuestReaderProps) {
             <div className='bg-primary/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full'>
               <Lock className='text-primary h-8 w-8' />
             </div>
-            <h2 className='mb-2 text-2xl font-bold'>{t("reachedLimit")}</h2>
+            <h2 className='mb-2 text-2xl font-bold'>
+              {signupReason === "translations"
+                ? t("translationLimitTitle")
+                : t("reachedLimit")}
+            </h2>
             <p className='text-muted-foreground mb-6'>
-              {t("reachedLimitDescription", { max: MAX_GUEST_TEXTS })}
+              {signupReason === "translations"
+                ? t("translationLimitDescription", {
+                    max: MAX_GUEST_TRANSLATION_CLICKS,
+                  })
+                : t("reachedLimitDescription", { max: MAX_GUEST_TEXTS })}
             </p>
             <div className='flex flex-col gap-3'>
               <Button size='lg' asChild>
@@ -357,6 +480,19 @@ export function GuestReader({ textId }: GuestReaderProps) {
                 </div>
               </div>
             </Card>
+
+            {guestExercises.length > 0 && (
+              <div className='mx-auto max-w-2xl'>
+                <ExerciseSection
+                  key={currentText.id}
+                  textId={0}
+                  courseId={0}
+                  exercises={guestExercises}
+                  initialResults={guestExerciseResults}
+                  onSubmitAnswer={handleGuestExerciseAnswer}
+                />
+              </div>
+            )}
 
             <div className='flex items-center justify-between'>
               <div className='flex gap-2'>

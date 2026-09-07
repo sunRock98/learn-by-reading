@@ -7,6 +7,7 @@ import {
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { ExerciseType } from "@prisma/client";
+import { checkExerciseAnswer } from "@/lib/exercise-answer";
 
 // ─── Generate Exercises for a Text ─────────────────────────────────────────
 
@@ -134,7 +135,7 @@ export const submitExerciseAnswer = async ({
     }
 
     // Check correctness based on exercise type
-    const isCorrect = checkAnswer(
+    const isCorrect = checkExerciseAnswer(
       exercise.type,
       userAnswer,
       exercise.correctAnswer
@@ -275,47 +276,3 @@ export const getExercisesForText = async (
     };
   }
 };
-
-// ─── Helper: Check Answer Correctness ───────────────────────────────────────
-
-function checkAnswer(
-  type: ExerciseType,
-  userAnswer: string,
-  correctAnswer: string
-): boolean {
-  const normalizedUser = userAnswer.trim().toLowerCase();
-  const normalizedCorrect = correctAnswer.trim().toLowerCase();
-
-  switch (type) {
-    case "MULTIPLE_CHOICE":
-      return normalizedUser === normalizedCorrect;
-
-    case "FILL_BLANK":
-      // Allow minor variations (punctuation, extra spaces)
-      return (
-        normalizedUser.replace(/[.,!?;:'"()]/g, "").trim() ===
-        normalizedCorrect.replace(/[.,!?;:'"()]/g, "").trim()
-      );
-
-    case "TRUE_FALSE":
-      return normalizedUser === normalizedCorrect;
-
-    case "TRANSLATION":
-      // More lenient: allow partial matches for translations
-      return (
-        normalizedUser === normalizedCorrect ||
-        normalizedCorrect.includes(normalizedUser) ||
-        normalizedUser.includes(normalizedCorrect)
-      );
-
-    case "SENTENCE_ORDER":
-      // Compare normalized sentences
-      return (
-        normalizedUser.replace(/\s+/g, " ").trim() ===
-        normalizedCorrect.replace(/\s+/g, " ").trim()
-      );
-
-    default:
-      return normalizedUser === normalizedCorrect;
-  }
-}
